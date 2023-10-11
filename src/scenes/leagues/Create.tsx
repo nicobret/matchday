@@ -3,13 +3,11 @@ import supabaseClient from '../../utils/supabase/supabase';
 
 const CreateLeague = () => {
     const [name, setName] = React.useState('');
-    const [error, setError] = React.useState('');
 
     async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
         e.preventDefault();
         const { data: userData } = await supabaseClient.auth.getUser();
         const { user } = userData;
-        console.log("🚀 ~ file: CreateLeague.tsx:7 ~ onSubmit ~ user:", user)
         if (!user) {
             return;
         }
