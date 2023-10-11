@@ -1,32 +1,52 @@
 import './index.css'
-import { useState, useEffect } from 'react'
+import { useEffect } from 'react'
+import { Link, Outlet } from 'react-router-dom'
 import { Auth } from '@supabase/auth-ui-react'
 import { ThemeSupa } from '@supabase/auth-ui-shared'
-import type { Session } from '@supabase/supabase-js'
-import supabaseClient from './utils/supabase/supabase'
-
+import supabaseClient from './utils/supabase'
+import useStore from './utils/zustand'
 
 export default function App() {
-  const [session, setSession] = useState<Session | null>(null)
+  const { session, setSession } = useStore()
+
+  async function getSession() {
+    const res = await supabaseClient.auth.getSession();
+    if (res.error) console.error(res.error);
+    if (!res.data.session) return;
+    setSession(res.data.session);
+  }
+
+  async function logout() {
+    await supabaseClient.auth.signOut()
+    setSession(null)
+  }
 
   useEffect(() => {
-    supabaseClient.auth.getSession().then(({ data: { session } }) => {
-      setSession(session)
-    })
-
-    const {
-      data: { subscription },
-    } = supabaseClient.auth.onAuthStateChange((_event, session) => {
-      setSession(session)
-    })
-
+    getSession()
+    const { data: { subscription } } = supabaseClient.auth.onAuthStateChange((_event, session) => { setSession(session) })
     return () => subscription.unsubscribe()
   }, [])
 
-  if (!session) {
-    return (<Auth supabaseClient={supabaseClient} appearance={{ theme: ThemeSupa }} />)
-  }
-  else {
-    return (<div>Logged in!</div>)
-  }
+  return (
+    <>
+      <header>
+        <h1>
+          Matchday
+        </h1>
+
+        <nav>
+          <ul>
+            <li><Link to="/leagues">Ligues</Link></li>
+            <li><Link to="/games">Matches</Link></li>
+            <li><Link to="/players">Joueurs</Link></li>
+          </ul>
+        </nav>
+
+        {session ? <div><p>{session.user.email}</p><button onClick={logout}>Déconnexion</button>
+        </div> : <Auth supabaseClient={supabaseClient} appearance={{ theme: ThemeSupa }} providers={[]} />}
+      </header>
+
+      <Outlet />
+    </>
+  )
 }

@@ -1,5 +1,5 @@
 import React from 'react';
-import supabaseClient from '../../utils/supabase/supabase';
+import supabaseClient from '../../utils/supabase';
 
 const CreateLeague = () => {
     const [name, setName] = React.useState('');

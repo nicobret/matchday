@@ -9,20 +9,21 @@ const router = createBrowserRouter([
   {
     path: '/',
     element: <App />,
+    children: [
+      {
+        path: '/leagues',
+        element: <div>Leagues</div>,
+      },
+      {
+        path: '/leagues/create',
+        element: <CreateLeague />,
+      },
+      {
+        path: '/leagues/:id',
+        element: <div>League</div>,
+      }
+    ]
   },
-  {
-    path: '/leagues',
-    element: <div>Leagues</div>,
-  },
-  {
-    path: '/leagues/create',
-    element: <CreateLeague />,
-  },
-  {
-    path: '/leagues/:id',
-    element: <div>League</div>,
-
-  }
 ]);
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
