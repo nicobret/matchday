@@ -4,6 +4,8 @@ import { createBrowserRouter, RouterProvider } from 'react-router-dom'
 import App from './App.tsx'
 import './index.css'
 import CreateLeague from './scenes/leagues/Create.tsx'
+import ListLeagues from './scenes/leagues/List.tsx'
+import { loader as leagueLoader } from './scenes/leagues/List.tsx'
 
 const router = createBrowserRouter([
   {
@@ -12,7 +14,8 @@ const router = createBrowserRouter([
     children: [
       {
         path: '/leagues',
-        element: <div>Leagues</div>,
+        element: <ListLeagues />,
+        loader: leagueLoader,
       },
       {
         path: '/leagues/create',

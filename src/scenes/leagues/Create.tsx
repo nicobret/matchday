@@ -1,8 +1,8 @@
-import React from 'react';
+import { useState } from 'react';
 import supabaseClient from '../../utils/supabase';
 
 const CreateLeague = () => {
-    const [name, setName] = React.useState('');
+    const [name, setName] = useState('');
 
     async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
         e.preventDefault();
