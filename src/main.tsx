@@ -11,7 +11,7 @@ import supabaseClient from "./utils/supabase.ts";
 export async function leaguesLoader() {
   const { data: leagues, error: leagueError } = await supabaseClient
     .from("leagues")
-    .select();
+    .select(`id, name, league_memberships ( user_id )`);
   if (leagueError) {
     console.error(leagueError);
     return null;
@@ -20,15 +20,7 @@ export async function leaguesLoader() {
   const { data: userData } = await supabaseClient.auth.getUser();
   if (!userData.user?.id) return { leagues };
 
-  const { data: memberships, error: membershipError } = await supabaseClient
-    .from("league_memberships")
-    .select()
-    .eq("user_id", userData.user.id);
-  if (membershipError) {
-    console.error(membershipError);
-    return null;
-  }
-  return { leagues, memberships };
+  return { leagues };
 }
 
 const router = createBrowserRouter([
