@@ -1,16 +1,15 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { Link } from "react-router-dom";
 import useStore from "../../utils/zustand";
 import ClubCard from "./components/ClubCard";
-import { fetchClubs, clubType } from "./clubs.service";
+import { useClubs } from "./useClubs";
 
 export default function List() {
-  const [clubs, setLeagues] = useState<clubType[]>([]);
+  const { clubs, fetchClubs } = useClubs();
 
   useEffect(() => {
     async function getClubs() {
-      const clubs = await fetchClubs();
-      if (clubs) setLeagues(clubs);
+      await fetchClubs();
     }
     getClubs();
   }, []);
@@ -25,7 +24,7 @@ export default function List() {
       <h2 className="scroll-m-20 border-b pb-2 text-3xl font-semibold tracking-tight first:mt-0">
         Mes clubs
       </h2>
-      <div className="grid grid-cols-4">
+      <div className="flex flex-wrap gap-6">
         {clubs
           .filter((l) =>
             l.club_enrolments.some((m) => m.user_id === session.user.id)
@@ -38,7 +37,7 @@ export default function List() {
       <h2 className="scroll-m-20 border-b pb-2 text-3xl font-semibold tracking-tight first:mt-0">
         Rejoindre un club
       </h2>
-      <div className="flex gap-6">
+      <div className="flex flex-wrap gap-6">
         {clubs.map((league) => (
           <ClubCard key={league.id} {...league} />
         ))}

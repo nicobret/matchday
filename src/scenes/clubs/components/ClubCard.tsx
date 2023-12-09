@@ -8,30 +8,25 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { PlusIcon } from "lucide-react";
-import { joinClub, leaveClub } from "../clubs.service";
+import { clubType, useClubs } from "../useClubs";
 
-export default function LeagueCard(league: {
-  id: number;
-  name: string;
-  club_enrolments: Array<{ user_id: string }>;
-}) {
+export default function ClubCard(club: clubType) {
+  const { joinClub, leaveClub } = useClubs();
   return (
     <Card>
       <CardHeader>
-        <CardTitle>{league.name}</CardTitle>
+        <CardTitle>{club.name}</CardTitle>
       </CardHeader>
       <CardContent>
-        <CardDescription>
-          {league.club_enrolments.length} membres
-        </CardDescription>
+        <CardDescription>{club.club_enrolments.length} membres</CardDescription>
       </CardContent>
       <CardFooter className="flex gap-4">
-        <Button onClick={() => joinClub(league.id)}>
+        <Button onClick={() => joinClub(club.id)}>
           <PlusIcon />
           Rejoindre
         </Button>
         <Button
-          onClick={() => leaveClub(league.id)}
+          onClick={() => leaveClub(club.id)}
           variant="secondary"
           className="flex"
         >

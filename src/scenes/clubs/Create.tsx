@@ -1,11 +1,12 @@
 import { useState } from "react";
-import { createClub } from "./clubs.service";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { useClubs } from "./useClubs";
 
 const CreateLeague = () => {
   const [name, setName] = useState("");
+  const { createClub } = useClubs();
 
   async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -23,7 +24,7 @@ const CreateLeague = () => {
           <Input
             type="text"
             id="clubname"
-            placeholder="Nom du club"
+            placeholder="Le club des champions"
             value={name}
             onChange={(e) => setName(e.target.value)}
           />
