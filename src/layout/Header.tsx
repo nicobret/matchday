@@ -1,8 +1,6 @@
 import { Link, NavLink } from "react-router-dom";
 import useStore from "../utils/zustand";
 import supabaseClient from "../utils/supabase";
-import { Auth } from "@supabase/auth-ui-react";
-import { ThemeSupa } from "@supabase/auth-ui-shared";
 import {
   NavigationMenu,
   NavigationMenuItem,
@@ -14,6 +12,7 @@ import { Button } from "@/components/ui/button";
 
 export default function Header() {
   const { session, setSession } = useStore();
+  console.log("🚀 ~ file: Header.tsx:15 ~ Header ~ session:", session);
 
   async function logout() {
     await supabaseClient.auth.signOut();
@@ -31,9 +30,9 @@ export default function Header() {
       <NavigationMenu>
         <NavigationMenuList>
           <NavigationMenuItem>
-            <Link to="/leagues">
+            <Link to="clubs">
               <NavigationMenuLink className={navigationMenuTriggerStyle()}>
-                Ligues
+                Clubs
               </NavigationMenuLink>
             </Link>
           </NavigationMenuItem>
@@ -55,18 +54,16 @@ export default function Header() {
       </NavigationMenu>
 
       {session ? (
-        <div className="ml-auto text-right">
+        <div className="flex items-center gap-8 ml-auto text-right">
           <p>{session.user.email}</p>
           <Button variant="outline" onClick={logout}>
             Déconnexion
           </Button>
         </div>
       ) : (
-        <Auth
-          supabaseClient={supabaseClient}
-          appearance={{ theme: ThemeSupa }}
-          providers={[]}
-        />
+        <Link to="auth">
+          <p className="ml-auto">Se connecter</p>
+        </Link>
       )}
     </header>
   );

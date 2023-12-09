@@ -1,9 +1,39 @@
 import "./index.css";
 import { useEffect } from "react";
-import { Outlet } from "react-router-dom";
+import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import supabaseClient from "./utils/supabase";
 import useStore from "./utils/zustand";
-import Header from "./layout/Header";
+
+import ClubList from "./scenes/clubs/List.tsx";
+import CreateClub from "./scenes/clubs/Create.tsx";
+import Dashboard from "./scenes/dashboard/Dashboard.tsx";
+import Layout from "./layout/Layout.tsx";
+import { Auth } from "@supabase/auth-ui-react";
+import { ThemeSupa } from "@supabase/auth-ui-shared";
+
+const router = createBrowserRouter([
+  {
+    path: "/",
+    element: <Layout />,
+    children: [
+      { index: true, element: <Dashboard /> },
+      { path: "games", element: <div>Games</div> },
+      { path: "clubs", element: <ClubList /> },
+      { path: "clubs/:id", element: <div>Club</div> },
+      { path: "clubs/create", element: <CreateClub /> },
+    ],
+  },
+  {
+    path: "auth",
+    element: (
+      <Auth
+        supabaseClient={supabaseClient}
+        appearance={{ theme: ThemeSupa }}
+        providers={[]}
+      />
+    ),
+  },
+]);
 
 export default function App() {
   const { setSession } = useStore();
@@ -25,10 +55,5 @@ export default function App() {
     return () => subscription.unsubscribe();
   }, []);
 
-  return (
-    <div className="max-w-screen-2xl mx-auto">
-      <Header />
-      <Outlet />
-    </div>
-  );
+  return <RouterProvider router={router} />;
 }
