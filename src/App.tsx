@@ -44,7 +44,7 @@ const router = createBrowserRouter([
 ]);
 
 export default function App() {
-  const { session, setSession } = useStore();
+  const { session: sessionFromStorage, setSession } = useStore();
 
   async function getSession() {
     const res = await supabaseClient.auth.getSession();
@@ -54,11 +54,14 @@ export default function App() {
   }
 
   useEffect(() => {
-    if (!session) getSession();
+    getSession();
     const {
       data: { subscription },
     } = supabaseClient.auth.onAuthStateChange((_event, session) => {
-      setSession(session);
+      const userIdFromSubscription = session?.user?.id;
+      const userIdFromStorage = sessionFromStorage?.user?.id;
+      const shouldUpdate = userIdFromSubscription !== userIdFromStorage;
+      if (shouldUpdate) setSession(session);
     });
     return () => subscription.unsubscribe();
   }, []);

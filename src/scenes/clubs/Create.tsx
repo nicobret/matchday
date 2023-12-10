@@ -5,14 +5,16 @@ import { Button } from "@/components/ui/button";
 import { ChevronRight } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
 
 const CreateLeague = () => {
   const [name, setName] = useState("");
+  const [description, setDescription] = useState("");
   const { createClub } = useClubs();
 
   async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    await createClub(name);
+    await createClub(name, description);
   }
 
   return (
@@ -40,7 +42,16 @@ const CreateLeague = () => {
             onChange={(e) => setName(e.target.value)}
           />
         </div>
-        <Button type="submit">Create</Button>
+        <div className="grid w-full max-w-sm items-center gap-2">
+          <Label htmlFor="clubdescription">Description</Label>
+          <Textarea
+            id="clubdescription"
+            placeholder="Le meilleur club de tous les temps."
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
+          />
+        </div>
+        <Button type="submit">Créer</Button>
       </form>
     </div>
   );

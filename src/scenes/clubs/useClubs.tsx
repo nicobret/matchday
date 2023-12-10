@@ -6,6 +6,7 @@ import { useNavigate } from "react-router-dom";
 export type clubType = {
   id: number;
   name: string;
+  description: string;
   club_enrolments: Array<{ user_id: string }>;
 };
 
@@ -19,7 +20,7 @@ export function useClubs() {
     setLoading(true);
     const { data, error } = await supabaseClient
       .from("clubs")
-      .select(`id, name, club_enrolments ( user_id )`);
+      .select(`id, name, description, club_enrolments ( user_id )`);
     if (error) console.error(error);
     if (data) setClubs(data);
     setLoading(false);
@@ -29,7 +30,7 @@ export function useClubs() {
     setLoading(true);
     const { data, error } = await supabaseClient
       .from("clubs")
-      .select(`id, name, club_enrolments ( user_id )`)
+      .select(`id, name, description, club_enrolments ( user_id )`)
       .eq("id", parseInt(club_id));
     if (error) console.error(error);
     if (data) setClub(data[0]);
@@ -78,8 +79,7 @@ export function useClubs() {
       console.error(error);
     }
     if (data) {
-      window.alert("Vous avez rejoint ce club !");
-      await fetchClubs();
+      await fetchClub(club_id.toString());
     }
   }
 
@@ -98,27 +98,28 @@ export function useClubs() {
         console.error(error);
       }
       if (data) {
-        window.alert("Vous avez quitté ce club !");
-        await fetchClubs();
+        await fetchClub(club_id.toString());
       }
     }
   }
 
-  async function createClub(name: string) {
+  async function createClub(name: string, description: string) {
     setLoading(true);
-
-    if (!session) throw new Error("No session found");
+    if (!session) {
+      console.error("User must be logged in.");
+      return;
+    }
 
     const { data, error } = await supabaseClient
       .from("clubs")
       .insert({
         creator_id: session.user.id,
         name,
+        description,
       })
       .select();
 
     if (error) console.error(error);
-
     if (data) {
       window.alert("Club créé avec succès !");
       await fetchClubs();

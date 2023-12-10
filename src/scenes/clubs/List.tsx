@@ -36,14 +36,8 @@ export default function List() {
         </Link>
       </div>
       <h2 className="scroll-m-20 border-b pb-2 text-3xl font-semibold tracking-tight first:mt-0">
-        Rejoindre un club
+        Trouver un club
       </h2>
-      <div className="flex flex-wrap gap-6">
-        {clubs.map((league) => (
-          <ClubCard key={league.id} {...league} />
-        ))}
-      </div>
-
       {session && (
         <Link to="create">
           <div className="flex items-center underline underline-offset-2 hover:text-gray-500 mt-6 gap-2">
@@ -52,6 +46,11 @@ export default function List() {
           </div>
         </Link>
       )}
+      <div className="flex flex-wrap gap-6">
+        {clubs.map((league) => (
+          <ClubCard key={league.id} {...league} />
+        ))}
+      </div>
     </div>
   );
 }
