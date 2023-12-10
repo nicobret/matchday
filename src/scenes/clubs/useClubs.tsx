@@ -10,47 +10,30 @@ export type clubType = {
 };
 
 export function useClubs() {
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<Error | null>(null);
-  const [clubs, setClubs] = useState<clubType[]>([]);
+  const { session, setClubs } = useStore();
+  const [loading, setLoading] = useState(false);
   const [club, setClub] = useState<clubType | null>(null);
   const navigate = useNavigate();
 
   async function fetchClubs() {
-    try {
-      setLoading(true);
-      const { data, error } = await supabaseClient
-        .from("clubs")
-        .select(`id, name, club_enrolments ( user_id )`);
-      if (error) throw error;
-      if (data) setClubs(data);
-    } catch (error) {
-      console.error(error);
-      setError(error as Error);
-    } finally {
-      setLoading(false);
-    }
+    setLoading(true);
+    const { data, error } = await supabaseClient
+      .from("clubs")
+      .select(`id, name, club_enrolments ( user_id )`);
+    if (error) console.error(error);
+    if (data) setClubs(data);
+    setLoading(false);
   }
 
-  async function fetchClub(club_id: number) {
-    try {
-      const { data, error } = await supabaseClient
-        .from("clubs")
-        .select(`id, name, club_enrolments ( user_id )`)
-        .eq("id", club_id);
-
-      if (error) throw error;
-
-      if (data) {
-        setClub(data[0]);
-        await fetchClubs();
-      }
-    } catch (error) {
-      console.error(error);
-      setError(error as Error);
-    } finally {
-      setLoading(false);
-    }
+  async function fetchClub(club_id: string) {
+    setLoading(true);
+    const { data, error } = await supabaseClient
+      .from("clubs")
+      .select(`id, name, club_enrolments ( user_id )`)
+      .eq("id", parseInt(club_id));
+    if (error) console.error(error);
+    if (data) setClub(data[0]);
+    setLoading(false);
   }
 
   async function updateClub(club_id: number, name: string) {
@@ -65,19 +48,47 @@ export function useClubs() {
     console.log("🚀 ~ file: List.tsx:22 ~ join ~ data", data);
   }
 
-  async function joinClub(league_id: number) {
+  async function joinClub(club_id: number) {
+    if (!session) {
+      console.error("User must be logged in.");
+      return;
+    }
+
+    const { data: club_enrolments, error: club_enrolments_error } =
+      await supabaseClient
+        .from("club_enrolments")
+        .select("user_id")
+        .eq("club_id", club_id);
+    if (club_enrolments_error) {
+      console.error(club_enrolments_error);
+    }
+    if (
+      club_enrolments &&
+      club_enrolments.find((m) => m.user_id === session.user.id)
+    ) {
+      window.alert("Vous avez déjà rejoint ce club !");
+      return;
+    }
+
     const { data, error } = await supabaseClient
       .from("club_enrolments")
-      .insert({ league_id })
+      .insert({ club_id, user_id: session.user.id })
       .select();
     if (error) {
       console.error(error);
     }
-    console.log("🚀 ~ file: List.tsx:22 ~ join ~ data", data);
+    if (data) {
+      window.alert("Vous avez rejoint ce club !");
+      await fetchClubs();
+    }
   }
 
   async function leaveClub(club_id: number) {
-    if (window.confirm("Voulez-vous vraiment quitter cette ligue ?")) {
+    if (!session) {
+      console.error("User must be logged in.");
+      return;
+    }
+    if (window.confirm("Voulez-vous vraiment quitter ce club   ?")) {
       const { data, error } = await supabaseClient
         .from("club_enrolments")
         .delete()
@@ -86,38 +97,35 @@ export function useClubs() {
       if (error) {
         console.error(error);
       }
-      console.log("🚀 ~ file: List.tsx:22 ~ join ~ data", data);
+      if (data) {
+        window.alert("Vous avez quitté ce club !");
+        await fetchClubs();
+      }
     }
   }
 
   async function createClub(name: string) {
-    try {
-      setLoading(true);
+    setLoading(true);
 
-      const { session } = useStore();
-      if (!session) throw new Error("No session found");
+    if (!session) throw new Error("No session found");
 
-      const { data, error } = await supabaseClient
-        .from("clubs")
-        .insert({
-          creator_id: session.user.id,
-          name,
-        })
-        .select();
+    const { data, error } = await supabaseClient
+      .from("clubs")
+      .insert({
+        creator_id: session.user.id,
+        name,
+      })
+      .select();
 
-      if (error) throw error;
+    if (error) console.error(error);
 
-      if (data) {
-        window.alert("Club créé avec succès !");
-        await fetchClubs();
-        navigate(`/clubs/${data[0].id}`);
-      }
-    } catch (error) {
-      console.error(error);
-      setError(error as Error);
-    } finally {
-      setLoading(false);
+    if (data) {
+      window.alert("Club créé avec succès !");
+      await fetchClubs();
+      navigate(`/clubs/${data[0].id}`);
     }
+
+    setLoading(false);
   }
 
   async function deleteClub(club_id: number) {
@@ -136,8 +144,6 @@ export function useClubs() {
 
   return {
     loading,
-    error,
-    clubs,
     club,
     fetchClubs,
     fetchClub,

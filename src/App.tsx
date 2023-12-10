@@ -4,10 +4,11 @@ import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import supabaseClient from "./utils/supabase";
 import useStore from "./utils/zustand";
 
+import Layout from "./layout/Layout.tsx";
+import Dashboard from "./scenes/dashboard/Dashboard.tsx";
 import ClubList from "./scenes/clubs/List.tsx";
 import CreateClub from "./scenes/clubs/Create.tsx";
-import Dashboard from "./scenes/dashboard/Dashboard.tsx";
-import Layout from "./layout/Layout.tsx";
+import ViewClub from "./scenes/clubs/View.tsx";
 import { Auth } from "@supabase/auth-ui-react";
 import { ThemeSupa } from "@supabase/auth-ui-shared";
 
@@ -17,10 +18,17 @@ const router = createBrowserRouter([
     element: <Layout />,
     children: [
       { index: true, element: <Dashboard /> },
-      { path: "games", element: <div>Games</div> },
+
       { path: "clubs", element: <ClubList /> },
-      { path: "clubs/:id", element: <div>Club</div> },
+      { path: "clubs/:id", element: <ViewClub /> },
       { path: "clubs/create", element: <CreateClub /> },
+
+      { path: "games", element: <div>Games</div> },
+      { path: "games/:id", element: <div>Game</div> },
+      { path: "games/create", element: <div>Create Game</div> },
+
+      { path: "players", element: <div>Players</div> },
+      { path: "players/:id", element: <div>Player</div> },
     ],
   },
   {
@@ -36,7 +44,7 @@ const router = createBrowserRouter([
 ]);
 
 export default function App() {
-  const { setSession } = useStore();
+  const { session, setSession } = useStore();
 
   async function getSession() {
     const res = await supabaseClient.auth.getSession();
@@ -46,7 +54,7 @@ export default function App() {
   }
 
   useEffect(() => {
-    getSession();
+    if (!session) getSession();
     const {
       data: { subscription },
     } = supabaseClient.auth.onAuthStateChange((_event, session) => {

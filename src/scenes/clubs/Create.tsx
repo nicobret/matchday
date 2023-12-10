@@ -1,8 +1,10 @@
 import { useState } from "react";
+import { Link } from "react-router-dom";
+import { useClubs } from "./useClubs";
 import { Button } from "@/components/ui/button";
+import { ChevronRight } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { useClubs } from "./useClubs";
 
 const CreateLeague = () => {
   const [name, setName] = useState("");
@@ -14,7 +16,16 @@ const CreateLeague = () => {
   }
 
   return (
-    <div className="border my-6 rounded p-6 space-y-6">
+    <div className="border rounded p-6 space-y-6">
+      <div className="flex items-center gap-1 text-sm text-gray-500">
+        <Link to="/clubs">
+          <p>Clubs</p>
+        </Link>
+        <ChevronRight className="w-4 h-4" />
+        <Link to="#">
+          <p>Créer un club</p>
+        </Link>
+      </div>
       <h2 className="scroll-m-20 border-b pb-2 text-3xl font-semibold tracking-tight first:mt-0">
         Créer un club
       </h2>

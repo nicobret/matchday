@@ -9,13 +9,16 @@ import {
 } from "@/components/ui/card";
 import { PlusIcon } from "lucide-react";
 import { clubType, useClubs } from "../useClubs";
+import { Link } from "react-router-dom";
 
 export default function ClubCard(club: clubType) {
   const { joinClub, leaveClub } = useClubs();
   return (
     <Card>
       <CardHeader>
-        <CardTitle>{club.name}</CardTitle>
+        <CardTitle>
+          <Link to={club.id.toString()}>{club.name}</Link>
+        </CardTitle>
       </CardHeader>
       <CardContent>
         <CardDescription>{club.club_enrolments.length} membres</CardDescription>
