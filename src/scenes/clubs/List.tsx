@@ -1,19 +1,27 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import useStore from "../../utils/zustand";
-import { useClubs } from "./useClubs";
+import { clubTypeSummary, useClubs } from "./useClubs";
 import ClubCard from "./components/ClubCard";
 import { ChevronRight, Plus } from "lucide-react";
 
 export default function List() {
-  const { clubs } = useStore();
-  const { loading, fetchClubs } = useClubs();
+  const [loading, setLoading] = useState(false);
+  const [clubs, setClubs] = useState<clubTypeSummary[] | null>(null);
+  const { fetchClubs } = useClubs();
+
+  async function getClubs() {
+    setLoading(true);
+    const clubs = await fetchClubs();
+    if (!clubs) {
+      setLoading(false);
+      return;
+    }
+    setClubs(clubs as unknown as clubTypeSummary[]);
+    setLoading(false);
+  }
 
   useEffect(() => {
-    if (clubs) return;
-    async function getClubs() {
-      await fetchClubs();
-    }
     getClubs();
   }, []);
 
@@ -35,9 +43,11 @@ export default function List() {
           <p>Liste des clubs</p>
         </Link>
       </div>
+
       <h2 className="scroll-m-20 border-b pb-2 text-3xl font-semibold tracking-tight first:mt-0">
         Trouver un club
       </h2>
+
       {session && (
         <Link to="create">
           <div className="flex items-center underline underline-offset-2 hover:text-gray-500 mt-6 gap-2">
@@ -46,9 +56,10 @@ export default function List() {
           </div>
         </Link>
       )}
+
       <div className="flex flex-wrap gap-6">
-        {clubs.map((league) => (
-          <ClubCard key={league.id} {...league} />
+        {clubs.map((c) => (
+          <ClubCard key={c.id} {...c} />
         ))}
       </div>
     </div>

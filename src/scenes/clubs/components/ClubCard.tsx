@@ -7,10 +7,10 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { clubType } from "../useClubs";
+import { clubTypeSummary } from "../useClubs";
 import { Link } from "react-router-dom";
 
-export default function ClubCard(club: clubType) {
+export default function ClubCard(club: clubTypeSummary) {
   return (
     <Card className="w-full sm:w-96 h-64">
       <CardHeader>
@@ -20,9 +20,9 @@ export default function ClubCard(club: clubType) {
       </CardHeader>
       <CardContent>
         <CardDescription>
-          {club.club_enrolments.length} membres
+          {club.members.length} membres
           <br />
-          {club.description}
+          <p className="text-ellipsis">{club.description}</p>
         </CardDescription>
       </CardContent>
       <CardFooter className="flex gap-4">

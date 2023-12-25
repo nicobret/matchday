@@ -7,33 +7,85 @@ export type clubType = {
   id: number;
   name: string;
   description: string;
-  club_enrolments: Array<{ user_id: string }>;
+  created_at: Date;
+  members: Array<{
+    id: string;
+    role: "member" | "admin";
+    profile: {
+      id: string;
+      firstname: string;
+      lastname: string;
+      avatar: string;
+      status: string;
+    };
+  }>;
+  creator: {
+    id: string;
+    firstname: string;
+    lastname: string;
+    avatar: string;
+    status: string;
+  };
+};
+
+export type clubTypeSummary = {
+  id: number;
+  name: string;
+  description: string;
+  created_at: Date;
+  members: Array<{
+    id: string;
+    role: "member" | "admin";
+  }>;
+  creator: {
+    id: string;
+    firstname: string;
+    lastname: string;
+    avatar: string;
+    status: string;
+  };
 };
 
 export function useClubs() {
-  const { session, setClubs } = useStore();
+  const { session } = useStore();
   const [loading, setLoading] = useState(false);
   const [club, setClub] = useState<clubType | null>(null);
   const navigate = useNavigate();
 
   async function fetchClubs() {
-    setLoading(true);
-    const { data, error } = await supabaseClient
-      .from("clubs")
-      .select(`id, name, description, club_enrolments ( user_id )`);
+    const { data, error } = await supabaseClient.from("clubs").select(
+      `
+        id,
+        name,
+        description,
+        created_at,
+        members: club_enrolments ( id: user_id, role ),
+        creator: users ( id, firstname, lastname, avatar, status )
+      `
+    );
     if (error) console.error(error);
-    if (data) setClubs(data);
-    setLoading(false);
+    if (data) return data;
   }
 
   async function fetchClub(club_id: string) {
     setLoading(true);
     const { data, error } = await supabaseClient
       .from("clubs")
-      .select(`id, name, description, club_enrolments ( user_id )`)
+      .select(
+        `
+          id,
+          name,
+          description,
+          created_at,
+          members: club_enrolments ( id: user_id, role, profile: users ( id, firstname, lastname, avatar, status ) ),
+          creator: users ( id, firstname, lastname, avatar, status )
+        `
+      )
       .eq("id", parseInt(club_id));
     if (error) console.error(error);
-    if (data) setClub(data[0]);
+    if (data) {
+      setClub(data[0] as unknown as clubType);
+    }
     setLoading(false);
   }
 
