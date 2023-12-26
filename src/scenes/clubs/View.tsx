@@ -2,8 +2,8 @@ import { useEffect } from "react";
 import { Link, useParams } from "react-router-dom";
 import { clubType, useClubs } from "./useClubs";
 import {
+  Check,
   ChevronRight,
-  DoorOpen,
   Plus,
   PlusIcon,
   TrafficCone,
@@ -57,7 +57,7 @@ export default function View() {
         </Link>
       </div>
 
-      <div className="flex gap-4 items-end scroll-m-20 border-b pb-2 mt-6 mb-2">
+      <div className="flex gap-4 items-end scroll-m-20 border-b pb-3 mt-6 mb-2">
         <h2 className="text-3xl font-semibold tracking-tight">{club.name}</h2>
 
         <div className="flex gap-2 items-center">
@@ -72,18 +72,21 @@ export default function View() {
               variant="secondary"
               className="flex gap-2 ml-auto"
             >
-              <DoorOpen className="h-5 w-5" />
-              <span className="hidden md:block">Quitter le club</span>
+              <Check className="h-5 w-5" />
+              <span className="hidden md:block">Rejoint</span>
             </Button>
           ) : (
-            <Button onClick={() => joinClub(club.id)} className="ml-auto">
+            <Button
+              onClick={() => joinClub(club.id)}
+              className="flex gap-2 ml-auto"
+            >
               <PlusIcon className="h-5 w-5" />
               Rejoindre
             </Button>
           ))}
       </div>
 
-      <p className="text-sm">
+      <p className="text-sm my-4">
         Créé par{" "}
         <Link to={`users/${club.creator.id}`}>
           <span className="text-gray-500 underline underline-offset-4 hover:text-gray-800">
@@ -105,7 +108,7 @@ export default function View() {
 
       <GamesTable />
 
-      {userIsAdmin(club, session) && (
+      {session && userIsAdmin(club, session) && (
         <Link to={`/games/create?club=${club.id}`}>
           <div className="flex items-center underline underline-offset-2 hover:text-gray-500 my-6 gap-2">
             <Plus className="w-5 h-5" />
@@ -121,7 +124,7 @@ export default function View() {
 
       <PlayersTable />
 
-      {userIsAdmin(club, session) && (
+      {session && userIsAdmin(club, session) && (
         <>
           <h3 className="text-2xl font-semibold flex gap-3 items-center mt-10 mb-6">
             <TrafficCone className="h-5 w-5" />
