@@ -9,6 +9,7 @@ import Dashboard from "./scenes/dashboard/Dashboard.tsx";
 import ClubList from "./scenes/clubs/List.tsx";
 import CreateClub from "./scenes/clubs/Create.tsx";
 import CreateGame from "./scenes/games/Create.tsx";
+import ViewGame from "./scenes/games/View.tsx";
 import ViewClub from "./scenes/clubs/View.tsx";
 import { Auth } from "@supabase/auth-ui-react";
 import { ThemeSupa } from "@supabase/auth-ui-shared";
@@ -25,7 +26,7 @@ const router = createBrowserRouter([
       { path: "clubs/create", element: <CreateClub /> },
 
       { path: "games", element: <div>Games</div> },
-      { path: "games/:id", element: <div>Game</div> },
+      { path: "games/:id", element: <ViewGame /> },
       { path: "games/create", element: <CreateGame /> },
 
       { path: "players", element: <div>Players</div> },
