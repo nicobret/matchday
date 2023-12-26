@@ -1,8 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
-import { ChevronRight, DoorOpen, Plus, PlusIcon, Users } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import useStore from "@/utils/zustand";
+import { ChevronRight } from "lucide-react";
 import supabaseClient from "@/utils/supabase";
 
 // function userIsInClub(club: clubType, session: any) {
