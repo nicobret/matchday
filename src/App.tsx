@@ -23,6 +23,7 @@ const router = createBrowserRouter([
 
       { path: "clubs", element: <ClubList /> },
       { path: "clubs/:id", element: <ViewClub /> },
+      { path: "clubs/:id/edit", element: <CreateClub /> },
       { path: "clubs/create", element: <CreateClub /> },
 
       { path: "games", element: <div>Games</div> },

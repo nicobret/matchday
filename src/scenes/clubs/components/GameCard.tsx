@@ -18,13 +18,15 @@ export default function GameCard({ game }: { game: gameSummary }) {
         <CardTitle className="flex justify-between">
           <Link
             to={"/games/" + game.id.toString()}
-            className="hover:underline underline-offset-2"
+            className="hover:underline underline-offset-2 decoration-2"
           >
             {new Date(game.date).toLocaleDateString("fr-FR", {
               dateStyle: "long",
             })}
           </Link>
-          <Badge variant="outline">{game.status}</Badge>
+          <div>
+            <Badge variant="outline">{game.status}</Badge>
+          </div>
         </CardTitle>
         <CardDescription>
           <p>{game.player_count[0].count} joueurs</p>
@@ -38,9 +40,9 @@ export default function GameCard({ game }: { game: gameSummary }) {
       <CardFooter>
         <Link
           to={"/games/" + game.id.toString()}
-          className="text-right ml-auto"
+          className="p-1 rounded text-right ml-auto text-gray-300 hover:bg-gray-200 hover:text-white"
         >
-          <ArrowRight className="text-gray-300 w-5 h-5" />
+          <ArrowRight className="w-5 h-5" />
         </Link>
       </CardFooter>
     </Card>

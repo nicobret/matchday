@@ -23,18 +23,26 @@ export function useClubs(id = "") {
           id,
           name,
           description,
+          address,
+          postcode,
+          city,
+          country,
           created_at,
-          members: club_enrolments ( id: user_id, role, profile: users ( id, firstname, lastname, avatar, status ) ),
+          members: club_enrolments ( id: user_id, role, created_at, profile: users ( id, firstname, lastname, avatar, status ) ),
           creator: users ( id, firstname, lastname, avatar, status ),
           games ( id, date, location, status, created_at, player_count: game_registrations ( count ) )
         `
       )
       .eq("id", parseInt(club_id));
-    if (error) console.error(error);
+    if (error) {
+      console.error(error);
+      setLoading(false);
+    }
     if (data) {
       setClub(data[0] as unknown as clubType);
+      setLoading(false);
+      return data[0];
     }
-    setLoading(false);
   }
 
   async function fetchClubs() {
@@ -52,15 +60,42 @@ export function useClubs(id = "") {
     if (data) return data;
   }
 
-  async function updateClub(club_id: number, name: string) {
-    const { error } = await supabaseClient
-      .from("clubs")
-      .update({ name })
-      .eq("id", club_id)
-      .select();
-    if (error) {
-      console.error(error);
+  async function updateClub(
+    id: string,
+    name: string,
+    description: string,
+    address: string,
+    postcode: string,
+    city: string,
+    country: string
+  ) {
+    setLoading(true);
+    if (!session) {
+      console.error("User must be logged in.");
+      return;
     }
+
+    const { data, error } = await supabaseClient
+      .from("clubs")
+      .update({
+        name,
+        description,
+        address,
+        postcode,
+        city,
+        country,
+      })
+      .eq("id", id)
+      .select();
+
+    if (error) console.error(error);
+    if (data) {
+      window.alert("Club modifié avec succès !");
+      await fetchClubs();
+      navigate(`/clubs/${data[0].id}`);
+    }
+
+    setLoading(false);
   }
 
   async function joinClub(club_id: number) {
@@ -117,7 +152,14 @@ export function useClubs(id = "") {
     }
   }
 
-  async function createClub(name: string, description: string) {
+  async function createClub(
+    name: string,
+    description: string,
+    address: string,
+    postcode: string,
+    city: string,
+    country: string
+  ) {
     setLoading(true);
     if (!session) {
       console.error("User must be logged in.");
@@ -130,6 +172,10 @@ export function useClubs(id = "") {
         creator_id: session.user.id,
         name,
         description,
+        address,
+        postcode,
+        city,
+        country,
       })
       .select();
 

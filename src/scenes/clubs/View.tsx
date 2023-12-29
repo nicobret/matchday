@@ -1,16 +1,24 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { useClubs } from "./useClubs";
 import {
+  Calendar,
   Check,
   ChevronRight,
+  ClipboardList,
   History,
   Plus,
   PlusIcon,
-  TrafficCone,
   Trophy,
   Users,
 } from "lucide-react";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Button } from "@/components/ui/button";
 import useStore from "@/utils/zustand";
 import PlayersTable from "./components/PlayersTable";
@@ -33,10 +41,14 @@ export default function View() {
   const { session } = useStore();
   const { id } = useParams();
   const { club, fetchClub, joinClub, leaveClub } = useClubs();
+  const [year, setYear] = useState(new Date().getFullYear());
   const upcomingGames = club?.games.filter(
     (g) => new Date(g.date) > new Date()
   );
-  const pastGames = club?.games.filter((g) => new Date(g.date) < new Date());
+  const pastGames = club?.games.filter(
+    (g) =>
+      new Date(g.date) < new Date() && new Date(g.date).getFullYear() === year
+  );
 
   useEffect(() => {
     if (!id) {
@@ -71,6 +83,15 @@ export default function View() {
             {club.members.length}
             <Users className="h-4 w-4" />
           </div>
+
+          {session && userIsAdmin(club, session) && (
+            <Link
+              to={`/clubs/${club.id}/edit`}
+              className="underline underline-offset-2 hover:text-gray-500"
+            >
+              Modifier
+            </Link>
+          )}
 
           {session &&
             (userIsInClub(club, session) ? (
@@ -122,15 +143,31 @@ export default function View() {
 
         <hr className="my-8 w-32 md:max-w-96 mx-auto" />
 
-        <h3 className="text-2xl font-semibold flex gap-3 items-center my-6">
+        <h3 className="text-2xl font-semibold flex gap-3 items-center mt-6">
           <History className="h-5 w-5" />
           Historique
         </h3>
 
+        <div className="flex gap-3 items-center mt-2 mb-6">
+          <Calendar className="h-5 w-5" />
+          <Select
+            onValueChange={(value) => setYear(parseInt(value))}
+            defaultValue={year.toString()}
+          >
+            <SelectTrigger className="w-fit">
+              <SelectValue placeholder="Année">{year}</SelectValue>
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="2024">2024</SelectItem>
+              <SelectItem value="2023">2023</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+
         {pastGames && pastGames.length ? (
           <GamesCarousel games={pastGames} />
         ) : (
-          <p className="text-center mt-8">Aucun match</p>
+          <p className="text-center mt-8">Aucun match.</p>
         )}
 
         <hr className="my-8 w-32 md:max-w-96 mx-auto" />
@@ -140,31 +177,27 @@ export default function View() {
           Joueurs
         </h3>
 
-        <PlayersTable />
+        <PlayersTable players={club.members} />
 
-        {session && userIsAdmin(club, session) && (
-          <>
-            <hr className="my-8 w-32 md:max-w-96 mx-auto" />
+        <hr className="my-8 w-32 md:max-w-96 mx-auto" />
 
-            <h3 className="text-2xl font-semibold flex gap-3 items-center my-6">
-              <TrafficCone className="h-5 w-5" />
-              Informations
-            </h3>
+        <h3 className="text-2xl font-semibold flex gap-3 items-center my-6">
+          <ClipboardList className="h-5 w-5" />
+          Informations
+        </h3>
 
-            <p className="text-sm my-4">
-              Créé par{" "}
-              <Link to={`users/${club.creator.id}`}>
-                <span className="text-gray-500 underline underline-offset-4 hover:text-gray-800">
-                  {club.creator.firstname} {club.creator.lastname}
-                </span>
-              </Link>{" "}
-              le{" "}
-              {new Date(club.created_at).toLocaleDateString("fr-FR", {
-                dateStyle: "long",
-              })}
-            </p>
-          </>
-        )}
+        <p className="text-sm my-4">
+          Créé par{" "}
+          <Link to={`users/${club.creator.id}`}>
+            <span className="text-gray-500 underline underline-offset-4 hover:text-gray-800">
+              {club.creator.firstname} {club.creator.lastname}
+            </span>
+          </Link>{" "}
+          le{" "}
+          {new Date(club.created_at).toLocaleDateString("fr-FR", {
+            dateStyle: "long",
+          })}
+        </p>
       </Container>
     </>
   );

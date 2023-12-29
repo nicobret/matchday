@@ -1,21 +1,12 @@
 import { gameSummary } from "../games/games.service";
+import { playerSummary } from "../users/users.service";
 
 export type clubType = {
   id: number;
   name: string;
   description: string;
   created_at: Date;
-  members: Array<{
-    id: string;
-    role: "member" | "admin";
-    profile: {
-      id: string;
-      firstname: string;
-      lastname: string;
-      avatar: string;
-      status: string;
-    };
-  }>;
+  members: Array<playerSummary>;
   creator: {
     id: string;
     firstname: string;
@@ -24,6 +15,10 @@ export type clubType = {
     status: string;
   };
   games: Array<gameSummary>;
+  address: string;
+  city: string;
+  country: string;
+  postcode: string;
 };
 
 export type clubSummary = {
