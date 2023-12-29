@@ -6,7 +6,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { gameType } from "@/scenes/games/View";
+import { gameType } from "@/scenes/games/games.service";
 import supabaseClient from "@/utils/supabase";
 import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";

@@ -23,10 +23,6 @@ export type playerType = {
 
 export default function PlayersTable() {
   const [players, setPlayers] = useState<playerType[]>([]);
-  console.log(
-    "🚀 ~ file: PlayersTable.tsx:23 ~ PlayersTable ~ players:",
-    players
-  );
   const [loading, setLoading] = useState<boolean>(false);
   const { id } = useParams<{ id: string }>();
 

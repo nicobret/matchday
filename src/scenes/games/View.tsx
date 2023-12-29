@@ -1,11 +1,13 @@
 import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
-import { ChevronRight } from "lucide-react";
+import { Check, ChevronRight, PlusIcon } from "lucide-react";
 import supabaseClient from "@/utils/supabase";
-
-// function userIsInClub(club: clubType, session: any) {
-//   return club.members.map((m) => m.id).includes(session.user.id);
-// }
+import { useClubs } from "../clubs/useClubs";
+import { Button } from "@/components/ui/button";
+import useStore from "@/utils/zustand";
+import { userIsInClub } from "../clubs/clubs.service";
+import { fetchGame, gameType, userIsInGame } from "./games.service";
+import Container from "@/layout/Container";
 
 // function userIsAdmin(club: clubType, session: any) {
 //   return club.members
@@ -14,72 +16,52 @@ import supabaseClient from "@/utils/supabase";
 //     .includes(session.user.id);
 // }
 
-export type gameType = {
-  id: number;
-  created_at: Date;
-  date: Date;
-  location: string;
-  status: string;
-  club: {
-    id: number;
-    name: string;
-  };
-  creator: {
-    id: string;
-    firstname: string;
-    lastname: string;
-    avatar: string;
-    status: string;
-  };
-};
-
-export async function fetchGame(id: string) {
-  const { data, error } = await supabaseClient
-    .from("games")
-    .select(
-      `
-        id,
-        created_at,
-        date,
-        location,
-        status,
-        club:club_id (id, name),
-        creator:creator_id (id, firstname, lastname, avatar, status)
-      `
-    )
-    .eq("id", id)
-    .single();
+async function joinGame(id: number) {
+  const { error } = await supabaseClient.from("game_enrolments").insert({
+    game_id: id,
+  });
 
   if (error) {
     console.error(error);
     return;
   }
+}
 
-  return data as unknown as gameType;
+async function leaveGame(id: number) {
+  const { error } = await supabaseClient
+    .from("game_enrolments")
+    .delete()
+    .eq("game_id", id);
+
+  if (error) {
+    console.error(error);
+    return;
+  }
 }
 
 export default function View() {
   const { id } = useParams();
   const [game, setGame] = useState<gameType | null>(null);
+  const { club } = useClubs(game?.club_id.toString());
+  const { session } = useStore();
 
   useEffect(() => {
     if (!id) {
       console.error("No id provided");
       return;
     }
-    async function getGame(id: string) {
-      console.log("Fetching club data");
+    async function getGame(id: number) {
       const data = await fetchGame(id);
       if (!data) return;
       setGame(data);
     }
-    getGame(id);
+    getGame(parseInt(id));
   }, [id]);
 
   if (!game) return <p className="text-center animate_pulse">Chargement...</p>;
 
   return (
-    <div className="md:border rounded p-6 space-y-6">
+    <Container>
       <div className="flex items-center gap-1 text-sm text-gray-500">
         <Link to="/clubs">
           <p>Matches</p>
@@ -95,37 +77,37 @@ export default function View() {
         </Link>
       </div>
 
-      <div className="flex gap-4 items-end scroll-m-20 border-b pb-2 first:mt-0">
+      <div className="flex gap-4 items-end scroll-m-20 border-b pb-2 first:mt-0 justify-between">
         <h2 className="text-3xl font-semibold tracking-tight">
-          Match du{" "}
           {new Date(game.date).toLocaleDateString("fr-FR", {
             dateStyle: "long",
           })}
         </h2>
-      </div>
 
-      {/* <div className="flex gap-2 items-center">
-          {game.players.length}
-          <Users className="h-4 w-4" />
-        </div> */}
-
-      {/* {session &&
-          (userIsInClub(club, session) ? (
+        {session &&
+          club &&
+          userIsInClub(session.user, club) &&
+          (userIsInGame(session.user, game) ? (
             <Button
-              onClick={() => leaveClub(club.id)}
+              onClick={() => leaveGame(game.id)}
               variant="secondary"
-              className="flex gap-2 ml-auto"
+              className="flex gap-2"
             >
-              <DoorOpen className="h-5 w-5" />
-              <span className="hidden md:block">Quitter le club</span>
+              <Check className="h-5 w-5" />
+              <span className="hidden md:block">Inscrit</span>
             </Button>
           ) : (
-            <Button onClick={() => joinClub(club.id)} className="ml-auto">
+            <Button onClick={() => joinGame(game.id)} className="flex gap-2">
               <PlusIcon className="h-5 w-5" />
-              Rejoindre
+              <p className="hidden md:block">S'inscrire</p>
             </Button>
           ))}
-      </div> */}
+      </div>
+      {/* 
+      <div className="flex gap-2 items-center">
+      {game.players.length}
+      <Users className="h-4 w-4" />
+    </div> */}
 
       <p>
         Créé par{" "}
@@ -143,6 +125,6 @@ export default function View() {
       <h3 className="text-xl font-semibold">Lieu</h3>
 
       <p>{game.location}</p>
-    </div>
+    </Container>
   );
 }

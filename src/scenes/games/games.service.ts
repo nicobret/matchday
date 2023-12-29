@@ -1,51 +1,100 @@
 import supabaseClient from "@/utils/supabase";
 
-export type match = {
-  id: string;
+export type gameType = {
+  id: number;
   created_at: string;
+  status: "draft" | "published" | "canceled" | "finished";
   club_id: string;
-  creator_id: string;
+  creator: {
+    id: string;
+    firstname: string;
+    lastname: string;
+    avatar: string;
+    status: string;
+  };
   date: Date;
   location: string;
+  players: Array<{
+    id: string;
+    status: "accepted" | "pending" | "declined";
+    created_at: Date;
+    profile: {
+      id: string;
+      firstname: string;
+      lastname: string;
+      avatar: string;
+      status: string;
+    };
+  }>;
+};
+
+export type gameSummary = {
+  id: number;
+  date: Date;
+  location: string;
+  status: "draft" | "published" | "canceled" | "finished";
+  created_at: string;
+  player_count: Array<{ count: number }>;
 };
 
 export async function fetchGames() {
-  const { data, error } = await supabaseClient.from("matches").select(
+  const { data, error } = await supabaseClient.from("games").select(
     `
       id,
       created_at,
+      status,
       club_id,
       creator_id,
       date,
-      location
+      location,
+      playerCount: game_registrations (count)
     `
   );
   if (error) {
-    console.log(error);
+    console.error(error);
     return [];
   }
-  return data;
+  return data as unknown as gameType[];
 }
 
-export async function fetchGame(id: string) {
+export async function fetchGame(id: number) {
   const { data, error } = await supabaseClient
-    .from("matches")
+    .from("games")
     .select(
       `
       id,
       created_at,
+      status,
       club_id,
-      creator_id,
+      creator: users (
+        id,
+        firstname,
+        lastname,
+        avatar,
+        status
+      ),
       date,
-      location
+      location,
+      players: game_registrations (
+        id,
+        status,
+        created_at,
+        profile: users (
+          id,
+          firstname,
+          lastname,
+          avatar,
+          status
+        )
+      )
     `
     )
     .eq("id", id);
   if (error) {
-    console.log(error);
-    return [];
+    console.error(error);
+    return;
   }
-  return data;
+  return data[0] as unknown as gameType;
 }
 
 export async function createGame(game: {
@@ -60,9 +109,13 @@ export async function createGame(game: {
     .select();
 
   if (error) {
-    console.log(error);
+    console.error(error);
     return;
   }
 
   return data[0];
+}
+
+export function userIsInGame(user: any, game: gameType) {
+  return game.players.map((m) => m.id).includes(user.id);
 }

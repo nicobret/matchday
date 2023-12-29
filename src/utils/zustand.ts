@@ -1,4 +1,4 @@
-import { clubType } from "@/scenes/clubs/useClubs";
+import { clubType } from "@/scenes/clubs/clubs.service";
 import { Session } from "@supabase/supabase-js";
 import { create } from "zustand";
 

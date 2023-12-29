@@ -2,22 +2,16 @@ import { useState } from "react";
 import { Link, NavLink } from "react-router-dom";
 import useStore from "../utils/zustand";
 import supabaseClient from "../utils/supabase";
-import {
-  NavigationMenu,
-  NavigationMenuItem,
-  NavigationMenuLink,
-  NavigationMenuList,
-  navigationMenuTriggerStyle,
-} from "@/components/ui/navigation-menu";
 import { Button } from "@/components/ui/button";
 import { LogOut, Trophy, UserCircle } from "lucide-react";
+import { Separator } from "@/components/ui/separator";
 
 export default function Header() {
   const [userMenuOpen, setUserMenuOpen] = useState(false);
 
   return (
     <header className="relative flex items-center justify-between p-2 gap-4">
-      <div className="flex items-center gap-2">
+      <div className="flex items-center gap-4">
         <NavLink to="/">
           <div className="flex items-center gap-4 p-2">
             <Trophy />
@@ -26,8 +20,34 @@ export default function Header() {
             </h1>
           </div>
         </NavLink>
+        <NavLink
+          to="/clubs"
+          className={({ isActive }: { isActive: boolean }) =>
+            `hover:underline underline-offset-2 ${isActive ? "underline" : ""}`
+          }
+        >
+          Clubs
+        </NavLink>
+        <Separator orientation="vertical" className="" />
+        <NavLink
+          to="/games"
+          className={({ isActive }: { isActive: boolean }) =>
+            `hover:underline underline-offset-2 ${isActive ? "underline" : ""}`
+          }
+        >
+          Matches
+        </NavLink>
+        <Separator orientation="vertical" />
+        <NavLink
+          to="/players"
+          className={({ isActive }: { isActive: boolean }) =>
+            `hover:underline underline-offset-2 ${isActive ? "underline" : ""}`
+          }
+        >
+          Joueurs
+        </NavLink>
 
-        <NavigationMenu>
+        {/* <NavigationMenu>
           <NavigationMenuList>
             <NavigationMenuItem>
               <NavigationMenuLink
@@ -54,7 +74,7 @@ export default function Header() {
               </NavigationMenuLink>
             </NavigationMenuItem>
           </NavigationMenuList>
-        </NavigationMenu>
+        </NavigationMenu> */}
       </div>
 
       <button onClick={() => setUserMenuOpen(!userMenuOpen)} className="p-2">

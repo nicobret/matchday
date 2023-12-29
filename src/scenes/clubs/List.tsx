@@ -1,13 +1,15 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import useStore from "../../utils/zustand";
-import { clubTypeSummary, useClubs } from "./useClubs";
+import { useClubs } from "./useClubs";
 import ClubCard from "./components/ClubCard";
 import { ChevronRight, Plus } from "lucide-react";
+import { clubSummary } from "./clubs.service";
+import Container from "@/layout/Container";
 
 export default function List() {
   const [loading, setLoading] = useState(false);
-  const [clubs, setClubs] = useState<clubTypeSummary[] | null>(null);
+  const [clubs, setClubs] = useState<clubSummary[] | null>(null);
   const { fetchClubs } = useClubs();
 
   async function getClubs() {
@@ -17,7 +19,7 @@ export default function List() {
       setLoading(false);
       return;
     }
-    setClubs(clubs as unknown as clubTypeSummary[]);
+    setClubs(clubs as unknown as clubSummary[]);
     setLoading(false);
   }
 
@@ -33,7 +35,7 @@ export default function List() {
   if (!clubs) return <p className="text-center">Aucun club</p>;
 
   return (
-    <div className="border rounded p-6 space-y-6">
+    <Container>
       <div className="flex items-center gap-1 text-sm text-gray-500">
         <Link to="/clubs">
           <p>Clubs</p>
@@ -44,7 +46,7 @@ export default function List() {
         </Link>
       </div>
 
-      <h2 className="scroll-m-20 border-b pb-2 text-3xl font-semibold tracking-tight first:mt-0">
+      <h2 className="scroll-m-20 border-b pb-2 text-3xl font-semibold tracking-tight mt-6">
         Trouver un club
       </h2>
 
@@ -62,6 +64,6 @@ export default function List() {
           <ClubCard key={c.id} {...c} />
         ))}
       </div>
-    </div>
+    </Container>
   );
 }

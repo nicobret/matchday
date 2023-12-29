@@ -1,56 +1,41 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import supabaseClient from "@/utils/supabase";
 import useStore from "@/utils/zustand";
 import { useNavigate } from "react-router-dom";
+import { clubType } from "./clubs.service";
 
-export type clubType = {
-  id: number;
-  name: string;
-  description: string;
-  created_at: Date;
-  members: Array<{
-    id: string;
-    role: "member" | "admin";
-    profile: {
-      id: string;
-      firstname: string;
-      lastname: string;
-      avatar: string;
-      status: string;
-    };
-  }>;
-  creator: {
-    id: string;
-    firstname: string;
-    lastname: string;
-    avatar: string;
-    status: string;
-  };
-};
-
-export type clubTypeSummary = {
-  id: number;
-  name: string;
-  description: string;
-  created_at: Date;
-  members: Array<{
-    id: string;
-    role: "member" | "admin";
-  }>;
-  creator: {
-    id: string;
-    firstname: string;
-    lastname: string;
-    avatar: string;
-    status: string;
-  };
-};
-
-export function useClubs() {
+export function useClubs(id = "") {
   const { session } = useStore();
   const [loading, setLoading] = useState(false);
   const [club, setClub] = useState<clubType | null>(null);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    if (id) fetchClub(id);
+  }, [id]);
+
+  async function fetchClub(club_id: string) {
+    setLoading(true);
+    const { data, error } = await supabaseClient
+      .from("clubs")
+      .select(
+        `
+          id,
+          name,
+          description,
+          created_at,
+          members: club_enrolments ( id: user_id, role, profile: users ( id, firstname, lastname, avatar, status ) ),
+          creator: users ( id, firstname, lastname, avatar, status ),
+          games ( id, date, location, status, created_at, player_count: game_registrations ( count ) )
+        `
+      )
+      .eq("id", parseInt(club_id));
+    if (error) console.error(error);
+    if (data) {
+      setClub(data[0] as unknown as clubType);
+    }
+    setLoading(false);
+  }
 
   async function fetchClubs() {
     const { data, error } = await supabaseClient.from("clubs").select(
@@ -67,30 +52,8 @@ export function useClubs() {
     if (data) return data;
   }
 
-  async function fetchClub(club_id: string) {
-    setLoading(true);
-    const { data, error } = await supabaseClient
-      .from("clubs")
-      .select(
-        `
-          id,
-          name,
-          description,
-          created_at,
-          members: club_enrolments ( id: user_id, role, profile: users ( id, firstname, lastname, avatar, status ) ),
-          creator: users ( id, firstname, lastname, avatar, status )
-        `
-      )
-      .eq("id", parseInt(club_id));
-    if (error) console.error(error);
-    if (data) {
-      setClub(data[0] as unknown as clubType);
-    }
-    setLoading(false);
-  }
-
   async function updateClub(club_id: number, name: string) {
-    const { data, error } = await supabaseClient
+    const { error } = await supabaseClient
       .from("clubs")
       .update({ name })
       .eq("id", club_id)
@@ -98,7 +61,6 @@ export function useClubs() {
     if (error) {
       console.error(error);
     }
-    console.log("🚀 ~ file: List.tsx:22 ~ join ~ data", data);
   }
 
   async function joinClub(club_id: number) {
@@ -183,7 +145,7 @@ export function useClubs() {
 
   async function deleteClub(club_id: number) {
     if (window.confirm("Voulez-vous vraiment supprimer ce club ?")) {
-      const { data, error } = await supabaseClient
+      const { error } = await supabaseClient
         .from("clubs")
         .delete()
         .eq("id", club_id)
@@ -191,7 +153,6 @@ export function useClubs() {
       if (error) {
         console.error(error);
       }
-      console.log("🚀 ~ file: List.tsx:22 ~ join ~ data", data);
     }
   }
 

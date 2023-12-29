@@ -7,12 +7,12 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { clubTypeSummary } from "../useClubs";
 import { Link } from "react-router-dom";
+import { clubSummary } from "../clubs.service";
 
-export default function ClubCard(club: clubTypeSummary) {
+export default function ClubCard(club: clubSummary) {
   return (
-    <Card className="w-full sm:w-96 h-64">
+    <Card className="w-full sm:w-72">
       <CardHeader>
         <CardTitle>
           <Link to={club.id.toString()}>{club.name}</Link>
