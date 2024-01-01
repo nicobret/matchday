@@ -4,14 +4,24 @@ import useStore from "../utils/zustand";
 import supabaseClient from "../utils/supabase";
 import { Button } from "@/components/ui/button";
 import { LogOut, Trophy, UserCircle } from "lucide-react";
-import { Separator } from "@/components/ui/separator";
+import { ModeToggle } from "@/components/mode-toggle";
+import { Card, CardContent } from "@/components/ui/card";
+import {
+  NavigationMenu,
+  NavigationMenuContent,
+  NavigationMenuItem,
+  NavigationMenuLink,
+  NavigationMenuList,
+  NavigationMenuTrigger,
+  navigationMenuTriggerStyle,
+} from "@/components/ui/navigation-menu";
 
 export default function Header() {
   const [userMenuOpen, setUserMenuOpen] = useState(false);
 
   return (
-    <header className="relative flex items-center justify-between p-2 gap-4">
-      <div className="flex items-center gap-4">
+    <header className="relative flex items-center justify-between p-2">
+      <div className="flex items-center gap-2">
         <NavLink to="/">
           <div className="flex items-center gap-4 p-2">
             <Trophy />
@@ -20,71 +30,62 @@ export default function Header() {
             </h1>
           </div>
         </NavLink>
-        <NavLink
-          to="/clubs"
-          className={({ isActive }: { isActive: boolean }) =>
-            `hover:underline underline-offset-2 ${isActive ? "underline" : ""}`
-          }
-        >
-          Clubs
-        </NavLink>
-        <Separator orientation="vertical" className="" />
-        <NavLink
-          to="/games"
-          className={({ isActive }: { isActive: boolean }) =>
-            `hover:underline underline-offset-2 ${isActive ? "underline" : ""}`
-          }
-        >
-          Matches
-        </NavLink>
-        <Separator orientation="vertical" />
-        <NavLink
-          to="/players"
-          className={({ isActive }: { isActive: boolean }) =>
-            `hover:underline underline-offset-2 ${isActive ? "underline" : ""}`
-          }
-        >
-          Joueurs
-        </NavLink>
 
-        {/* <NavigationMenu>
+        <NavigationMenu>
           <NavigationMenuList>
             <NavigationMenuItem>
-              <NavigationMenuLink
-                asChild
-                className={navigationMenuTriggerStyle()}
-              >
-                <Link to="clubs">Clubs</Link>
-              </NavigationMenuLink>
+              <NavigationMenuTrigger>Explorer</NavigationMenuTrigger>
+              <NavigationMenuContent>
+                <NavigationMenuLink
+                  asChild
+                  className={navigationMenuTriggerStyle()}
+                >
+                  <Link to="clubs">Clubs</Link>
+                </NavigationMenuLink>
+                <NavigationMenuLink
+                  asChild
+                  className={navigationMenuTriggerStyle()}
+                >
+                  <Link to="/games">Matches</Link>
+                </NavigationMenuLink>
+                <NavigationMenuLink
+                  asChild
+                  className={navigationMenuTriggerStyle()}
+                >
+                  <Link to="/players">Joueurs</Link>
+                </NavigationMenuLink>
+              </NavigationMenuContent>
             </NavigationMenuItem>
+
             <NavigationMenuItem>
-              <NavigationMenuLink
-                asChild
-                className={navigationMenuTriggerStyle()}
-              >
-                <Link to="/games">Matches</Link>
-              </NavigationMenuLink>
-            </NavigationMenuItem>
-            <NavigationMenuItem>
-              <NavigationMenuLink
-                asChild
-                className={navigationMenuTriggerStyle()}
-              >
-                <Link to="/players">Joueurs</Link>
-              </NavigationMenuLink>
+              <Link to="/my-club">
+                <NavigationMenuLink className={navigationMenuTriggerStyle()}>
+                  Mon club
+                </NavigationMenuLink>
+              </Link>
             </NavigationMenuItem>
           </NavigationMenuList>
-        </NavigationMenu> */}
+        </NavigationMenu>
       </div>
 
-      <button onClick={() => setUserMenuOpen(!userMenuOpen)} className="p-2">
-        <UserCircle className="" />
-      </button>
+      <div className="flex items-center gap-2">
+        <ModeToggle />
+        <Button
+          variant="outline"
+          size="icon"
+          onClick={() => setUserMenuOpen(!userMenuOpen)}
+        >
+          <UserCircle className="h-[1.2rem] w-[1.2rem]" />
+          <span className="sr-only">User menu</span>
+        </Button>
+      </div>
 
       {userMenuOpen && (
-        <div className="absolute right-2 top-12 p-4 bg-white border rounded shadow-lg">
-          <UserMenu />
-        </div>
+        <Card className="absolute right-2 top-14">
+          <CardContent className="p-4">
+            <UserMenu />
+          </CardContent>
+        </Card>
       )}
     </header>
   );
@@ -100,9 +101,9 @@ function UserMenu() {
 
   if (session)
     return (
-      <div className="text-right space-y-4">
+      <div className="text-right">
         <p>{session.user.email}</p>
-        <Button variant="outline" onClick={logout}>
+        <Button variant="outline" onClick={logout} className="mt-2">
           <LogOut className="h-4 w-4 mr-2" />
           Déconnexion
         </Button>

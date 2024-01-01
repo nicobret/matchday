@@ -13,7 +13,7 @@ import { ArrowRight } from "lucide-react";
 
 export default function GameCard({ game }: { game: gameSummary }) {
   return (
-    <Card>
+    <Card className="bg-accent">
       <CardHeader>
         <CardTitle className="flex justify-between">
           <Link
@@ -32,15 +32,17 @@ export default function GameCard({ game }: { game: gameSummary }) {
           <p>{game.player_count[0].count} joueurs</p>
         </CardDescription>
       </CardHeader>
+
       <CardContent>
         <CardDescription>
           <p>{game.location}</p>
         </CardDescription>
       </CardContent>
+
       <CardFooter>
         <Link
           to={"/games/" + game.id.toString()}
-          className="p-1 rounded text-right ml-auto text-gray-300 hover:bg-gray-200 hover:text-white"
+          className="p-1 rounded text-right ml-auto text-primary hover:bg-primary hover:text-primary-foreground"
         >
           <ArrowRight className="w-5 h-5" />
         </Link>

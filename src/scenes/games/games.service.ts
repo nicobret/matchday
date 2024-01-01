@@ -35,6 +35,7 @@ export type gameSummary = {
   status: "draft" | "published" | "canceled" | "finished";
   created_at: string;
   player_count: Array<{ count: number }>;
+  score: Array<{ count: number }>;
 };
 
 export async function fetchGames() {

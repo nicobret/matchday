@@ -31,7 +31,7 @@ export default function PlayersTable({
                 to={`/players/${player.id}`}
                 className="underline underline-offset-2"
               >
-                {player.profile.firstname} {player.profile.lastname}
+                {player.profile.firstname}
               </Link>
             </TableCell>
             <TableCell>

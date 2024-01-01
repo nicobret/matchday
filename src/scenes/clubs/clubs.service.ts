@@ -14,6 +14,7 @@ export type clubType = {
     avatar: string;
     status: string;
   };
+  score: Array<{ count: number }>;
   games: Array<gameSummary>;
   address: string;
   city: string;

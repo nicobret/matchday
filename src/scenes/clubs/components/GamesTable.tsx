@@ -6,79 +6,41 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { gameType } from "@/scenes/games/games.service";
-import supabaseClient from "@/utils/supabase";
-import { useEffect, useState } from "react";
-import { Link, useParams } from "react-router-dom";
+import { gameSummary } from "@/scenes/games/games.service";
+import { Link } from "react-router-dom";
 
-export default function GamesTable() {
-  const [games, setGames] = useState<gameType[]>([]);
-  const [loading, setLoading] = useState<boolean>(false);
-  const { id } = useParams<{ id: string }>();
-
-  async function getGames() {
-    setLoading(true);
-    const { data, error } = await supabaseClient
-      .from("games")
-      .select(
-        `
-          id,
-          created_at,
-          date,
-          location,
-          status,
-          club:club_id (id, name),
-          creator:creator_id (id, firstname, lastname, avatar, status)
-        `
-      )
-      .eq("club_id", id)
-      .order("date", { ascending: true });
-
-    if (error) {
-      console.error(error);
-      return;
-    }
-
-    setGames(data as unknown as gameType[]);
-    setLoading(false);
-  }
-
-  useEffect(() => {
-    getGames();
-  }, []);
-
-  if (loading)
-    return <p className="text-center animate_pulse">Chargement...</p>;
-
-  if (games)
-    return (
-      <Table className="border">
-        <TableHeader>
-          <TableRow>
-            <TableHead>Date</TableHead>
-            <TableHead>Adversaire</TableHead>
-            <TableHead>Statut</TableHead>
-            <TableHead>Créateur</TableHead>
+export default function GamesTable({ games }: { games: gameSummary[] }) {
+  return (
+    <Table className="border">
+      <TableHeader>
+        <TableRow>
+          <TableHead>Date</TableHead>
+          <TableHead>Score</TableHead>
+          <TableHead>Adversaire</TableHead>
+        </TableRow>
+      </TableHeader>
+      <TableBody>
+        {games.map((game) => (
+          <TableRow key={game.id}>
+            <TableCell>
+              <Link
+                to={`/games/${game.id}`}
+                className="underline underline-offset-2 hover:text-primary"
+              >
+                {new Date(game.date).toLocaleDateString("fr-FR")}
+              </Link>
+            </TableCell>
+            <TableCell>
+              {game.score && game.score.length === 2
+                ? game.score[0].toString() + " - " + game.score[1].toString()
+                : "N/A"}
+            </TableCell>
+            <TableCell>N/A</TableCell>
           </TableRow>
-        </TableHeader>
-        <TableBody>
-          {games.map((game) => (
-            <TableRow key={game.id}>
-              <TableCell>
-                <Link to={`/games/${game.id}`}>
-                  {new Date(game.date).toLocaleDateString("fr-FR", {
-                    dateStyle: "long",
-                  })}
-                </Link>
-              </TableCell>
-              <TableCell>N/A</TableCell>
-              <TableCell>{game.status}</TableCell>
-              <TableCell>{game.creator.firstname}</TableCell>
-            </TableRow>
-          ))}
-        </TableBody>
-      </Table>
-    );
+        ))}
+      </TableBody>
+    </Table>
+  );
 
   return <p>Aucun match.</p>;
 }

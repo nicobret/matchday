@@ -30,7 +30,7 @@ export function useClubs(id = "") {
           created_at,
           members: club_enrolments ( id: user_id, role, created_at, profile: users ( id, firstname, lastname, avatar, status ) ),
           creator: users ( id, firstname, lastname, avatar, status ),
-          games ( id, date, location, status, created_at, player_count: game_registrations ( count ) )
+          games!games_club_id_fkey ( id, date, location, status, created_at, score, player_count: game_registrations ( count ) )
         `
       )
       .eq("id", parseInt(club_id));

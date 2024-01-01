@@ -10,7 +10,7 @@ import GameCard from "./GameCard";
 
 export default function GamesCarousel({ games }: { games: gameSummary[] }) {
   return (
-    <Carousel className="mx-12">
+    <Carousel className="mx-8">
       <CarouselContent>
         {games.map((game) => (
           <CarouselItem key={game.id} className="md:basis-1/3">
