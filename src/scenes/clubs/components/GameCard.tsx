@@ -3,40 +3,45 @@ import { gameSummary } from "@/scenes/games/games.service";
 import {
   Card,
   CardContent,
-  CardDescription,
   CardFooter,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, Calendar, MapPin, Users } from "lucide-react";
 
 export default function GameCard({ game }: { game: gameSummary }) {
   return (
     <Card className="bg-accent">
       <CardHeader>
-        <CardTitle className="flex justify-between">
+        <CardTitle>
           <Link
             to={"/games/" + game.id.toString()}
             className="hover:underline underline-offset-2 decoration-2"
           >
-            {new Date(game.date).toLocaleDateString("fr-FR", {
-              dateStyle: "long",
-            })}
+            Match #{game.id}
           </Link>
-          <div>
-            <Badge variant="outline">{game.status}</Badge>
-          </div>
         </CardTitle>
-        <CardDescription>
-          <p>{game.player_count[0].count} joueurs</p>
-        </CardDescription>
       </CardHeader>
 
-      <CardContent>
-        <CardDescription>
-          <p>{game.location}</p>
-        </CardDescription>
+      <CardContent className="space-y-2 text-sm pb-0">
+        <div className="flex items-center gap-3">
+          <Calendar className="w-4 h-4" />
+          <p className="col-span-5">
+            {new Date(game.date).toLocaleDateString()}
+          </p>
+        </div>
+
+        <div className="flex items-center gap-3">
+          <MapPin className="w-4 h-4" />
+          <p className="col-span-5">IND</p>
+        </div>
+
+        <div className="flex items-center gap-3">
+          <Users className="w-4 h-4" />
+          <p className="col-span-5">{game.player_count[0].count} / 10</p>
+          <Badge>{game.status}</Badge>
+        </div>
       </CardContent>
 
       <CardFooter>

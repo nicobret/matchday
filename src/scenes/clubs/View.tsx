@@ -2,12 +2,16 @@ import { useEffect } from "react";
 import { Link, useParams } from "react-router-dom";
 import { useClubs } from "./useClubs";
 import {
+  Book,
   Check,
   ChevronRight,
+  Clipboard,
   History,
+  MapPin,
+  Pencil,
   Plus,
   PlusIcon,
-  TrafficCone,
+  Shield,
   Trophy,
   Users,
 } from "lucide-react";
@@ -34,9 +38,9 @@ export default function View() {
   const { session } = useStore();
   const { id } = useParams();
   const { club, fetchClub, joinClub, leaveClub } = useClubs();
-  const upcomingGames = club?.games.filter(
-    (g) => new Date(g.date) > new Date()
-  );
+  const upcomingGames = club?.games
+    .filter((g) => new Date(g.date) > new Date())
+    .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
   const pastGames = club?.games.filter((g) => new Date(g.date) < new Date());
 
   useEffect(() => {
@@ -97,7 +101,7 @@ export default function View() {
         <Card className="md:col-span-2">
           <CardHeader>
             <CardTitle>
-              <div className="flex gap-3 items-centers">
+              <div className="flex gap-3 items-center">
                 <Trophy className="h-5 w-5" />
                 Matches à venir
               </div>
@@ -119,58 +123,12 @@ export default function View() {
             {upcomingGames && upcomingGames.length ? (
               <GamesCarousel games={upcomingGames} />
             ) : (
-              <p className="text-center">Aucun match</p>
-            )}
-          </CardContent>
-        </Card>
-
-        <Card className="">
-          <CardHeader>
-            <CardTitle>
-              <div className="flex gap-3 items-center">
-                <History className="h-5 w-5" />
-                Historique
-              </div>
-            </CardTitle>
-          </CardHeader>
-
-          <CardContent className="overflow-auto">
-            {pastGames && pastGames.length ? (
-              <GamesTable games={pastGames} />
-            ) : (
-              <p className="text-center mt-8">Aucun match</p>
+              <p className="text-center">Aucun match prévu.</p>
             )}
           </CardContent>
         </Card>
 
         <Card>
-          <CardHeader>
-            <CardTitle>
-              <div className="flex gap-3 items-center">
-                <TrafficCone className="h-5 w-5" />
-                Informations
-              </div>
-            </CardTitle>
-          </CardHeader>
-
-          <CardContent>
-            <p className="text-sm my-4">
-              Créé par{" "}
-              <Link to={`users/${club.creator.id}`}>
-                <span className="text-gray-500 underline underline-offset-4 hover:text-gray-800">
-                  {club.creator.firstname} {club.creator.lastname}
-                </span>
-              </Link>{" "}
-              le{" "}
-              {new Date(club.created_at).toLocaleDateString("fr-FR", {
-                dateStyle: "long",
-              })}
-            </p>
-            <p className="my-6">{club.description}</p>
-          </CardContent>
-        </Card>
-
-        <Card className="md:col-span-2">
           <CardHeader>
             <CardTitle>
               <div className="flex gap-3 items-center">
@@ -181,7 +139,77 @@ export default function View() {
           </CardHeader>
 
           <CardContent>
-            <PlayersTable players={club.members} />
+            {club.members.length === 0 ? (
+              <PlayersTable players={club.members} />
+            ) : (
+              <p className="text-center">Aucun joueur dans ce club.</p>
+            )}
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <CardTitle>
+              <div className="flex gap-3 items-center">
+                <Clipboard className="h-5 w-5" />
+                Informations
+              </div>
+            </CardTitle>
+          </CardHeader>
+
+          <CardContent className="text-sm space-y-4">
+            <div className="flex gap-3 items-center">
+              <Shield className="h-5 w-5" />
+              <p>
+                Créé le{" "}
+                {new Date(club.created_at).toLocaleDateString("fr-FR", {
+                  dateStyle: "long",
+                })}
+              </p>
+            </div>
+
+            <div className="flex gap-3">
+              <MapPin className="h-5 w-5" />
+              <p className="leading-relaxed">
+                {club.address}, {club.postcode} {club.city}
+              </p>
+            </div>
+
+            <div className="flex gap-3">
+              <Book className="h-5 w-5 flex-none" />
+              <p className="leading-relaxed">{club.description}</p>
+            </div>
+
+            {userIsAdmin(club, session) && (
+              <div className="flex gap-3">
+                <Pencil className="h-5 w-5" />
+                <Link
+                  to={`/clubs/${club.id}/edit`}
+                  className="underline underline-offset-2 hover:text-primary"
+                >
+                  Modifier
+                </Link>
+              </div>
+            )}
+          </CardContent>
+        </Card>
+
+        <Card className="md:col-span-2">
+          <CardHeader>
+            <CardTitle>
+              <div className="flex gap-3 items-center">
+                <History className="h-5 w-5" />
+                Historique
+              </div>
+            </CardTitle>
+          </CardHeader>
+
+          <CardContent className="overflow-auto">
+            {pastGames?.length ? (
+              <GamesTable games={pastGames} />
+            ) : (
+              <p className="text-center">Aucun match joué.</p>
+            )}
           </CardContent>
         </Card>
       </div>

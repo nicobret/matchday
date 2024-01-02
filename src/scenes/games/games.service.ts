@@ -36,6 +36,10 @@ export type gameSummary = {
   created_at: string;
   player_count: Array<{ count: number }>;
   score: Array<{ count: number }>;
+  opponent: {
+    id: string;
+    name: string;
+  };
 };
 
 export async function fetchGames() {
@@ -48,7 +52,9 @@ export async function fetchGames() {
       creator_id,
       date,
       location,
-      playerCount: game_registrations (count)
+      player_count: game_registrations (count)
+      score,
+      opponent: game!opponent_id (id, name)
     `
   );
   if (error) {
