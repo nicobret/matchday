@@ -1,11 +1,6 @@
-import { useState } from "react";
 import { Link, NavLink } from "react-router-dom";
-import useStore from "../utils/zustand";
-import supabaseClient from "../utils/supabase";
-import { Button } from "@/components/ui/button";
-import { LogOut, Trophy, UserCircle } from "lucide-react";
+import { Trophy } from "lucide-react";
 import { ModeToggle } from "@/components/mode-toggle";
-import { Card, CardContent } from "@/components/ui/card";
 import {
   NavigationMenu,
   NavigationMenuContent,
@@ -15,10 +10,9 @@ import {
   NavigationMenuTrigger,
   navigationMenuTriggerStyle,
 } from "@/components/ui/navigation-menu";
+import { UserMenu } from "@/components/UserMenu";
 
 export default function Header() {
-  const [userMenuOpen, setUserMenuOpen] = useState(false);
-
   return (
     <header className="relative flex items-center justify-between p-2">
       <div className="flex items-center gap-2">
@@ -70,49 +64,8 @@ export default function Header() {
 
       <div className="flex items-center gap-2">
         <ModeToggle />
-        <Button
-          variant="outline"
-          size="icon"
-          onClick={() => setUserMenuOpen(!userMenuOpen)}
-        >
-          <UserCircle className="h-[1.2rem] w-[1.2rem]" />
-          <span className="sr-only">User menu</span>
-        </Button>
+        <UserMenu />
       </div>
-
-      {userMenuOpen && (
-        <Card className="absolute right-2 top-14">
-          <CardContent className="p-4">
-            <UserMenu />
-          </CardContent>
-        </Card>
-      )}
     </header>
-  );
-}
-
-function UserMenu() {
-  const { session, setSession } = useStore();
-
-  async function logout() {
-    await supabaseClient.auth.signOut();
-    setSession(null);
-  }
-
-  if (session)
-    return (
-      <div className="text-right">
-        <p>{session.user.email}</p>
-        <Button variant="outline" onClick={logout} className="mt-2">
-          <LogOut className="h-4 w-4 mr-2" />
-          Déconnexion
-        </Button>
-      </div>
-    );
-
-  return (
-    <Link to="auth">
-      <p className="">Se connecter</p>
-    </Link>
   );
 }

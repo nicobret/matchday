@@ -140,9 +140,9 @@ export default function View() {
 
           <CardContent>
             {club.members.length === 0 ? (
-              <PlayersTable players={club.members} />
-            ) : (
               <p className="text-center">Aucun joueur dans ce club.</p>
+            ) : (
+              <PlayersTable players={club.members} />
             )}
           </CardContent>
         </Card>
@@ -157,7 +157,7 @@ export default function View() {
             </CardTitle>
           </CardHeader>
 
-          <CardContent className="text-sm space-y-4">
+          <CardContent className="space-y-4">
             <div className="flex gap-3 items-center">
               <Shield className="h-5 w-5" />
               <p>
@@ -170,9 +170,16 @@ export default function View() {
 
             <div className="flex gap-3">
               <MapPin className="h-5 w-5" />
-              <p className="leading-relaxed">
-                {club.address}, {club.postcode} {club.city}
-              </p>
+              {club.address && club.postcode && club.city ? (
+                <div>
+                  <p className="leading-relaxed">{club.address}</p>
+                  <p>
+                    {club.postcode} {club.city}
+                  </p>
+                </div>
+              ) : (
+                <p className="leading-relaxed">Adresse non renseignée.</p>
+              )}
             </div>
 
             <div className="flex gap-3">
@@ -180,7 +187,7 @@ export default function View() {
               <p className="leading-relaxed">{club.description}</p>
             </div>
 
-            {userIsAdmin(club, session) && (
+            {session && userIsAdmin(club, session) && (
               <div className="flex gap-3">
                 <Pencil className="h-5 w-5" />
                 <Link

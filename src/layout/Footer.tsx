@@ -1,6 +1,6 @@
 export default function Footer() {
   return (
-    <footer className="flex justify-center py-4 text-gray-500">
+    <footer className="flex justify-center mb-6 text-muted-foreground">
       <p className="text-sm">
         &copy; {new Date().getFullYear()} -{" "}
         <a

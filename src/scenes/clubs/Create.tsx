@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { useClubs } from "./useClubs";
 import { Button } from "@/components/ui/button";
-import { ChevronRight } from "lucide-react";
+import { ChevronRight, Save, Trash } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
@@ -162,15 +162,26 @@ const CreateClub = () => {
           </Card>
         </div>
 
-        <Button
-          type="submit"
-          disabled={
-            !name || !description || !address || !postcode || !city || !country
-          }
-          className="mt-4"
-        >
-          {id ? "Enregistrer" : "Créer"}
-        </Button>
+        <div className="flex gap-4 justify-end mt-4">
+          <Button
+            type="submit"
+            disabled={
+              !name ||
+              !description ||
+              !address ||
+              !postcode ||
+              !city ||
+              !country
+            }
+          >
+            <Save className="w-5 h-5 mr-2" />
+            {id ? "Enregistrer" : "Créer"}
+          </Button>
+          <Button type="button" variant="destructive" disabled>
+            <Trash className="w-5 h-5 mr-2" />
+            Supprimer le club
+          </Button>
+        </div>
       </form>
     </div>
   );
