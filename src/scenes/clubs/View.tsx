@@ -6,7 +6,6 @@ import {
   Check,
   ChevronRight,
   Clipboard,
-  History,
   MapPin,
   Pencil,
   Plus,
@@ -21,7 +20,7 @@ import PlayersTable from "./components/PlayersTable";
 import { clubType } from "./clubs.service";
 import GamesCarousel from "./components/GamesCarousel";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import GamesTable from "./components/GamesTable";
+import History from "./components/History";
 
 function userIsInClub(club: clubType, session: any) {
   return club.members.map((m) => m.id).includes(session.user.id);
@@ -133,7 +132,7 @@ export default function View() {
             <CardTitle>
               <div className="flex gap-3 items-center">
                 <Users className="h-5 w-5" />
-                Joueurs
+                Membres
               </div>
             </CardTitle>
           </CardHeader>
@@ -201,24 +200,7 @@ export default function View() {
           </CardContent>
         </Card>
 
-        <Card className="md:col-span-2">
-          <CardHeader>
-            <CardTitle>
-              <div className="flex gap-3 items-center">
-                <History className="h-5 w-5" />
-                Historique
-              </div>
-            </CardTitle>
-          </CardHeader>
-
-          <CardContent className="overflow-auto">
-            {pastGames?.length ? (
-              <GamesTable games={pastGames} />
-            ) : (
-              <p className="text-center">Aucun match joué.</p>
-            )}
-          </CardContent>
-        </Card>
+        <History clubId={club.id} />
       </div>
     </div>
   );
