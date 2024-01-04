@@ -21,22 +21,29 @@ const CreateClub = () => {
   const { id } = useParams();
   const { fetchClub } = useClubs();
 
-  const [name, setName] = useState("");
-  const [description, setDescription] = useState("");
-  const [address, setAddress] = useState("");
-  const [postcode, setPostcode] = useState("");
-  const [city, setCity] = useState("");
-  const [country, setCountry] = useState("France");
+  const [formData, setFormData] = useState({
+    id: "",
+    name: "",
+    description: "",
+    address: "",
+    postcode: "",
+    city: "",
+    country: "France",
+  });
 
   async function get() {
-    if (id) {
-      const data = await fetchClub(id);
-      setName(data?.name || "");
-      setDescription(data?.description || "");
-      setAddress(data?.address || "");
-      setPostcode(data?.postcode || "");
-      setCity(data?.city || "");
-      setCountry(data?.country || "");
+    if (!id) return;
+    const data = await fetchClub(id);
+    if (data) {
+      setFormData({
+        id,
+        name: data.name,
+        description: data.description,
+        address: data.address,
+        postcode: data.postcode,
+        city: data.city,
+        country: data.country,
+      });
     }
   }
 
@@ -46,11 +53,8 @@ const CreateClub = () => {
 
   async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    if (id) {
-      await updateClub(id, name, description, address, postcode, city, country);
-    } else {
-      await createClub(name, description, address, postcode, city, country);
-    }
+    if (id) await updateClub(formData);
+    else await createClub(formData);
   }
 
   return (
@@ -78,8 +82,10 @@ const CreateClub = () => {
                   type="text"
                   id="clubname"
                   placeholder="Le club des champions"
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
+                  value={formData.name}
+                  onChange={(e) =>
+                    setFormData({ ...formData, name: e.target.value })
+                  }
                 />
               </div>
 
@@ -88,8 +94,10 @@ const CreateClub = () => {
                 <Textarea
                   id="clubdescription"
                   placeholder="Le meilleur club de tous les temps."
-                  value={description}
-                  onChange={(e) => setDescription(e.target.value)}
+                  value={formData.description}
+                  onChange={(e) =>
+                    setFormData({ ...formData, description: e.target.value })
+                  }
                   rows={5}
                 />
               </div>
@@ -113,8 +121,10 @@ const CreateClub = () => {
                   type="text"
                   id="address"
                   placeholder="Rue du club 1, 1000 Bruxelles"
-                  value={address}
-                  onChange={(e) => setAddress(e.target.value)}
+                  value={formData.address}
+                  onChange={(e) =>
+                    setFormData({ ...formData, address: e.target.value })
+                  }
                 />
               </div>
 
@@ -124,8 +134,10 @@ const CreateClub = () => {
                   type="text"
                   id="postcode"
                   placeholder="10 000"
-                  value={postcode}
-                  onChange={(e) => setPostcode(e.target.value)}
+                  value={formData.postcode}
+                  onChange={(e) =>
+                    setFormData({ ...formData, postcode: e.target.value })
+                  }
                 />
               </div>
 
@@ -135,15 +147,20 @@ const CreateClub = () => {
                   type="text"
                   id="city"
                   placeholder="Bruxelles"
-                  value={city}
-                  onChange={(e) => setCity(e.target.value)}
+                  value={formData.city}
+                  onChange={(e) =>
+                    setFormData({ ...formData, city: e.target.value })
+                  }
                 />
               </div>
 
               <div className="grid w-full max-w-sm items-center gap-2">
                 <Label htmlFor="country">Pays</Label>
                 <Select
-                  onValueChange={(e) => setCountry(e)}
+                  onValueChange={(value) =>
+                    setFormData({ ...formData, country: value })
+                  }
+                  value={formData.country}
                   defaultValue="France"
                 >
                   <SelectTrigger>
@@ -163,24 +180,16 @@ const CreateClub = () => {
         </div>
 
         <div className="flex gap-4 justify-end mt-4">
-          <Button
-            type="submit"
-            disabled={
-              !name ||
-              !description ||
-              !address ||
-              !postcode ||
-              !city ||
-              !country
-            }
-          >
+          <Button type="submit" disabled={!formData.name}>
             <Save className="w-5 h-5 mr-2" />
             {id ? "Enregistrer" : "Créer"}
           </Button>
-          <Button type="button" variant="destructive" disabled>
-            <Trash className="w-5 h-5 mr-2" />
-            Supprimer le club
-          </Button>
+          {id && (
+            <Button type="button" variant="destructive" disabled>
+              <Trash className="w-5 h-5 mr-2" />
+              Supprimer le club
+            </Button>
+          )}
         </div>
       </form>
     </div>

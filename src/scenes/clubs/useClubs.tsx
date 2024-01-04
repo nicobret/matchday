@@ -60,41 +60,43 @@ export function useClubs(id = "") {
     if (data) return data;
   }
 
-  async function updateClub(
-    id: string,
-    name: string,
-    description: string,
-    address: string,
-    postcode: string,
-    city: string,
-    country: string
-  ) {
+  async function updateClub({
+    id,
+    name,
+    description,
+    address,
+    postcode,
+    city,
+    country,
+  }: {
+    id: string;
+    name: string;
+    description: string;
+    address: string;
+    postcode: string;
+    city: string;
+    country: string;
+  }) {
     setLoading(true);
+
     if (!session) {
-      console.error("User must be logged in.");
+      window.alert("Vous devez être connecté pour modifier un club.");
       return;
     }
 
-    const { data, error } = await supabaseClient
+    const { error } = await supabaseClient
       .from("clubs")
-      .update({
-        name,
-        description,
-        address,
-        postcode,
-        city,
-        country,
-      })
-      .eq("id", id)
-      .select();
+      .update({ name, description, address, postcode, city, country })
+      .eq("id", parseInt(id));
 
-    if (error) console.error(error);
-    if (data) {
-      window.alert("Club modifié avec succès !");
-      await fetchClubs();
-      navigate(`/clubs/${data[0].id}`);
+    if (error) {
+      window.alert("Une erreur est survenue lors de la modification du club.");
+      console.error(error);
+      setLoading(false);
+      return;
     }
 
+    window.alert("Club modifié avec succès !");
     setLoading(false);
   }
 
@@ -152,14 +154,21 @@ export function useClubs(id = "") {
     }
   }
 
-  async function createClub(
-    name: string,
-    description: string,
-    address: string,
-    postcode: string,
-    city: string,
-    country: string
-  ) {
+  async function createClub({
+    name,
+    description,
+    address,
+    postcode,
+    city,
+    country,
+  }: {
+    name: string;
+    description: string;
+    address: string;
+    postcode: string;
+    city: string;
+    country: string;
+  }) {
     setLoading(true);
     if (!session) {
       console.error("User must be logged in.");
@@ -179,7 +188,13 @@ export function useClubs(id = "") {
       })
       .select();
 
-    if (error) console.error(error);
+    if (error) {
+      window.alert("Une erreur est survenue lors de la création du club.");
+      console.error(error);
+      setLoading(false);
+      return;
+    }
+
     if (data) {
       window.alert("Club créé avec succès !");
       await fetchClubs();
