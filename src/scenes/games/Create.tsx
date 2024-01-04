@@ -6,26 +6,50 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { createGame } from "./games.service";
-import supabaseClient from "@/utils/supabase";
+import { useClubs } from "../clubs/useClubs";
+import useStore from "@/utils/zustand";
 
-export default function CreateLeague() {
-  const params = new URLSearchParams(window.location.search);
+export default function CreateGame() {
+  const clubId = new URLSearchParams(window.location.search).get("clubId");
+  const { session } = useStore();
+  const { club } = useClubs(clubId || "");
+
+  if (!club) return <p className="text-center">Aucun club trouvé</p>;
+
+  if (!session?.user)
+    return (
+      <p className="text-center">
+        Vous devez être connecté pour créer un match
+      </p>
+    );
+
+  if (!club.members.map((m: any) => m.id).includes(session.user.id))
+    return <p className="text-center">Vous n'êtes pas membre de ce club</p>;
+
+  return <GameForm user={session.user} club={club} />;
+}
+
+function GameForm({ user, club }: { user: any; club: any }) {
   const navigate = useNavigate();
   const [date, setDate] = useState("");
+  const [time, setTime] = useState("");
+  const [playerCount, setPlayerCount] = useState(10);
   const [location, setLocation] = useState(
-    "24, Rue Alexandre Guilmant, 92190 Meudon"
+    `${club?.address}, ${club?.postcode} ${club?.city}`
   );
 
   async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
+    if (!date || !time || !playerCount || !location) return;
+    const dateString = new Date(`${date} ${time}`).toISOString();
 
-    const { data } = await supabaseClient.auth.getSession();
-    const creator_id = data.session?.user.id;
-    if (!creator_id) return;
-    const club_id = params.get("club");
-    if (!club_id) return;
-
-    const game = await createGame({ date, location, creator_id, club_id });
+    const game = await createGame({
+      date: dateString,
+      location,
+      total_players: playerCount,
+      creator_id: user.id,
+      club_id: club.id,
+    });
     if (!game) return;
 
     window.alert("Match créé avec succès");
@@ -33,22 +57,19 @@ export default function CreateLeague() {
   }
 
   return (
-    <div className="border rounded p-6 space-y-6">
-      <div className="flex items-center gap-1 text-sm text-gray-500">
-        <Link to="/clubs">
-          <p>Matches</p>
-        </Link>
+    <div className="p-4">
+      <div className="flex items-center gap-1 text-sm text-muted-foreground">
+        <Link to="/clubs">Matches</Link>
         <ChevronRight className="w-4 h-4" />
-        <Link to="#">
-          <p>Créer un match</p>
-        </Link>
+        <Link to="#">Créer un match</Link>
       </div>
-      <h2 className="scroll-m-20 border-b pb-2 text-3xl font-semibold tracking-tight first:mt-0">
+
+      <h2 className="scroll-m-20 border-b pb-2 text-3xl font-semibold tracking-tight mt-6 mb-2">
         Créer un match
       </h2>
 
-      <form onSubmit={onSubmit} className="space-y-6">
-        <div className="grid w-full max-w-sm items-center gap-2">
+      <form onSubmit={onSubmit}>
+        <div className="grid w-full max-w-sm items-center gap-2 my-6">
           <Label htmlFor="date">Date du match</Label>
           <Input
             type="date"
@@ -58,16 +79,43 @@ export default function CreateLeague() {
           />
         </div>
 
-        <div className="grid w-full max-w-sm items-center gap-2">
+        <div className="grid w-full max-w-sm items-center gap-2 my-6">
+          <Label htmlFor="time">Heure du match</Label>
+          <Input
+            type="time"
+            id="time"
+            value={time}
+            onChange={(e) => setTime(e.target.value)}
+          />
+        </div>
+
+        <div className="grid w-full max-w-sm items-center gap-2 my-6">
           <Label htmlFor="location">Lieu</Label>
           <Textarea
             id="location"
             placeholder="24, Rue Alexandre Guilmant, 92190 Meudon"
             value={location}
             onChange={(e) => setLocation(e.target.value)}
+            className="text-base"
           />
         </div>
-        <Button type="submit">Créer</Button>
+
+        <div className="grid w-full max-w-sm items-center gap-2 my-6">
+          <Label htmlFor="playerCount">Nombre de joueurs</Label>
+          <Input
+            type="number"
+            id="playerCount"
+            value={playerCount}
+            onChange={(e) => setPlayerCount(parseInt(e.target.value))}
+          />
+        </div>
+
+        <div className="flex items-center gap-4">
+          <Button type="submit">Créer</Button>
+          <Button asChild variant="secondary">
+            <Link to={`/clubs/${club.id}`}>Annuler</Link>
+          </Button>
+        </div>
       </form>
     </div>
   );

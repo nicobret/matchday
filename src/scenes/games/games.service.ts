@@ -13,6 +13,7 @@ export type gameType = {
     status: string;
   };
   date: Date;
+  score: Array<{ count: number }>;
   location: string;
   total_players: number;
   players: Array<{
@@ -73,6 +74,7 @@ export async function fetchGame(id: number) {
       id,
       created_at,
       status,
+      score,
       club_id,
       creator: users (
         id,
@@ -110,6 +112,7 @@ export async function createGame(game: {
   creator_id: string;
   club_id: string;
   date: string;
+  total_players: number;
   location: string;
 }) {
   const { data, error } = await supabaseClient
@@ -125,6 +128,38 @@ export async function createGame(game: {
   return data[0];
 }
 
+export async function joinGame(game_id: number, user_id: string) {
+  const { data, error } = await supabaseClient
+    .from("game_registrations")
+    .insert({
+      game_id,
+      user_id,
+      status: "confirmed",
+    })
+    .select()
+    .single();
+
+  if (error) {
+    console.error(error);
+    return;
+  }
+
+  return data;
+}
+
+export async function leaveGame(game_id: number, user_id: string) {
+  const { error } = await supabaseClient
+    .from("game_registrations")
+    .delete()
+    .eq("game_id", game_id)
+    .eq("user_id", user_id);
+
+  if (error) {
+    console.error(error);
+    return;
+  }
+}
+
 export function userIsInGame(user: any, game: gameType) {
-  return game.players.map((m) => m.id).includes(user.id);
+  return game.players.map((p) => p.profile.id).includes(user.id);
 }

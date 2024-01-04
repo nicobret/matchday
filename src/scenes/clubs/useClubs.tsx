@@ -98,6 +98,7 @@ export function useClubs(id = "") {
 
     window.alert("Club modifié avec succès !");
     setLoading(false);
+    navigate(`/clubs/${id}`);
   }
 
   async function joinClub(club_id: number) {

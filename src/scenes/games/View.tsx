@@ -1,9 +1,14 @@
 import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import useStore from "@/utils/zustand";
-import supabaseClient from "@/utils/supabase";
 import { userIsInClub } from "../clubs/clubs.service";
-import { fetchGame, gameType, userIsInGame } from "./games.service";
+import {
+  fetchGame,
+  gameType,
+  joinGame,
+  leaveGame,
+  userIsInGame,
+} from "./games.service";
 import { useClubs } from "../clubs/useClubs";
 import {
   Calendar,
@@ -28,31 +33,6 @@ import Players from "./components/Players";
 //     .map((m) => m.id)
 //     .includes(session.user.id);
 // }
-
-async function joinGame(id: number, user_id: string) {
-  const { error } = await supabaseClient.from("game_registrations").insert({
-    game_id: id,
-    user_id,
-    status: "confirmed",
-  });
-
-  if (error) {
-    console.error(error);
-    return;
-  }
-}
-
-async function leaveGame(id: number) {
-  const { error } = await supabaseClient
-    .from("game_enrolments")
-    .delete()
-    .eq("game_id", id);
-
-  if (error) {
-    console.error(error);
-    return;
-  }
-}
 
 export default function View() {
   const { id } = useParams();
@@ -97,7 +77,7 @@ export default function View() {
           userIsInClub(session.user, club) &&
           (userIsInGame(session.user, game) ? (
             <Button
-              onClick={() => leaveGame(game.id)}
+              onClick={() => leaveGame(game.id, session.user.id)}
               variant="secondary"
               className="flex gap-2 ml-auto"
             >
@@ -174,7 +154,24 @@ export default function View() {
               Résultat
             </CardTitle>
           </CardHeader>
-          <CardContent></CardContent>
+          <CardContent>
+            {new Date(game.date) > new Date() ? (
+              <p className="text-center text-muted-foreground">
+                Le match commence dans{" "}
+                {Math.floor(
+                  (new Date(game.date).getTime() - new Date().getTime()) /
+                    (1000 * 60 * 60 * 24)
+                )}{" "}
+                jours.
+              </p>
+            ) : game.score ? (
+              <p className="text-center">
+                {game.score[0].toString()} - {game.score[1].toString()}
+              </p>
+            ) : (
+              <p className="text-center">Aucun résultat.</p>
+            )}
+          </CardContent>
         </Card>
       </div>
     </div>

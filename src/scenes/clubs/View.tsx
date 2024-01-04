@@ -104,7 +104,7 @@ export default function View() {
               <div className="flex gap-3 items-center mt-1 mb-6">
                 <Plus className="h-5 w-5" />
                 <Link
-                  to={`/games/create?club=${club.id}`}
+                  to={`/games/create?clubId=${club.id}`}
                   className="underline underline-offset-2 hover:text-primary gap-2"
                 >
                   Créer un match
