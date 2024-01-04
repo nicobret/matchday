@@ -6,10 +6,10 @@ import {
   Check,
   ChevronRight,
   Clipboard,
+  ClipboardSignature,
   MapPin,
   Pencil,
   Plus,
-  PlusIcon,
   Shield,
   Trophy,
   Users,
@@ -40,7 +40,6 @@ export default function View() {
   const upcomingGames = club?.games
     .filter((g) => new Date(g.date) > new Date())
     .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
-  const pastGames = club?.games.filter((g) => new Date(g.date) < new Date());
 
   useEffect(() => {
     if (!id) {
@@ -58,13 +57,9 @@ export default function View() {
   return (
     <div className="p-4">
       <div className="flex items-center gap-1 text-sm text-muted-foreground">
-        <Link to="/clubs">
-          <p>Clubs</p>
-        </Link>
+        <Link to="/clubs">Clubs</Link>
         <ChevronRight className="w-4 h-4" />
-        <Link to="#">
-          <p>{club.name}</p>
-        </Link>
+        <Link to="#">{club.name}</Link>
       </div>
 
       <div className="flex gap-4 items-end scroll-m-20 border-b pb-3 mt-6 mb-2">
@@ -90,7 +85,7 @@ export default function View() {
               onClick={() => joinClub(club.id)}
               className="flex gap-2 ml-auto"
             >
-              <PlusIcon className="h-5 w-5" />
+              <ClipboardSignature className="h-5 w-5" />
               Rejoindre
             </Button>
           ))}
@@ -181,10 +176,12 @@ export default function View() {
               )}
             </div>
 
-            <div className="flex gap-3">
-              <Book className="h-5 w-5 flex-none" />
-              <p className="leading-relaxed">{club.description}</p>
-            </div>
+            {club.description && (
+              <div className="flex gap-3">
+                <Book className="h-5 w-5 flex-none" />
+                <p className="leading-relaxed">{club.description}</p>
+              </div>
+            )}
 
             {session && userIsAdmin(club, session) && (
               <div className="flex gap-3">

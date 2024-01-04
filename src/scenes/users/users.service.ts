@@ -1,4 +1,4 @@
-export type playerSummary = {
+export type clubMember = {
   id: string;
   role: "member" | "admin";
   created_at: Date;

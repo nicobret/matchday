@@ -1,13 +1,26 @@
 import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
-import { Check, ChevronRight, PlusIcon } from "lucide-react";
-import supabaseClient from "@/utils/supabase";
-import { useClubs } from "../clubs/useClubs";
-import { Button } from "@/components/ui/button";
 import useStore from "@/utils/zustand";
+import supabaseClient from "@/utils/supabase";
 import { userIsInClub } from "../clubs/clubs.service";
 import { fetchGame, gameType, userIsInGame } from "./games.service";
-import Container from "@/layout/Container";
+import { useClubs } from "../clubs/useClubs";
+import {
+  Calendar,
+  Check,
+  ChevronRight,
+  Clipboard,
+  ClipboardList,
+  ClipboardSignature,
+  Clock,
+  Crown,
+  MapPin,
+  Pencil,
+} from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import Players from "./components/Players";
 
 // function userIsAdmin(club: clubType, session: any) {
 //   return club.members
@@ -16,9 +29,11 @@ import Container from "@/layout/Container";
 //     .includes(session.user.id);
 // }
 
-async function joinGame(id: number) {
-  const { error } = await supabaseClient.from("game_enrolments").insert({
+async function joinGame(id: number, user_id: string) {
+  const { error } = await supabaseClient.from("game_registrations").insert({
     game_id: id,
+    user_id,
+    status: "confirmed",
   });
 
   if (error) {
@@ -61,70 +76,107 @@ export default function View() {
   if (!game) return <p className="text-center animate_pulse">Chargement...</p>;
 
   return (
-    <Container>
-      <div className="flex items-center gap-1 text-sm text-gray-500">
-        <Link to="/clubs">
-          <p>Matches</p>
-        </Link>
+    <div className="p-4">
+      <div className="flex items-center gap-1 text-sm text-muted-foreground">
+        <Link to="/games">Matches</Link>
         <ChevronRight className="w-4 h-4" />
-        <Link to="#">
-          <p>
-            Match du{" "}
-            {new Date(game.date).toLocaleDateString("fr-FR", {
-              dateStyle: "long",
-            })}
-          </p>
-        </Link>
+        <Link to="#">Match #{game.id}</Link>
       </div>
 
-      <div className="flex gap-4 items-end scroll-m-20 border-b pb-2 first:mt-0 justify-between">
+      <div className="flex gap-4 items-end scroll-m-20 border-b pb-2 mt-6 mb-2">
         <h2 className="text-3xl font-semibold tracking-tight">
-          {new Date(game.date).toLocaleDateString("fr-FR", {
-            dateStyle: "long",
-          })}
+          Match #{game.id}
         </h2>
+        <div className="pb-1">
+          <Badge className="text-sm">{game.status}</Badge>
+        </div>
 
         {session &&
+          new Date(game.date) > new Date() &&
           club &&
           userIsInClub(session.user, club) &&
           (userIsInGame(session.user, game) ? (
             <Button
               onClick={() => leaveGame(game.id)}
               variant="secondary"
-              className="flex gap-2"
+              className="flex gap-2 ml-auto"
             >
               <Check className="h-5 w-5" />
               <span className="hidden md:block">Inscrit</span>
             </Button>
           ) : (
-            <Button onClick={() => joinGame(game.id)} className="flex gap-2">
-              <PlusIcon className="h-5 w-5" />
+            <Button
+              onClick={() => joinGame(game.id, session.user.id)}
+              className="flex gap-2 ml-auto"
+            >
+              <ClipboardSignature className="h-5 w-5" />
               <p className="hidden md:block">S'inscrire</p>
             </Button>
           ))}
       </div>
-      {/* 
-      <div className="flex gap-2 items-center">
-      {game.players.length}
-      <Users className="h-4 w-4" />
-    </div> */}
 
-      <p>
-        Créé par{" "}
-        <Link to={`users/${game.creator.id}`}>
-          <span className="text-gray-500 underline underline-offset-4 hover:text-gray-800">
-            {game.creator.firstname} {game.creator.lastname}
-          </span>
-        </Link>{" "}
-        le{" "}
-        {new Date(game.created_at).toLocaleDateString("fr-FR", {
-          dateStyle: "long",
-        })}
-      </p>
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 py-2">
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex gap-3 items-center">
+              <Clipboard className="h-5 w-5 flex-none" />
+              Informations
+              <Button
+                asChild
+                variant="link"
+                className="gap-2 ml-auto h-auto p-0"
+              >
+                <Link to={`/games/${game.id}/edit`}>
+                  <Pencil className="h-4 w-4" />
+                  Modifier
+                </Link>
+              </Button>
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-2">
+            <div className="flex gap-3 items-center">
+              <Calendar className="h-4 w-4" />
+              {new Date(game.date).toLocaleDateString("fr-FR", {
+                dateStyle: "long",
+              })}
+            </div>
 
-      <h3 className="text-xl font-semibold">Lieu</h3>
+            <div className="flex gap-3 items-center">
+              <Clock className="h-4 w-4" />
+              {new Date(game.date).toLocaleTimeString("fr-FR", {
+                timeStyle: "short",
+              })}
+            </div>
 
-      <p>{game.location}</p>
-    </Container>
+            <div className="flex gap-3 items-center">
+              <MapPin className="h-4 w-4 flex-none" />
+              {game.location}
+            </div>
+          </CardContent>
+        </Card>
+
+        <Players game={game} />
+
+        <Card className="md:col-span-2">
+          <CardHeader>
+            <CardTitle className="flex gap-3 items-center">
+              <ClipboardList className="h-5 w-5" />
+              Compositions
+            </CardTitle>
+          </CardHeader>
+          <CardContent></CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex gap-3 items-center">
+              <Crown className="h-5 w-5" />
+              Résultat
+            </CardTitle>
+          </CardHeader>
+          <CardContent></CardContent>
+        </Card>
+      </div>
+    </div>
   );
 }

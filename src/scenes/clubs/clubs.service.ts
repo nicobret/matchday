@@ -1,12 +1,12 @@
 import { gameSummary } from "../games/games.service";
-import { playerSummary } from "../users/users.service";
+import { clubMember } from "../users/users.service";
 
 export type clubType = {
   id: number;
   name: string;
   description: string;
   created_at: Date;
-  members: Array<playerSummary>;
+  members: Array<clubMember>;
   creator: {
     id: string;
     firstname: string;

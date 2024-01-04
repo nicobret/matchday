@@ -14,6 +14,7 @@ export type gameType = {
   };
   date: Date;
   location: string;
+  total_players: number;
   players: Array<{
     id: string;
     status: "accepted" | "pending" | "declined";
@@ -82,6 +83,7 @@ export async function fetchGame(id: number) {
       ),
       date,
       location,
+      total_players,
       players: game_registrations (
         id,
         status,

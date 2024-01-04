@@ -15,22 +15,23 @@ export default function History({ clubId }: { clubId: number }) {
       .from("games")
       .select(
         `
-      id,
-      created_at,
-      status,
-      club_id,
-      creator_id,
-      date,
-      location,
-      player_count: game_registrations (count)
-      score,
-      opponent: game!opponent_id (id, name)
-    `
+          id,
+          created_at,
+          status,
+          club_id,
+          creator_id,
+          date,
+          location,
+          player_count: game_registrations (count),
+          score,
+          opponent: clubs!opponent_id (id, name)
+        `
       )
       .eq("club_id", clubId)
       .lte("date", new Date().toISOString())
-      .order("date", { ascending: false });
-    // .returns<gameSummary[]>();
+      .order("date", { ascending: false })
+      .returns<gameSummary[]>();
+
     if (data) setGames(data);
     if (error) console.error(error);
     setLoading(false);

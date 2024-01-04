@@ -6,17 +6,17 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { clubMember } from "@/scenes/users/users.service";
 import { Link } from "react-router-dom";
+import { gamePlayer } from "./Players";
 
-export default function PlayersTable({ players }: { players: clubMember[] }) {
+export default function PlayersTable({ players }: { players: gamePlayer[] }) {
   return (
     <Table className="border">
       <TableHeader>
         <TableRow>
           <TableHead>Nom</TableHead>
+          <TableHead>Status</TableHead>
           <TableHead>Inscription</TableHead>
-          <TableHead>Role</TableHead>
         </TableRow>
       </TableHeader>
       <TableBody>
@@ -30,10 +30,10 @@ export default function PlayersTable({ players }: { players: clubMember[] }) {
                 {player.profile.firstname}
               </Link>
             </TableCell>
+            <TableCell>{player.status}</TableCell>
             <TableCell>
               {new Date(player.created_at).toLocaleDateString("fr-FR")}
             </TableCell>
-            <TableCell>{player.role}</TableCell>
           </TableRow>
         ))}
       </TableBody>
