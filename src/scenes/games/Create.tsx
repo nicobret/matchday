@@ -8,6 +8,13 @@ import { Textarea } from "@/components/ui/textarea";
 import { createGame } from "./games.service";
 import { useClubs } from "../clubs/useClubs";
 import useStore from "@/utils/zustand";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+} from "@/components/ui/select";
+import { SelectValue } from "@radix-ui/react-select";
 
 export default function CreateGame() {
   const clubId = new URLSearchParams(window.location.search).get("clubId");
@@ -59,7 +66,9 @@ function GameForm({ user, club }: { user: any; club: any }) {
   return (
     <div className="p-4">
       <div className="flex items-center gap-1 text-sm text-muted-foreground">
-        <Link to="/clubs">Matches</Link>
+        <Link to="/">Accueil</Link>
+        <ChevronRight className="w-4 h-4" />
+        <Link to="/games">Matches</Link>
         <ChevronRight className="w-4 h-4" />
         <Link to="#">Créer un match</Link>
       </div>
@@ -69,24 +78,54 @@ function GameForm({ user, club }: { user: any; club: any }) {
       </h2>
 
       <form onSubmit={onSubmit}>
-        <div className="grid w-full max-w-sm items-center gap-2 my-6">
-          <Label htmlFor="date">Date du match</Label>
-          <Input
-            type="date"
-            id="date"
-            value={date}
-            onChange={(e) => setDate(e.target.value)}
-          />
+        <div className="grid w-full max-w-sm grid-cols-2 gap-3 my-6">
+          <div className="grid w-full max-w-sm items-center gap-2">
+            <Label htmlFor="sportType">Sport</Label>
+            <Select name="sportType" disabled>
+              <SelectTrigger>
+                <SelectValue placeholder="Choisir un sport" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="football">Football</SelectItem>
+                <SelectItem value="futsal">Futsal</SelectItem>
+                <SelectItem value="basketball">Basketball</SelectItem>
+                <SelectItem value="handball">Handball</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+
+          <div className="grid w-full max-w-sm items-center gap-2">
+            <Label htmlFor="playerCount">Nombre de joueurs</Label>
+            <Input
+              type="number"
+              id="playerCount"
+              value={playerCount}
+              onChange={(e) => setPlayerCount(parseInt(e.target.value))}
+              className="text-base"
+            />
+          </div>
         </div>
 
-        <div className="grid w-full max-w-sm items-center gap-2 my-6">
-          <Label htmlFor="time">Heure du match</Label>
-          <Input
-            type="time"
-            id="time"
-            value={time}
-            onChange={(e) => setTime(e.target.value)}
-          />
+        <div className="grid w-full max-w-sm grid-cols-2 gap-3 my-6">
+          <div className="grid w-full max-w-sm items-center gap-2">
+            <Label htmlFor="date">Date du match</Label>
+            <Input
+              type="date"
+              id="date"
+              value={date}
+              onChange={(e) => setDate(e.target.value)}
+            />
+          </div>
+
+          <div className="grid w-full max-w-sm items-center gap-2">
+            <Label htmlFor="time">Heure du match</Label>
+            <Input
+              type="time"
+              id="time"
+              value={time}
+              onChange={(e) => setTime(e.target.value)}
+            />
+          </div>
         </div>
 
         <div className="grid w-full max-w-sm items-center gap-2 my-6">
@@ -100,21 +139,11 @@ function GameForm({ user, club }: { user: any; club: any }) {
           />
         </div>
 
-        <div className="grid w-full max-w-sm items-center gap-2 my-6">
-          <Label htmlFor="playerCount">Nombre de joueurs</Label>
-          <Input
-            type="number"
-            id="playerCount"
-            value={playerCount}
-            onChange={(e) => setPlayerCount(parseInt(e.target.value))}
-          />
-        </div>
-
-        <div className="flex items-center gap-4">
-          <Button type="submit">Créer</Button>
-          <Button asChild variant="secondary">
+        <div className="flex items-center gap-3 max-w-sm justify-end">
+          <Button type="button" asChild variant="secondary">
             <Link to={`/clubs/${club.id}`}>Annuler</Link>
           </Button>
+          <Button type="submit">Créer</Button>
         </div>
       </form>
     </div>

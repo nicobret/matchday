@@ -13,7 +13,6 @@ import { useClubs } from "../clubs/useClubs";
 import {
   Calendar,
   Check,
-  ChevronRight,
   Clipboard,
   ClipboardList,
   ClipboardSignature,
@@ -26,6 +25,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import Players from "./components/Players";
+import Breadcrumbs from "@/components/Breadcrumbs";
 
 // function userIsAdmin(club: clubType, session: any) {
 //   return club.members
@@ -40,15 +40,16 @@ export default function View() {
   const { club } = useClubs(game?.club_id.toString());
   const { session } = useStore();
 
+  async function getGame(id: number) {
+    const data = await fetchGame(id);
+    if (!data) return;
+    setGame(data);
+  }
+
   useEffect(() => {
     if (!id) {
       console.error("No id provided");
       return;
-    }
-    async function getGame(id: number) {
-      const data = await fetchGame(id);
-      if (!data) return;
-      setGame(data);
     }
     getGame(parseInt(id));
   }, [id]);
@@ -57,11 +58,12 @@ export default function View() {
 
   return (
     <div className="p-4">
-      <div className="flex items-center gap-1 text-sm text-muted-foreground">
-        <Link to="/games">Matches</Link>
-        <ChevronRight className="w-4 h-4" />
-        <Link to="#">Match #{game.id}</Link>
-      </div>
+      <Breadcrumbs
+        links={[
+          { label: "Matches", link: "/games" },
+          { label: "Match #" + game?.id, link: "#" },
+        ]}
+      />
 
       <div className="flex gap-4 items-end scroll-m-20 border-b pb-2 mt-6 mb-2">
         <h2 className="text-3xl font-semibold tracking-tight">
@@ -114,6 +116,11 @@ export default function View() {
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-2">
+            <div className="flex gap-3 items-center">
+              <ClipboardSignature className="h-4 w-4" />
+              {club?.name}
+            </div>
+
             <div className="flex gap-3 items-center">
               <Calendar className="h-4 w-4" />
               {new Date(game.date).toLocaleDateString("fr-FR", {

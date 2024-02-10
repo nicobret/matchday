@@ -100,12 +100,14 @@ export async function fetchGame(id: number) {
       )
     `
     )
-    .eq("id", id);
+    .eq("id", id)
+    .returns<gameType[]>()
+    .single();
   if (error) {
     console.error(error);
     return;
   }
-  return data[0] as unknown as gameType;
+  return data;
 }
 
 export async function createGame(game: {

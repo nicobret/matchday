@@ -15,8 +15,8 @@ export default function PlayersTable({ players }: { players: gamePlayer[] }) {
       <TableHeader>
         <TableRow>
           <TableHead>Nom</TableHead>
-          <TableHead>Status</TableHead>
-          <TableHead>Inscription</TableHead>
+          <TableHead>Statut</TableHead>
+          <TableHead>Date</TableHead>
         </TableRow>
       </TableHeader>
       <TableBody>
