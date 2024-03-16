@@ -1,49 +1,103 @@
 import { useEffect, useState } from "react";
-import { Link, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import useStore from "@/utils/zustand";
-import { userIsInClub } from "../clubs/clubs.service";
-import {
-  fetchGame,
-  gameType,
-  joinGame,
-  leaveGame,
-  userIsInGame,
-} from "./games.service";
-import { useClubs } from "../clubs/useClubs";
-import {
-  Calendar,
-  Check,
-  Clipboard,
-  ClipboardList,
-  ClipboardSignature,
-  Clock,
-  Crown,
-  MapPin,
-  Pencil,
-} from "lucide-react";
+import supabaseClient from "@/utils/supabase";
+import { Tables } from "types/supabase";
+
+import { gameHasStarted } from "./games.service";
+import { Check, ClipboardSignature } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import Players from "./components/Players";
 import Breadcrumbs from "@/components/Breadcrumbs";
 
-// function userIsAdmin(club: clubType, session: any) {
-//   return club.members
-//     .filter((m) => m.role === "admin")
-//     .map((m) => m.id)
-//     .includes(session.user.id);
-// }
+import Information from "./components/Information";
+import Players from "./components/Players";
+import Result from "./components/Result";
+
+export type clubType = Tables<"clubs"> & {
+  members: Tables<"club_enrolments">[] | null;
+};
+
+export type gamePlayer = Tables<"game_registrations"> & {
+  profile: Tables<"users"> | null;
+};
 
 export default function View() {
   const { id } = useParams();
-  const [game, setGame] = useState<gameType | null>(null);
-  const { club } = useClubs(game?.club_id.toString());
   const { session } = useStore();
+  const [game, setGame] = useState<Tables<"games">>();
+  const [clubs, setClubs] = useState<clubType[]>();
+  const [players, setPlayers] = useState<gamePlayer[]>();
 
-  async function getGame(id: number) {
-    const data = await fetchGame(id);
-    if (!data) return;
-    setGame(data);
+  async function getData(id: number) {
+    const { data: gameData, error: gameError } = await supabaseClient
+      .from("games")
+      .select()
+      .eq("id", id)
+      .single();
+    if (gameError) {
+      console.error(gameError);
+      return;
+    }
+
+    const { data: clubsData, error: clubsError } = await supabaseClient
+      .from("clubs")
+      .select("*, members: club_enrolments (*)")
+      .in("id", [
+        gameData.club_id,
+        gameData.opponent_id ? gameData.opponent_id : 0,
+      ]);
+    if (clubsError) {
+      console.error(clubsError);
+      return;
+    }
+
+    const { data: playersData, error: playersError } = await supabaseClient
+      .from("game_registrations")
+      .select("*, profile: users (*)")
+      .eq("game_id", id);
+    if (playersError) {
+      console.error(playersError);
+      return;
+    }
+
+    setGame(gameData);
+    setClubs(clubsData);
+    setPlayers(playersData);
+  }
+
+  async function joinGame(game_id: number, user_id: string) {
+    const { data, error } = await supabaseClient
+      .from("game_registrations")
+      .insert({
+        game_id,
+        user_id,
+        status: "confirmed",
+      })
+      .select("*, profile: users (*)")
+      .single();
+
+    if (error) {
+      console.error(error);
+      return;
+    }
+
+    setPlayers([...players, data]);
+  }
+
+  async function leaveGame(game_id: number, user_id: string) {
+    const { error } = await supabaseClient
+      .from("game_registrations")
+      .delete()
+      .eq("game_id", game_id)
+      .eq("user_id", user_id);
+
+    if (error) {
+      console.error(error);
+      return;
+    }
+
+    setPlayers(players.filter((p) => p.user_id !== user_id));
   }
 
   useEffect(() => {
@@ -51,10 +105,24 @@ export default function View() {
       console.error("No id provided");
       return;
     }
-    getGame(parseInt(id));
+    getData(parseInt(id));
   }, [id]);
 
-  if (!game) return <p className="text-center animate_pulse">Chargement...</p>;
+  if (!session || !clubs || !game || !players) {
+    return <p className="text-center animate_pulse">Chargement...</p>;
+  }
+
+  const userIsInGame = players
+    .filter((p) => p.status === "confirmed")
+    .map((p) => p.profile?.id)
+    .includes(session.user.id);
+
+  const userIsInClubs = clubs.map(
+    (c) => c.members?.map((m) => m.id).includes(parseInt(session.user.id))
+  );
+
+  const userCanJoinGame =
+    userIsInClubs && !gameHasStarted(game) && !userIsInGame;
 
   return (
     <div className="p-4">
@@ -73,113 +141,32 @@ export default function View() {
           <Badge className="text-sm">{game.status}</Badge>
         </div>
 
-        {session &&
-          new Date(game.date) > new Date() &&
-          club &&
-          userIsInClub(session.user, club) &&
-          (userIsInGame(session.user, game) ? (
-            <Button
-              onClick={() => leaveGame(game.id, session.user.id)}
-              variant="secondary"
-              className="flex gap-2 ml-auto"
-            >
-              <Check className="h-5 w-5" />
-              <span className="hidden md:block">Inscrit</span>
-            </Button>
-          ) : (
-            <Button
-              onClick={() => joinGame(game.id, session.user.id)}
-              className="flex gap-2 ml-auto"
-            >
-              <ClipboardSignature className="h-5 w-5" />
-              <p className="hidden md:block">S'inscrire</p>
-            </Button>
-          ))}
+        {userIsInGame && (
+          <Button
+            onClick={() => leaveGame(game.id, session.user.id)}
+            variant="secondary"
+            className="flex gap-2 ml-auto"
+          >
+            <Check className="h-5 w-5" />
+            <span className="hidden md:block">Inscrit</span>
+          </Button>
+        )}
+
+        {userCanJoinGame && (
+          <Button
+            onClick={() => joinGame(game.id, session.user.id)}
+            className="flex gap-2 ml-auto"
+          >
+            <ClipboardSignature className="h-5 w-5" />
+            <span className="hidden md:block">S'inscrire</span>
+          </Button>
+        )}
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 py-2">
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex gap-3 items-center">
-              <Clipboard className="h-5 w-5 flex-none" />
-              Informations
-              <Button
-                asChild
-                variant="link"
-                className="gap-2 ml-auto h-auto p-0"
-              >
-                <Link to={`/games/${game.id}/edit`}>
-                  <Pencil className="h-4 w-4" />
-                  Modifier
-                </Link>
-              </Button>
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-2">
-            <div className="flex gap-3 items-center">
-              <ClipboardSignature className="h-4 w-4" />
-              {club?.name}
-            </div>
-
-            <div className="flex gap-3 items-center">
-              <Calendar className="h-4 w-4" />
-              {new Date(game.date).toLocaleDateString("fr-FR", {
-                dateStyle: "long",
-              })}
-            </div>
-
-            <div className="flex gap-3 items-center">
-              <Clock className="h-4 w-4" />
-              {new Date(game.date).toLocaleTimeString("fr-FR", {
-                timeStyle: "short",
-              })}
-            </div>
-
-            <div className="flex gap-3 items-center">
-              <MapPin className="h-4 w-4 flex-none" />
-              {game.location}
-            </div>
-          </CardContent>
-        </Card>
-
-        <Players game={game} />
-
-        <Card className="md:col-span-2">
-          <CardHeader>
-            <CardTitle className="flex gap-3 items-center">
-              <ClipboardList className="h-5 w-5" />
-              Compositions
-            </CardTitle>
-          </CardHeader>
-          <CardContent></CardContent>
-        </Card>
-
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex gap-3 items-center">
-              <Crown className="h-5 w-5" />
-              Résultat
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            {new Date(game.date) > new Date() ? (
-              <p className="text-center text-muted-foreground">
-                Le match commence dans{" "}
-                {Math.floor(
-                  (new Date(game.date).getTime() - new Date().getTime()) /
-                    (1000 * 60 * 60 * 24)
-                )}{" "}
-                jours.
-              </p>
-            ) : game.score ? (
-              <p className="text-center">
-                {game.score[0].toString()} - {game.score[1].toString()}
-              </p>
-            ) : (
-              <p className="text-center">Aucun résultat.</p>
-            )}
-          </CardContent>
-        </Card>
+        <Information game={game} clubs={clubs} />
+        <Players game={game} players={players} setPlayers={setPlayers} />
+        <Result game={game} />
       </div>
     </div>
   );

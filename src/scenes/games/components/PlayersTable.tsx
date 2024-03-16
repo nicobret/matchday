@@ -7,7 +7,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Link } from "react-router-dom";
-import { gamePlayer } from "./Players";
+import { gamePlayer } from "../View";
 
 export default function PlayersTable({ players }: { players: gamePlayer[] }) {
   return (
@@ -27,7 +27,7 @@ export default function PlayersTable({ players }: { players: gamePlayer[] }) {
                 to={`/players/${player.id}`}
                 className="underline underline-offset-2"
               >
-                {player.profile.firstname}
+                {player.profile?.firstname}
               </Link>
             </TableCell>
             <TableCell>{player.status}</TableCell>

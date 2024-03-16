@@ -2,12 +2,11 @@ import { useEffect, useState } from "react";
 import supabaseClient from "@/utils/supabase";
 import useStore from "@/utils/zustand";
 import { useNavigate } from "react-router-dom";
-import { clubType } from "./clubs.service";
 
 export function useClubs(id = "") {
   const { session } = useStore();
   const [loading, setLoading] = useState(false);
-  const [club, setClub] = useState<clubType | null>(null);
+  const [club, setClub] = useState<any>();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -33,15 +32,16 @@ export function useClubs(id = "") {
           games!games_club_id_fkey ( id, date, location, status, created_at, score, player_count: game_registrations ( count ) )
         `
       )
-      .eq("id", parseInt(club_id));
+      .eq("id", parseInt(club_id))
+      .single();
     if (error) {
       console.error(error);
       setLoading(false);
     }
     if (data) {
-      setClub(data[0] as unknown as clubType);
+      setClub(data);
       setLoading(false);
-      return data[0];
+      return data;
     }
   }
 

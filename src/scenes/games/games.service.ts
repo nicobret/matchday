@@ -1,4 +1,5 @@
 import supabaseClient from "@/utils/supabase";
+import { Tables } from "types/supabase";
 
 export type gameType = {
   id: number;
@@ -101,7 +102,6 @@ export async function fetchGame(id: number) {
     `
     )
     .eq("id", id)
-    .returns<gameType[]>()
     .single();
   if (error) {
     console.error(error);
@@ -112,7 +112,7 @@ export async function fetchGame(id: number) {
 
 export async function createGame(game: {
   creator_id: string;
-  club_id: string;
+  club_id: number;
   date: string;
   total_players: number;
   location: string;
@@ -130,38 +130,7 @@ export async function createGame(game: {
   return data[0];
 }
 
-export async function joinGame(game_id: number, user_id: string) {
-  const { data, error } = await supabaseClient
-    .from("game_registrations")
-    .insert({
-      game_id,
-      user_id,
-      status: "confirmed",
-    })
-    .select()
-    .single();
-
-  if (error) {
-    console.error(error);
-    return;
-  }
-
-  return data;
-}
-
-export async function leaveGame(game_id: number, user_id: string) {
-  const { error } = await supabaseClient
-    .from("game_registrations")
-    .delete()
-    .eq("game_id", game_id)
-    .eq("user_id", user_id);
-
-  if (error) {
-    console.error(error);
-    return;
-  }
-}
-
-export function userIsInGame(user: any, game: gameType) {
-  return game.players.map((p) => p.profile.id).includes(user.id);
+export function gameHasStarted(game: Tables<"games">) {
+  if (!game.date) return false;
+  return new Date(game.date) < new Date();
 }

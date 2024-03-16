@@ -37,9 +37,6 @@ export default function View() {
   const { session } = useStore();
   const { id } = useParams();
   const { club, fetchClub, joinClub, leaveClub } = useClubs();
-  const upcomingGames = club?.games
-    .filter((g) => new Date(g.date) > new Date())
-    .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
 
   useEffect(() => {
     if (!id) {
@@ -53,6 +50,10 @@ export default function View() {
   }, [id]);
 
   if (!club) return <p className="text-center animate_pulse">Chargement...</p>;
+
+  const upcomingGames = club.games
+    .filter((g) => new Date(g.date) > new Date())
+    .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
 
   return (
     <div className="p-4">

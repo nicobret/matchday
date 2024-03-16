@@ -3,7 +3,7 @@ import { clubMember } from "../users/users.service";
 
 export type clubType = {
   id: number;
-  name: string;
+  name: string | null;
   description: string;
   created_at: Date;
   members: Array<clubMember>;
@@ -14,7 +14,6 @@ export type clubType = {
     avatar: string;
     status: string;
   };
-  score: Array<{ count: number }>;
   games: Array<gameSummary>;
   address: string;
   city: string;
