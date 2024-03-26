@@ -13,6 +13,7 @@ import Breadcrumbs from "@/components/Breadcrumbs";
 import Information from "./components/Information";
 import Players from "./components/Players";
 import Result from "./components/Result";
+import LineUp from "./components/LineUp";
 
 export type clubType = Tables<"clubs"> & {
   members: Tables<"club_enrolments">[] | null;
@@ -112,6 +113,8 @@ export default function View() {
     return <p className="text-center animate_pulse">Chargement...</p>;
   }
 
+  const hasStarted = gameHasStarted(game);
+
   const userIsInGame = players
     .filter((p) => p.status === "confirmed")
     .map((p) => p.profile?.id)
@@ -121,8 +124,7 @@ export default function View() {
     (c) => c.members?.map((m) => m.id).includes(parseInt(session.user.id))
   );
 
-  const userCanJoinGame =
-    userIsInClubs && !gameHasStarted(game) && !userIsInGame;
+  const userCanJoinGame = userIsInClubs && !hasStarted && !userIsInGame;
 
   return (
     <div className="p-4">
@@ -165,7 +167,12 @@ export default function View() {
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 py-2">
         <Information game={game} clubs={clubs} />
-        <Players game={game} players={players} setPlayers={setPlayers} />
+        <Players game={game} players={players} />
+        <LineUp
+          players={players}
+          setPlayers={setPlayers}
+          disabled={!userIsInGame || hasStarted}
+        />
         <Result game={game} />
       </div>
     </div>

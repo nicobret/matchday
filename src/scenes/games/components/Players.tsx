@@ -8,11 +8,9 @@ import { gamePlayer } from "../View";
 export default function Players({
   game,
   players,
-  setPlayers,
 }: {
   game: Tables<"games">;
   players: gamePlayer[];
-  setPlayers: any;
 }) {
   return (
     <Card className="md:col-span-2">
