@@ -1,14 +1,18 @@
 import supabaseClient from "@/utils/supabase";
 import useStore from "@/utils/zustand";
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "./ui/dropdown-menu";
-import { Button } from "./ui/button";
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet";
+
 import { UserCircle } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Auth } from "@supabase/auth-ui-react";
+import { ThemeSupa } from "@supabase/auth-ui-shared";
+import { Button } from "./ui/button";
 
 export function UserMenu() {
   const { session, setSession } = useStore();
@@ -19,27 +23,38 @@ export function UserMenu() {
   }
 
   return (
-    <DropdownMenu>
-      <DropdownMenuTrigger asChild>
+    <Sheet>
+      <SheetTrigger asChild>
         <Button variant="outline" size="icon">
           <UserCircle className="h-[1.2rem] w-[1.2rem]" />
-          <span className="sr-only">User menu</span>
         </Button>
-      </DropdownMenuTrigger>
-      <DropdownMenuContent align="end">
+      </SheetTrigger>
+      <SheetContent>
         {session ? (
-          <>
-            <DropdownMenuItem>
-              <Link to="/account">Mon compte</Link>
-            </DropdownMenuItem>
-            <DropdownMenuItem onClick={logout}>Déconnexion</DropdownMenuItem>
-          </>
+          <SheetHeader>
+            <SheetTitle>Mon compte</SheetTitle>
+            <SheetDescription>
+              <p>Bonjour, {session.user.email}.</p>
+              <p>Vous êtes connecté.</p>
+            </SheetDescription>
+            <Button onClick={logout} variant="outline">
+              Se déconnecter
+            </Button>
+          </SheetHeader>
         ) : (
-          <DropdownMenuItem>
-            <Link to="/auth">Se connecter</Link>
-          </DropdownMenuItem>
+          <SheetHeader>
+            <SheetTitle>Connexion</SheetTitle>
+            <SheetDescription>
+              <p>Connectez-vous pour accéder à votre compte.</p>
+            </SheetDescription>
+            <Auth
+              supabaseClient={supabaseClient}
+              appearance={{ theme: ThemeSupa }}
+              providers={[]}
+            />
+          </SheetHeader>
         )}
-      </DropdownMenuContent>
-    </DropdownMenu>
+      </SheetContent>
+    </Sheet>
   );
 }

@@ -11,8 +11,6 @@ import CreateClub from "./scenes/clubs/Create.tsx";
 import CreateGame from "./scenes/games/Create.tsx";
 import ViewGame from "./scenes/games/View.tsx";
 import ViewClub from "./scenes/clubs/View.tsx";
-import { Auth } from "@supabase/auth-ui-react";
-import { ThemeSupa } from "@supabase/auth-ui-shared";
 
 const router = createBrowserRouter([
   {
@@ -33,16 +31,6 @@ const router = createBrowserRouter([
       { path: "players", element: <div>Players</div> },
       { path: "players/:id", element: <div>Player</div> },
     ],
-  },
-  {
-    path: "auth",
-    element: (
-      <Auth
-        supabaseClient={supabaseClient}
-        appearance={{ theme: ThemeSupa }}
-        providers={[]}
-      />
-    ),
   },
 ]);
 
