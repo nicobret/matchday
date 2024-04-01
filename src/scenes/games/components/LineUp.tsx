@@ -64,29 +64,21 @@ function EditLineUp({
 
   return (
     <DndContext onDragEnd={handleDrop}>
-      <div className="grid grid-cols-3 gap-4">
+      <div className="grid md:grid-cols-3 gap-4">
         <Team
-          label="Disponibles"
+          label="Disponible"
           id="none"
           players={players.filter((p) => p.team === null)}
         />
         <Team
-          label={
-            <>
-              <span>Domicile</span>
-              <Shirt className="h-5 w-5  text-yellow-300 inline-block ml-2" />
-            </>
-          }
+          label="Domicile"
+          icon={<Shirt className="h-5 w-5 text-yellow-300 inline-block ml-2" />}
           id="home"
           players={players.filter((p) => p.team === 0)}
         />
         <Team
-          label={
-            <>
-              <span>Visiteurs</span>
-              <Shirt className="h-5 w-5  text-red-400 inline-block ml-2" />
-            </>
-          }
+          label="Visiteurs"
+          icon={<Shirt className="h-5 w-5 text-red-400 inline-block ml-2" />}
           id="away"
           players={players.filter((p) => p.team === 1)}
         />
@@ -98,21 +90,26 @@ function EditLineUp({
 function Team({
   label,
   id,
+  icon,
   players,
 }: {
-  label: string | JSX.Element;
-  id: String;
+  label: string;
+  id: string;
+  icon?: JSX.Element;
   players: gamePlayer[];
 }) {
   const { isOver, setNodeRef } = useDroppable({ id: id as string });
   return (
     <div
       ref={setNodeRef}
-      className={`border-dashed border-2 border-foreground rounded-lg p-2 text-center ${
-        isOver ? "bg-accent" : "bg-card-background"
+      className={`border-dashed border-2 bg-card-background rounded-lg p-3 min-h-24 ${
+        isOver ? "border-primary" : "border-input"
       }`}
     >
-      <p>{label}</p>
+      <div className="flex items-start justify-between">
+        <p>{label}</p>
+        {icon}
+      </div>
       <div className="mt-2 grid gap-1">
         {players.map((p) => (
           <Draggable key={p.id} player={p} />
@@ -138,7 +135,7 @@ function Draggable({ player }: { player: gamePlayer }) {
       {...attributes}
       {...listeners}
       style={style}
-      className="flex gap-2 items-center bg-foreground text-background rounded-lg p-1 text-left cursor-grab active:shadow-lg active:cursor-grabbing"
+      className="flex gap-2 items-center bg-muted rounded-lg p-2 text-left cursor-grab active:shadow-lg active:cursor-grabbing touch-none"
     >
       <Grip className="h-4 w-4" />
       {player.profile?.firstname}
