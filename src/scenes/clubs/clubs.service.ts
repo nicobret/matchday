@@ -42,3 +42,10 @@ export type clubSummary = {
 export function userIsInClub(user: any, club: clubType) {
   return club.members.map((m) => m.id).includes(user.id);
 }
+
+export function userIsAdmin(user: any, club: clubType) {
+  return club.members
+    .filter((m) => m.role === "admin")
+    .map((m) => m.id)
+    .includes(user.id);
+}

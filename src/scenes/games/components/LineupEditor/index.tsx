@@ -4,6 +4,8 @@ import { DndContext } from "@dnd-kit/core";
 import { Shirt } from "lucide-react";
 import Team from "./Team";
 
+const teams = { none: null, home: 0, away: 1 };
+
 export default function LineupEditor({
   players,
   setPlayers,
@@ -12,16 +14,10 @@ export default function LineupEditor({
   setPlayers: React.Dispatch<React.SetStateAction<gamePlayer[]>>;
 }) {
   async function handleDrop(event) {
-    const teams = {
-      none: null,
-      home: 0,
-      away: 1,
-    };
     const team = teams[event.over.id];
-    const newArr = players.map((p) =>
-      p.id === event.active.id ? { ...p, team } : p
+    setPlayers(
+      players.map((p) => (p.id === event.active.id ? { ...p, team } : p))
     );
-    setPlayers(newArr);
     const { error } = await supabaseClient
       .from("game_registrations")
       .update({ team })
@@ -37,6 +33,7 @@ export default function LineupEditor({
       <div className="grid md:grid-cols-3 gap-4">
         <Team
           label="Disponible"
+          icon={<Shirt className="h-5 w-5 text-muted inline-block ml-2" />}
           id="none"
           players={players.filter((p) => p.team === null)}
         />

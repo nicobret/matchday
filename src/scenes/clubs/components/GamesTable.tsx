@@ -6,10 +6,10 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { gameSummary } from "@/scenes/games/games.service";
 import { Link } from "react-router-dom";
+import { Tables } from "types/supabase";
 
-export default function GamesTable({ games }: { games: gameSummary[] }) {
+export default function GamesTable({ games }: { games: Tables<"games">[] }) {
   return (
     <Table className="border">
       <TableHeader>
@@ -17,9 +17,6 @@ export default function GamesTable({ games }: { games: gameSummary[] }) {
           <TableHead>#</TableHead>
           <TableHead>Date</TableHead>
           <TableHead>Score</TableHead>
-          {games.some((g) => g.opponent?.id) && (
-            <TableHead>Adversaire</TableHead>
-          )}
         </TableRow>
       </TableHeader>
       <TableBody>
@@ -41,16 +38,6 @@ export default function GamesTable({ games }: { games: gameSummary[] }) {
                 ? game.score[0].toString() + " - " + game.score[1].toString()
                 : "N/A"}
             </TableCell>
-            {game.opponent?.id && (
-              <TableCell>
-                <Link
-                  to={`/clubs/${game.opponent.id}`}
-                  className="underline underline-offset-2 hover:text-primary"
-                >
-                  {game.opponent.name}
-                </Link>
-              </TableCell>
-            )}
           </TableRow>
         ))}
       </TableBody>
