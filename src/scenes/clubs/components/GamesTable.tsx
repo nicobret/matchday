@@ -1,3 +1,4 @@
+import { buttonVariants } from "@/components/ui/button";
 import {
   Table,
   TableBody,
@@ -6,6 +7,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { ArrowRight } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Tables } from "types/supabase";
 
@@ -14,22 +16,14 @@ export default function GamesTable({ games }: { games: Tables<"games">[] }) {
     <Table className="border">
       <TableHeader>
         <TableRow>
-          <TableHead>#</TableHead>
           <TableHead>Date</TableHead>
           <TableHead>Score</TableHead>
+          <TableHead>Actions</TableHead>
         </TableRow>
       </TableHeader>
       <TableBody>
         {games.map((game) => (
           <TableRow key={game.id}>
-            <TableCell>
-              <Link
-                to={`/games/${game.id}`}
-                className="underline underline-offset-2 hover:text-primary"
-              >
-                Match #{game.id}
-              </Link>
-            </TableCell>
             <TableCell>
               {new Date(game.date).toLocaleDateString("fr-FR")}
             </TableCell>
@@ -37,6 +31,15 @@ export default function GamesTable({ games }: { games: Tables<"games">[] }) {
               {game.score && game.score.length === 2
                 ? game.score[0].toString() + " - " + game.score[1].toString()
                 : "N/A"}
+            </TableCell>
+            <TableCell>
+              <Link
+                to={`/games/${game.id}`}
+                className={buttonVariants({ variant: "secondary" }) + "gap-2"}
+              >
+                Voir
+                <ArrowRight className="w-5 h-5 ml-2" />
+              </Link>
             </TableCell>
           </TableRow>
         ))}

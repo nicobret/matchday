@@ -1,7 +1,7 @@
 import { useEffect } from "react";
-import { Link, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import { useClubs } from "./useClubs";
-import { Check, ChevronRight, ClipboardSignature } from "lucide-react";
+import { Check, ClipboardSignature } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import useStore from "@/utils/zustand";
 import ClubHistory from "./components/ClubHistory";
@@ -9,6 +9,7 @@ import ClubMembers from "./components/ClubMembers";
 import ClubInfo from "./components/ClubInfo";
 import UpcomingGames from "./components/UpcomingGames";
 import { userIsInClub } from "./clubs.service";
+import Breadcrumbs from "@/components/Breadcrumbs";
 
 export default function View() {
   const { session } = useStore();
@@ -30,11 +31,12 @@ export default function View() {
 
   return (
     <div className="p-4">
-      <div className="flex items-center gap-1 text-sm text-muted-foreground">
-        <Link to="/clubs">Clubs</Link>
-        <ChevronRight className="w-4 h-4" />
-        <Link to="#">{club.name}</Link>
-      </div>
+      <Breadcrumbs
+        links={[
+          { label: "Clubs", link: "/clubs" },
+          { label: club.name, link: "#" },
+        ]}
+      />
 
       <div className="flex gap-4 items-end scroll-m-20 border-b pb-3 mt-6 mb-2">
         <h2 className="text-3xl font-semibold tracking-tight">{club.name}</h2>
@@ -63,8 +65,8 @@ export default function View() {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 py-2">
         <ClubInfo club={club} />
         <UpcomingGames club={club} />
-        <ClubMembers club={club} />
         <ClubHistory clubId={club.id} />
+        <ClubMembers club={club} />
       </div>
     </div>
   );

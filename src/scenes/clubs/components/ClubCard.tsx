@@ -15,7 +15,7 @@ export default function ClubCard(club: clubSummary) {
     <Card className="w-full sm:w-72">
       <CardHeader>
         <CardTitle>
-          <Link to={club.id.toString()}>{club.name}</Link>
+          <Link to={"/clubs/" + club.id.toString()}>{club.name}</Link>
         </CardTitle>
       </CardHeader>
       <CardContent>
@@ -26,7 +26,7 @@ export default function ClubCard(club: clubSummary) {
         </CardDescription>
       </CardContent>
       <CardFooter className="flex gap-4">
-        <Link to={club.id.toString()}>
+        <Link to={"/clubs/" + club.id.toString()}>
           <Button variant="secondary">Voir</Button>
         </Link>
       </CardFooter>

@@ -8,9 +8,13 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { ArrowRight, Calendar, MapPin, Users } from "lucide-react";
+import { ArrowRight, MapPin, Users } from "lucide-react";
+import { buttonVariants } from "@/components/ui/button";
 
 export default function GameCard({ game }: { game: gameSummary }) {
+  const status = game.player_count[0].count === 10 ? "Complet" : "Incomplet";
+  const variant = status === "Complet" ? "default" : "outline";
+
   return (
     <Card className="bg-accent">
       <CardHeader>
@@ -19,37 +23,30 @@ export default function GameCard({ game }: { game: gameSummary }) {
             to={"/games/" + game.id.toString()}
             className="hover:underline underline-offset-2 decoration-2"
           >
-            Match #{game.id}
+            {new Date(game.date).toLocaleDateString("fr-FR", {
+              dateStyle: "long",
+            })}
           </Link>
         </CardTitle>
       </CardHeader>
 
-      <CardContent className="space-y-2 text-sm pb-0">
-        <div className="flex items-center gap-3">
-          <Calendar className="w-4 h-4" />
-          <p className="col-span-5">
-            {new Date(game.date).toLocaleDateString()}
-          </p>
-        </div>
-
+      <CardContent>
         <div className="flex items-center gap-3">
           <MapPin className="w-4 h-4" />
-          <p className="col-span-5">IND</p>
+          <p>IND</p>
         </div>
 
-        <div className="flex items-center gap-3">
-          <Users className="w-4 h-4" />
-          <p className="col-span-5">{game.player_count[0].count} / 10</p>
-          <Badge>{game.status}</Badge>
+        <div className="flex items-center gap-3 flex-wrap">
+          <Users className="w-4 h-4 flex-none" />
+          <p>{game.player_count[0].count} / 10</p>
+          <Badge variant={variant}>{status}</Badge>
         </div>
       </CardContent>
 
-      <CardFooter>
-        <Link
-          to={"/games/" + game.id.toString()}
-          className="p-1 rounded text-right ml-auto text-primary hover:bg-primary hover:text-primary-foreground"
-        >
-          <ArrowRight className="w-5 h-5" />
+      <CardFooter className="flex justify-end gap-2">
+        <Link to={"/games/" + game.id.toString()} className={buttonVariants()}>
+          Voir
+          <ArrowRight className="w-5 h-5 ml-2" />
         </Link>
       </CardFooter>
     </Card>

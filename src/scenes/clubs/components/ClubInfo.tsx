@@ -61,7 +61,7 @@ export default function ClubInfo({ club }: { club: clubType }) {
       <CardFooter className="mt-auto flex justify-end">
         {session && userIsAdmin(session.user, club) && (
           <Link
-            className={buttonVariants({ variant: "outline" })}
+            className={buttonVariants({ variant: "secondary" })}
             to={`/clubs/${club.id}/edit`}
           >
             <Pencil className="h-4 w-4 mr-2" />

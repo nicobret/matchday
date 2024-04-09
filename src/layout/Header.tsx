@@ -18,9 +18,9 @@ export default function Header() {
       <div className="flex items-center gap-2">
         <NavLink to="/">
           <div className="flex items-center gap-4 p-2">
-            <Trophy />
-            <h1 className="hidden md:block text-2xl font-extrabold tracking-tight">
-              Matchday
+            <Trophy className="text-primary" />
+            <h1 className="hidden md:block text-2xl font-extrabold tracking-tight text-primary">
+              Matchday_
             </h1>
           </div>
         </NavLink>

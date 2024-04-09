@@ -5,7 +5,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Eye, Plus, Trophy } from "lucide-react";
+import { Plus, Trophy } from "lucide-react";
 import GamesCarousel from "./GamesCarousel";
 import { Link } from "react-router-dom";
 import { clubType, userIsAdmin } from "../clubs.service";
@@ -20,10 +20,10 @@ export default function UpcomingGames({ club }: { club: clubType }) {
     .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
 
   return (
-    <Card className="md:col-span-2 bg-primary">
+    <Card className="md:col-span-2 border-primary">
       <CardHeader>
         <CardTitle>
-          <div className="flex gap-3 items-center text-primary-foreground">
+          <div className="flex gap-3 items-center">
             <Trophy className="h-5 w-5" />
             Matches à venir
           </div>
@@ -41,21 +41,13 @@ export default function UpcomingGames({ club }: { club: clubType }) {
       </CardContent>
 
       <CardFooter className="flex justify-end gap-2">
-        <Link
-          to={`/clubs/${club?.id}/games`}
-          className={buttonVariants({ variant: "secondary" })}
-        >
-          <Eye className="h-5 w-5 mr-2" />
-          Voir tous les matchs
-        </Link>
-
         {session && club && userIsAdmin(session.user, club) && (
           <Link
             to={`/games/create?clubId=${club.id}`}
             className={buttonVariants({ variant: "secondary" })}
           >
             <Plus className="h-5 w-5 mr-2" />
-            Créer un match
+            Créer
           </Link>
         )}
       </CardFooter>

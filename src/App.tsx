@@ -5,7 +5,7 @@ import supabaseClient from "./utils/supabase";
 import useStore from "./utils/zustand";
 
 import Layout from "./layout/Layout.tsx";
-import Dashboard from "./scenes/dashboard/Dashboard.tsx";
+// import Dashboard from "./scenes/dashboard/Dashboard.tsx";
 import ClubList from "./scenes/clubs/List.tsx";
 import CreateClub from "./scenes/clubs/Create.tsx";
 import CreateGame from "./scenes/games/Create.tsx";
@@ -17,7 +17,7 @@ const router = createBrowserRouter([
     path: "/",
     element: <Layout />,
     children: [
-      { index: true, element: <Dashboard /> },
+      { index: true, element: <ClubList /> },
 
       { path: "clubs", element: <ClubList /> },
       { path: "clubs/:id", element: <ViewClub /> },

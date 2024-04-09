@@ -38,7 +38,7 @@ export default function ClubHistory({ clubId }: { clubId: number }) {
   }, [clubId, year]);
 
   return (
-    <Card className="md:col-span-2">
+    <Card className="">
       <CardHeader>
         <CardTitle>
           <div className="flex items-center justify-between">
@@ -47,16 +47,18 @@ export default function ClubHistory({ clubId }: { clubId: number }) {
               Historique
             </div>
 
-            <Select onValueChange={setYear} defaultValue={year}>
-              <SelectTrigger className="w-[180px] bg-red-400 m-0">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="2024">2024</SelectItem>
-                <SelectItem value="2023">2023</SelectItem>
-                <SelectItem value="2022">2022</SelectItem>
-              </SelectContent>
-            </Select>
+            <div>
+              <Select onValueChange={setYear} defaultValue={year}>
+                <SelectTrigger className="w-[180px">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="2024">2024</SelectItem>
+                  <SelectItem value="2023">2023</SelectItem>
+                  <SelectItem value="2022">2022</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
           </div>
         </CardTitle>
       </CardHeader>
