@@ -3,10 +3,11 @@ import { Link } from "react-router-dom";
 import useStore from "../../utils/zustand";
 import { useClubs } from "./useClubs";
 import ClubCard from "./components/ClubCard";
-import { ChevronRight, Plus } from "lucide-react";
+import { Plus } from "lucide-react";
 import { clubSummary } from "./clubs.service";
 import Container from "@/layout/Container";
 import { buttonVariants } from "@/components/ui/button";
+import Breadcrumbs from "@/components/Breadcrumbs";
 
 export default function List() {
   const [loading, setLoading] = useState(false);
@@ -30,6 +31,14 @@ export default function List() {
 
   const { session } = useStore();
 
+  const myClubs = clubs?.filter((c) =>
+    c.members.some((m) => m.id === session?.user.id)
+  );
+
+  const notMyClubs = clubs?.filter(
+    (c) => !c.members.some((m) => m.id === session?.user.id)
+  );
+
   if (loading)
     return <p className="text-center animate-pulse">Chargement...</p>;
 
@@ -37,15 +46,19 @@ export default function List() {
 
   return (
     <Container>
-      <div className="flex items-center gap-1 text-sm text-gray-500">
-        <Link to="/clubs">
-          <p>Clubs</p>
-        </Link>
-        <ChevronRight className="w-4 h-4" />
-        <Link to="#">
-          <p>Liste des clubs</p>
-        </Link>
-      </div>
+      <Breadcrumbs links={[{ label: "Liste des clubs", link: "#" }]} />
+
+      {session && (
+        <>
+          <h2 className="scroll-m-20 border-b pb-2 text-3xl font-semibold tracking-tight mt-6 mb-4">
+            Mes clubs
+          </h2>
+
+          <div className="flex flex-wrap gap-6">
+            {myClubs?.map((c) => <ClubCard key={c.id} {...c} />)}
+          </div>
+        </>
+      )}
 
       <h2 className="scroll-m-20 border-b pb-2 text-3xl font-semibold tracking-tight mt-6">
         Trouver un club
@@ -59,7 +72,7 @@ export default function List() {
       )}
 
       <div className="flex flex-wrap gap-6">
-        {clubs
+        {notMyClubs
           .sort(
             (a, b) =>
               new Date(b.created_at).getTime() -

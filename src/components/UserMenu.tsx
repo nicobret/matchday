@@ -13,6 +13,7 @@ import { UserCircle } from "lucide-react";
 import { Auth } from "@supabase/auth-ui-react";
 import { ThemeSupa } from "@supabase/auth-ui-shared";
 import { Button } from "./ui/button";
+import { ModeToggle } from "./mode-toggle";
 
 export function UserMenu() {
   const { session, setSession } = useStore();
@@ -54,6 +55,8 @@ export function UserMenu() {
             />
           </SheetHeader>
         )}
+        <br />
+        <ModeToggle />
       </SheetContent>
     </Sheet>
   );

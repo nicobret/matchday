@@ -20,7 +20,7 @@ export default function UpcomingGames({ club }: { club: clubType }) {
     .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
 
   return (
-    <Card className="md:col-span-2 border-primary">
+    <Card className="md:col-span-2">
       <CardHeader>
         <CardTitle>
           <div className="flex gap-3 items-center">

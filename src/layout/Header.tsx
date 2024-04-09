@@ -1,6 +1,5 @@
 import { Link, NavLink } from "react-router-dom";
 import { Trophy } from "lucide-react";
-import { ModeToggle } from "@/components/mode-toggle";
 import {
   NavigationMenu,
   NavigationMenuContent,
@@ -50,23 +49,11 @@ export default function Header() {
                 </NavigationMenuLink>
               </NavigationMenuContent>
             </NavigationMenuItem>
-
-            <NavigationMenuItem>
-              <NavigationMenuLink
-                asChild
-                className={navigationMenuTriggerStyle()}
-              >
-                <Link to="/my-club">Mon club</Link>
-              </NavigationMenuLink>
-            </NavigationMenuItem>
           </NavigationMenuList>
         </NavigationMenu>
       </div>
 
-      <div className="flex items-center gap-2">
-        <ModeToggle />
-        <UserMenu />
-      </div>
+      <UserMenu />
     </header>
   );
 }

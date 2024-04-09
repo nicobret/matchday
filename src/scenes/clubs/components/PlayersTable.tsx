@@ -16,20 +16,16 @@ export default function PlayersTable({ players }: { players: clubMember[] }) {
     <Table className="border">
       <TableHeader>
         <TableRow>
-          <TableHead>Prénom</TableHead>
           <TableHead>Nom</TableHead>
-          <TableHead>Inscription</TableHead>
-          <TableHead>Role</TableHead>
+          <TableHead>Rôle</TableHead>
           <TableHead>Actions</TableHead>
         </TableRow>
       </TableHeader>
       <TableBody>
         {players.map((player) => (
           <TableRow key={player.id}>
-            <TableCell>{player.profile.firstname}</TableCell>
-            <TableCell>{player.profile.lastname}</TableCell>
             <TableCell>
-              {new Date(player.created_at).toLocaleDateString("fr-FR")}
+              {player.profile.firstname} {player.profile.lastname}
             </TableCell>
             <TableCell>{player.role}</TableCell>
             <TableCell>

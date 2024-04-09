@@ -69,65 +69,93 @@ const CreateClub = () => {
         {id ? "Modifier mon club" : "Créer un club"}
       </h2>
 
-      <form onSubmit={onSubmit}>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 py-2">
-          <Card>
-            <CardHeader>
-              <CardTitle>Informations</CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="grid w-full max-w-sm items-center gap-2">
-                <Label htmlFor="clubname">Nom du club</Label>
-                <Input
-                  type="text"
-                  id="clubname"
-                  placeholder="Le club des champions"
-                  value={formData.name}
-                  onChange={(e) =>
-                    setFormData({ ...formData, name: e.target.value })
-                  }
-                />
-              </div>
+      <form onSubmit={onSubmit} className="grid md:grid-cols-2 gap-4 mt-4">
+        <Card>
+          <CardHeader>
+            <CardTitle>
+              <h2 className="scroll-m-20 border-b pb-2 text-3xl font-semibold tracking-tight first:mt-0">
+                Informations
+              </h2>
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="grid w-full items-center gap-2">
+              <Label htmlFor="clubname">Nom du club</Label>
+              <Input
+                type="text"
+                id="clubname"
+                placeholder="Le club des champions"
+                value={formData.name}
+                onChange={(e) =>
+                  setFormData({ ...formData, name: e.target.value })
+                }
+              />
+            </div>
 
-              <div className="grid w-full max-w-sm items-center gap-2">
-                <Label htmlFor="clubdescription">Description</Label>
-                <Textarea
-                  id="clubdescription"
-                  placeholder="Le meilleur club de tous les temps."
-                  value={formData.description}
-                  onChange={(e) =>
-                    setFormData({ ...formData, description: e.target.value })
-                  }
-                  rows={5}
-                />
-              </div>
+            <div className="grid w-full items-center gap-2 mt-4">
+              <Label htmlFor="clubdescription">Description</Label>
+              <Textarea
+                id="clubdescription"
+                placeholder="Le meilleur club de tous les temps."
+                value={formData.description}
+                onChange={(e) =>
+                  setFormData({ ...formData, description: e.target.value })
+                }
+                rows={5}
+              />
+            </div>
 
-              <div className="grid w-full max-w-sm items-center gap-2">
-                <Label htmlFor="clubdescription">Logo</Label>
-                <Input type="file" id="clublogo" />
-              </div>
-            </CardContent>
-          </Card>
+            <div className="grid w-full items-center gap-2 mt-4">
+              <Label htmlFor="clubdescription">Logo</Label>
+              <Input type="file" id="clublogo" />
+            </div>
+          </CardContent>
+        </Card>
 
-          <Card>
-            <CardHeader>
-              <CardTitle>Adresse</CardTitle>
-            </CardHeader>
+        <Card className="">
+          <CardHeader>
+            <h2 className="scroll-m-20 border-b pb-2 text-3xl font-semibold tracking-tight first:mt-0">
+              Adresse
+            </h2>
+          </CardHeader>
 
-            <CardContent className="space-y-4">
-              <div className="grid w-full max-w-sm items-center gap-2">
-                <Label htmlFor="address">Numéro et rue</Label>
-                <Input
-                  type="text"
-                  id="address"
-                  placeholder="Rue du club 1, 1000 Bruxelles"
-                  value={formData.address}
-                  onChange={(e) =>
-                    setFormData({ ...formData, address: e.target.value })
-                  }
-                />
-              </div>
+          <CardContent className="">
+            <div className="grid w-full items-center gap-2">
+              <Label htmlFor="country">Pays</Label>
+              <Select
+                onValueChange={(value) =>
+                  setFormData({ ...formData, country: value })
+                }
+                value={formData.country}
+                defaultValue="France"
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Select a verified email to display" />
+                </SelectTrigger>
+                <SelectContent>
+                  {countryList.map((country) => (
+                    <SelectItem key={country} value={country}>
+                      {country}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
 
+            <div className="grid w-full items-center gap-2 mt-4">
+              <Label htmlFor="address">Numéro et rue</Label>
+              <Input
+                type="text"
+                id="address"
+                placeholder="Rue du club 1, 1000 Bruxelles"
+                value={formData.address}
+                onChange={(e) =>
+                  setFormData({ ...formData, address: e.target.value })
+                }
+              />
+            </div>
+
+            <div className="grid md:grid-cols-2 w-full gap-4 mt-4">
               <div className="grid w-full max-w-sm items-center gap-2">
                 <Label htmlFor="postcode">Code Postal</Label>
                 <Input
@@ -153,39 +181,17 @@ const CreateClub = () => {
                   }
                 />
               </div>
+            </div>
+          </CardContent>
+        </Card>
 
-              <div className="grid w-full max-w-sm items-center gap-2">
-                <Label htmlFor="country">Pays</Label>
-                <Select
-                  onValueChange={(value) =>
-                    setFormData({ ...formData, country: value })
-                  }
-                  value={formData.country}
-                  defaultValue="France"
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select a verified email to display" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {countryList.map((country) => (
-                      <SelectItem key={country} value={country}>
-                        {country}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-
-        <div className="flex gap-4 justify-end mt-4">
+        <div className="grid md:grid-cols-2 w-full gap-4">
           <Button type="submit" disabled={!formData.name}>
             <Save className="w-5 h-5 mr-2" />
             {id ? "Enregistrer" : "Créer"}
           </Button>
           {id && (
-            <Button type="button" variant="destructive" disabled>
+            <Button type="button" variant="secondary" disabled>
               <Trash className="w-5 h-5 mr-2" />
               Supprimer le club
             </Button>

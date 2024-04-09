@@ -38,7 +38,7 @@ export default function ClubHistory({ clubId }: { clubId: number }) {
   }, [clubId, year]);
 
   return (
-    <Card className="">
+    <Card className="md:col-span-2">
       <CardHeader>
         <CardTitle>
           <div className="flex items-center justify-between">

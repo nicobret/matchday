@@ -12,7 +12,7 @@ import { Button } from "@/components/ui/button";
 
 export default function ClubMembers({ club }: { club: clubType }) {
   return (
-    <Card className="md:col-span-2">
+    <Card>
       <CardHeader>
         <CardTitle>
           <div className="flex gap-3 items-center">

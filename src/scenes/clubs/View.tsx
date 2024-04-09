@@ -65,8 +65,8 @@ export default function View() {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 py-2">
         <ClubInfo club={club} />
         <UpcomingGames club={club} />
-        <ClubHistory clubId={club.id} />
         <ClubMembers club={club} />
+        <ClubHistory clubId={club.id} />
       </div>
     </div>
   );

@@ -21,7 +21,7 @@ export default function GameCard({ game }: { game: gameSummary }) {
         <CardTitle>
           <Link
             to={"/games/" + game.id.toString()}
-            className="hover:underline underline-offset-2 decoration-2"
+            className="hover:underline underline-offset-4 decoration-2"
           >
             {new Date(game.date).toLocaleDateString("fr-FR", {
               dateStyle: "long",
@@ -44,7 +44,10 @@ export default function GameCard({ game }: { game: gameSummary }) {
       </CardContent>
 
       <CardFooter className="flex justify-end gap-2">
-        <Link to={"/games/" + game.id.toString()} className={buttonVariants()}>
+        <Link
+          to={"/games/" + game.id.toString()}
+          className={`${buttonVariants()} w-full`}
+        >
           Voir
           <ArrowRight className="w-5 h-5 ml-2" />
         </Link>
