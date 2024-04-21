@@ -1,9 +1,10 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { History as HistoryPicto } from "lucide-react";
-import GamesTable from "./GamesTable";
-import supabaseClient from "@/utils/supabase";
 import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
+import supabaseClient from "@/utils/supabase";
 import { Tables } from "types/supabase";
+
+import { buttonVariants } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Select,
   SelectContent,
@@ -11,6 +12,15 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { ArrowRight, History as HistoryPicto } from "lucide-react";
 
 export default function ClubHistory({ clubId }: { clubId: number }) {
   const [loading, setLoading] = useState(false);
@@ -67,7 +77,42 @@ export default function ClubHistory({ clubId }: { clubId: number }) {
         {loading ? (
           <p className="text-center">Chargement...</p>
         ) : games?.length ? (
-          <GamesTable games={games} />
+          <Table className="border">
+            <TableHeader>
+              <TableRow>
+                <TableHead>Date</TableHead>
+                <TableHead>Score</TableHead>
+                <TableHead>Actions</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {games.map((game) => (
+                <TableRow key={game.id}>
+                  <TableCell>
+                    {new Date(game.date).toLocaleDateString("fr-FR")}
+                  </TableCell>
+                  <TableCell>
+                    {game.score && game.score.length === 2
+                      ? game.score[0].toString() +
+                        " - " +
+                        game.score[1].toString()
+                      : "N/A"}
+                  </TableCell>
+                  <TableCell>
+                    <Link
+                      to={`/games/${game.id}`}
+                      className={
+                        buttonVariants({ variant: "secondary" }) + "gap-2"
+                      }
+                    >
+                      Voir
+                      <ArrowRight className="w-5 h-5 ml-2" />
+                    </Link>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
         ) : (
           <p className="text-center">Aucun match joué.</p>
         )}

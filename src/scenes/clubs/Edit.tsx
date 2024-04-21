@@ -111,6 +111,19 @@ export default function EditClub() {
     }
   }
 
+  // async function deleteClub(club_id: number) {
+  //   if (window.confirm("Voulez-vous vraiment supprimer ce club ?")) {
+  //     const { error } = await supabaseClient
+  //       .from("clubs")
+  //       .delete()
+  //       .eq("id", club_id)
+  //       .select();
+  //     if (error) {
+  //       console.error(error);
+  //     }
+  //   }
+  // }
+
   useEffect(() => {
     if (id) getClub(id);
   }, [id]);

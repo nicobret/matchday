@@ -46,6 +46,4 @@ export default function GamesTable({ games }: { games: Tables<"games">[] }) {
       </TableBody>
     </Table>
   );
-
-  return <p>Aucun match.</p>;
 }

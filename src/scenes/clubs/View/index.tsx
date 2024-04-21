@@ -1,12 +1,12 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import { Check, ClipboardSignature } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import useStore from "@/utils/zustand";
-
-import { Club, userIsInClub } from "../clubs.service";
-import Breadcrumbs from "@/components/Breadcrumbs";
 import supabaseClient from "@/utils/supabase";
+import { Club, userIsInClub } from "../clubs.service";
+
+import { Check, ClipboardSignature } from "lucide-react";
+import Breadcrumbs from "@/components/Breadcrumbs";
+import { Button } from "@/components/ui/button";
 import ClubInfo from "./components/ClubInfo";
 import UpcomingGames from "./components/UpcomingGames";
 import ClubMembers from "./components/ClubMembers";
@@ -36,68 +36,6 @@ export default function View() {
       setLoading(false);
     }
   }
-
-  // async function createClub({
-  //   name,
-  //   description,
-  //   address,
-  //   postcode,
-  //   city,
-  //   country,
-  // }: {
-  //   name: string;
-  //   description: string;
-  //   address: string;
-  //   postcode: string;
-  //   city: string;
-  //   country: string;
-  // }) {
-  //   setLoading(true);
-  //   if (!user) {
-  //     console.error("User must be logged in.");
-  //     return;
-  //   }
-
-  //   const { data, error } = await supabaseClient
-  //     .from("clubs")
-  //     .insert({
-  //       creator_id: user.id,
-  //       name,
-  //       description,
-  //       address,
-  //       postcode,
-  //       city,
-  //       country,
-  //     })
-  //     .select();
-
-  //   if (error) {
-  //     window.alert("Une erreur est survenue lors de la création du club.");
-  //     console.error(error);
-  //     setLoading(false);
-  //     return;
-  //   }
-
-  //   if (data) {
-  //     window.alert("Club créé avec succès !");
-  //     navigate(`/clubs/${data[0].id}`);
-  //   }
-
-  //   setLoading(false);
-  // }
-
-  // async function deleteClub(club_id: number) {
-  //   if (window.confirm("Voulez-vous vraiment supprimer ce club ?")) {
-  //     const { error } = await supabaseClient
-  //       .from("clubs")
-  //       .delete()
-  //       .eq("id", club_id)
-  //       .select();
-  //     if (error) {
-  //       console.error(error);
-  //     }
-  //   }
-  // }
 
   async function joinClub(club_id: number) {
     try {

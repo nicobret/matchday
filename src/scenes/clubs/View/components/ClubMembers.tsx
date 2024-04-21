@@ -1,3 +1,8 @@
+import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
+import { Tables } from "types/supabase";
+import supabaseClient from "@/utils/supabase";
+
 import {
   Card,
   CardContent,
@@ -5,14 +10,19 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { Button, buttonVariants } from "@/components/ui/button";
+import { ArrowRight } from "lucide-react";
 import { Users } from "lucide-react";
-import PlayersTable from "./PlayersTable";
-import { Button } from "@/components/ui/button";
-import { useEffect, useState } from "react";
-import { Tables } from "types/supabase";
-import supabaseClient from "@/utils/supabase";
 
-export type ClubMember = Tables<"club_enrolments"> & {
+type ClubMember = Tables<"club_enrolments"> & {
   profile: Tables<"users"> | null;
 };
 
@@ -58,7 +68,34 @@ export default function ClubMembers({ clubId }: { clubId: number }) {
         ) : members.length === 0 ? (
           <p className="text-center">Aucun joueur dans ce club.</p>
         ) : (
-          <PlayersTable players={members} />
+          <Table className="border">
+            <TableHeader>
+              <TableRow>
+                <TableHead>Nom</TableHead>
+                <TableHead>Rôle</TableHead>
+                <TableHead>Actions</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {members.map((player) => (
+                <TableRow key={player.id}>
+                  <TableCell>
+                    {player.profile.firstname} {player.profile.lastname}
+                  </TableCell>
+                  <TableCell>{player.role}</TableCell>
+                  <TableCell>
+                    <Link
+                      to={`/players/${player.id}`}
+                      className={buttonVariants({ variant: "secondary" })}
+                    >
+                      Voir
+                      <ArrowRight className="w-5 h-5 ml-2" />
+                    </Link>
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
         )}
       </CardContent>
 
