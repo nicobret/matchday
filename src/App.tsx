@@ -27,6 +27,10 @@ const router = createBrowserRouter([
 
       { path: "players", element: <div>Players</div> },
       { path: "players/:id", element: <div>Player</div> },
+      {
+        path: "*", // 404
+        element: <div className="text-center my-24">404 - Not Found</div>,
+      },
     ],
   },
 ]);
