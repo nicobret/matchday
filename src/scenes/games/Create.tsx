@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { ChevronRight } from "lucide-react";
@@ -6,7 +6,6 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { createGame } from "./games.service";
-import { useClubs } from "../clubs/useClubs";
 import useStore from "@/utils/zustand";
 import {
   Select,
@@ -15,28 +14,58 @@ import {
   SelectTrigger,
 } from "@/components/ui/select";
 import { SelectValue } from "@radix-ui/react-select";
+import { Club, userIsInClub } from "../clubs/clubs.service";
+import { User } from "@supabase/supabase-js";
+import supabaseClient from "@/utils/supabase";
 
 export default function CreateGame() {
   const clubId = new URLSearchParams(window.location.search).get("clubId");
-  const { session } = useStore();
-  const { club } = useClubs(clubId || "");
+  const { user } = useStore();
 
-  if (!club) return <p className="text-center">Aucun club trouvé</p>;
+  const [club, setClub] = useState<Club | null>(null);
 
-  if (!session?.user)
+  async function getClub(id: string) {
+    try {
+      const { data, error } = await supabaseClient
+        .from("clubs")
+        .select("*, members: club_enrolments (*)")
+        .eq("id", id)
+        .single();
+      if (error) {
+        throw new Error(error.message);
+      }
+      if (data) setClub(data);
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
+  useEffect(() => {
+    if (clubId) {
+      getClub(clubId);
+    }
+  }, [clubId]);
+
+  if (!club) {
+    return <p className="text-center">Aucun club trouvé</p>;
+  }
+
+  if (!user) {
     return (
       <p className="text-center">
         Vous devez être connecté pour créer un match
       </p>
     );
+  }
 
-  if (!club.members.map((m: any) => m.id).includes(session.user.id))
+  if (!userIsInClub(user, club)) {
     return <p className="text-center">Vous n'êtes pas membre de ce club</p>;
+  }
 
-  return <GameForm user={session.user} club={club} />;
+  return <GameForm user={user} club={club} />;
 }
 
-function GameForm({ user, club }: { user: any; club: any }) {
+function GameForm({ user, club }: { user: User; club: Club }) {
   const navigate = useNavigate();
   const [date, setDate] = useState("");
   const [time, setTime] = useState("");

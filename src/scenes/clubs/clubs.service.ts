@@ -1,51 +1,17 @@
-import { gameSummary } from "../games/games.service";
-import { clubMember } from "../users/users.service";
+import { User } from "@supabase/supabase-js";
+import { Tables } from "types/supabase";
 
-export type clubType = {
-  id: number;
-  name: string | null;
-  description: string;
-  created_at: Date;
-  members: Array<clubMember>;
-  creator: {
-    id: string;
-    firstname: string;
-    lastname: string;
-    avatar: string;
-    status: string;
-  };
-  games: Array<gameSummary>;
-  address: string;
-  city: string;
-  country: string;
-  postcode: string;
+export type Club = Tables<"clubs"> & {
+  members: Tables<"club_enrolments">[] | null;
 };
 
-export type clubSummary = {
-  id: number;
-  name: string;
-  description: string;
-  created_at: Date;
-  members: Array<{
-    id: string;
-    role: "member" | "admin";
-  }>;
-  creator: {
-    id: string;
-    firstname: string;
-    lastname: string;
-    avatar: string;
-    status: string;
-  };
-};
-
-export function userIsInClub(user: any, club: clubType) {
-  return club.members.map((m) => m.id).includes(user.id);
+export function userIsInClub(user: User, club: Club) {
+  return club.members.map((m) => m.user_id).includes(user.id);
 }
 
-export function userIsAdmin(user: any, club: clubType) {
+export function userIsAdmin(user: User, club: Club) {
   return club.members
     .filter((m) => m.role === "admin")
-    .map((m) => m.id)
+    .map((m) => m.user_id)
     .includes(user.id);
 }

@@ -25,7 +25,7 @@ export type gamePlayer = Tables<"game_registrations"> & {
 
 export default function View() {
   const { id } = useParams();
-  const { session } = useStore();
+  const { user } = useStore();
   const [game, setGame] = useState<Tables<"games">>();
   const [clubs, setClubs] = useState<clubType[]>();
   const [players, setPlayers] = useState<gamePlayer[]>();
@@ -109,7 +109,7 @@ export default function View() {
     getData(parseInt(id));
   }, [id]);
 
-  if (!session || !clubs || !game || !players) {
+  if (!user || !clubs || !game || !players) {
     return <p className="text-center animate_pulse">Chargement...</p>;
   }
 
@@ -118,10 +118,10 @@ export default function View() {
   const userIsInGame = players
     .filter((p) => p.status === "confirmed")
     .map((p) => p.profile?.id)
-    .includes(session.user.id);
+    .includes(user.id);
 
   const userIsInClubs = clubs.map(
-    (c) => c.members?.map((m) => m.id).includes(parseInt(session.user.id))
+    (c) => c.members?.map((m) => m.id).includes(parseInt(user.id))
   );
 
   const userCanJoinGame = userIsInClubs && !hasStarted && !userIsInGame;
@@ -145,7 +145,7 @@ export default function View() {
 
         {userIsInGame && (
           <Button
-            onClick={() => leaveGame(game.id, session.user.id)}
+            onClick={() => leaveGame(game.id, user.id)}
             variant="secondary"
             className="flex gap-2 ml-auto"
           >
@@ -156,7 +156,7 @@ export default function View() {
 
         {userCanJoinGame && (
           <Button
-            onClick={() => joinGame(game.id, session.user.id)}
+            onClick={() => joinGame(game.id, user.id)}
             className="flex gap-2 ml-auto"
           >
             <ClipboardSignature className="h-5 w-5" />

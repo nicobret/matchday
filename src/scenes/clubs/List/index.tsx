@@ -1,61 +1,70 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import useStore from "../../utils/zustand";
-import { useClubs } from "./useClubs";
+import useStore from "../../../utils/zustand";
+import { Club } from "../clubs.service";
 import ClubCard from "./components/ClubCard";
 import { Plus } from "lucide-react";
-import { clubSummary } from "./clubs.service";
 import Container from "@/layout/Container";
 import { buttonVariants } from "@/components/ui/button";
-import Breadcrumbs from "@/components/Breadcrumbs";
+import supabaseClient from "@/utils/supabase";
 
 export default function List() {
+  const { user } = useStore();
   const [loading, setLoading] = useState(false);
-  const [clubs, setClubs] = useState<clubSummary[] | null>(null);
-  const { fetchClubs } = useClubs();
+  const [clubs, setClubs] = useState<Club[]>([]);
 
   async function getClubs() {
-    setLoading(true);
-    const clubs = await fetchClubs();
-    if (!clubs) {
+    try {
+      setLoading(true);
+      const { data, error } = await supabaseClient
+        .from("clubs")
+        .select("*, members: club_enrolments (*)")
+        .order("created_at");
+      if (error) {
+        throw new Error(error.message);
+      }
+      setClubs(data);
+    } catch (error) {
+      console.error(error);
+    } finally {
       setLoading(false);
-      return;
     }
-    setClubs(clubs as unknown as clubSummary[]);
-    setLoading(false);
   }
 
   useEffect(() => {
     getClubs();
   }, []);
 
-  const { session } = useStore();
-
-  const myClubs = clubs?.filter((c) =>
-    c.members.some((m) => m.id === session?.user.id)
+  const myClubs = clubs.filter((c) =>
+    c.members.some((m) => m.user_id === user?.id)
   );
 
-  const notMyClubs = clubs?.filter(
-    (c) => !c.members.some((m) => m.id === session?.user.id)
+  const notMyClubs = clubs.filter(
+    (c) => !c.members.some((m) => m.user_id === user?.id)
   );
 
-  if (loading)
+  if (loading) {
     return <p className="text-center animate-pulse">Chargement...</p>;
+  }
 
-  if (!clubs) return <p className="text-center">Aucun club</p>;
+  if (!clubs) {
+    return <p className="text-center">Aucun club</p>;
+  }
 
   return (
     <Container>
-      <Breadcrumbs links={[{ label: "Liste des clubs", link: "#" }]} />
-
-      {session && (
+      {user && (
         <>
-          <h2 className="scroll-m-20 border-b pb-2 text-3xl font-semibold tracking-tight mt-6 mb-4">
+          <h2 className="scroll-m-20 border-b pb-2 text-3xl font-semibold tracking-tight mb-4">
             Mes clubs
           </h2>
 
           <div className="flex flex-wrap gap-6">
-            {myClubs?.map((c) => <ClubCard key={c.id} {...c} />)}
+            {myClubs.length ? (
+              myClubs.map((club) => <ClubCard key={club.id} club={club} />)
+            ) : (
+              <p className="text-center">Vous n'êtes membre d'aucun club</p>
+            )}
           </div>
         </>
       )}
@@ -64,7 +73,7 @@ export default function List() {
         Trouver un club
       </h2>
 
-      {session && (
+      {user && (
         <Link to="/clubs/create" className={`${buttonVariants()} my-4`}>
           <Plus className="w-5 h-5 mr-2" />
           <p>Créer</p>
@@ -78,8 +87,8 @@ export default function List() {
               new Date(b.created_at).getTime() -
               new Date(a.created_at).getTime()
           )
-          .map((c) => (
-            <ClubCard key={c.id} {...c} />
+          .map((club) => (
+            <ClubCard key={club.id} club={club} />
           ))}
       </div>
     </Container>
