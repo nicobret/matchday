@@ -1,19 +1,14 @@
-import { clubType } from "@/scenes/clubs/clubs.service";
-import { Session } from "@supabase/supabase-js";
+import { User } from "@supabase/supabase-js";
 import { create } from "zustand";
 
 type Store = {
-  session: Session | null;
-  setSession: (session: Session | null) => void;
-  clubs: clubType[] | null;
-  setClubs: (clubs: clubType[] | null) => void;
+  user: User;
+  setUser: (user: User) => void;
 };
 
 const useStore = create<Store>()((set) => ({
-  session: null,
-  setSession: (session) => set({ session: session }),
-  clubs: null,
-  setClubs: (clubs) => set({ clubs: clubs }),
+  user: null,
+  setUser: (user) => set({ user: user }),
 }));
 
 export default useStore;

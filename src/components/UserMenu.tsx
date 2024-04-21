@@ -16,11 +16,11 @@ import { Button } from "./ui/button";
 import { ModeToggle } from "./mode-toggle";
 
 export function UserMenu() {
-  const { session, setSession } = useStore();
+  const { user, setUser } = useStore();
 
   async function logout() {
     await supabaseClient.auth.signOut();
-    setSession(null);
+    setUser(null);
   }
 
   return (
@@ -31,11 +31,11 @@ export function UserMenu() {
         </Button>
       </SheetTrigger>
       <SheetContent>
-        {session ? (
+        {user ? (
           <SheetHeader>
             <SheetTitle>Mon compte</SheetTitle>
             <SheetDescription>
-              <p>Bonjour, {session.user.email}.</p>
+              <p>Bonjour, {user.email}.</p>
               <p>Vous êtes connecté.</p>
             </SheetDescription>
             <Button onClick={logout} variant="outline">

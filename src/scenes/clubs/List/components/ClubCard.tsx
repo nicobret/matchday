@@ -8,14 +8,14 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Link } from "react-router-dom";
-import { clubSummary } from "../clubs.service";
+import { Club } from "../../clubs.service";
 
-export default function ClubCard(club: clubSummary) {
+export default function ClubCard({ club }: { club: Club }) {
   return (
     <Card className="w-full sm:w-72">
       <CardHeader>
         <CardTitle>
-          <Link to={"/clubs/" + club.id.toString()}>{club.name}</Link>
+          <Link to={"/club/" + club.id.toString()}>{club.name}</Link>
         </CardTitle>
       </CardHeader>
       <CardContent>
@@ -26,7 +26,7 @@ export default function ClubCard(club: clubSummary) {
         </CardDescription>
       </CardContent>
       <CardFooter className="flex gap-4">
-        <Link to={"/clubs/" + club.id.toString()}>
+        <Link to={"/club/" + club.id.toString()}>
           <Button variant="secondary">Voir</Button>
         </Link>
       </CardFooter>

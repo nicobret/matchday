@@ -31,18 +31,8 @@ export type gameType = {
   }>;
 };
 
-export type gameSummary = {
-  id: number;
-  date: Date;
-  location: string;
-  status: "draft" | "published" | "canceled" | "finished";
-  created_at: string;
-  player_count: Array<{ count: number }>;
-  score: Array<{ count: number }>;
-  opponent: {
-    id: string;
-    name: string;
-  };
+export type gameSummary = Tables<"games"> & {
+  game_registrations: Tables<"game_registrations">[];
 };
 
 export async function fetchGames() {

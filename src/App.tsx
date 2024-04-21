@@ -5,12 +5,11 @@ import supabaseClient from "./utils/supabase";
 import useStore from "./utils/zustand";
 
 import Layout from "./layout/Layout.tsx";
-// import Dashboard from "./scenes/dashboard/Dashboard.tsx";
-import ClubList from "./scenes/clubs/List.tsx";
-import CreateClub from "./scenes/clubs/Create.tsx";
+import ClubList from "./scenes/clubs/List/index.tsx";
 import CreateGame from "./scenes/games/Create.tsx";
 import ViewGame from "./scenes/games/View.tsx";
-import ViewClub from "./scenes/clubs/View.tsx";
+import ViewClub from "./scenes/clubs/View/index.tsx";
+import EditClub from "./scenes/clubs/Edit.tsx";
 
 const router = createBrowserRouter([
   {
@@ -19,10 +18,8 @@ const router = createBrowserRouter([
     children: [
       { index: true, element: <ClubList /> },
 
-      { path: "clubs", element: <ClubList /> },
-      { path: "clubs/:id", element: <ViewClub /> },
-      { path: "clubs/:id/edit", element: <CreateClub /> },
-      { path: "clubs/create", element: <CreateClub /> },
+      { path: "club/:id", element: <ViewClub /> },
+      { path: "club/:id/edit", element: <EditClub /> },
 
       { path: "games", element: <div>Games</div> },
       { path: "games/:id", element: <ViewGame /> },
@@ -30,32 +27,30 @@ const router = createBrowserRouter([
 
       { path: "players", element: <div>Players</div> },
       { path: "players/:id", element: <div>Player</div> },
+      {
+        path: "*", // 404
+        element: <div className="text-center my-24">404 - Not Found</div>,
+      },
     ],
   },
 ]);
 
 export default function App() {
-  const { session: sessionFromStorage, setSession } = useStore();
-
-  async function getSession() {
-    const res = await supabaseClient.auth.getSession();
-    if (res.error) console.error(res.error);
-    if (!res.data.session) return;
-    setSession(res.data.session);
-  }
+  const { setUser } = useStore();
 
   useEffect(() => {
-    getSession();
-    const {
-      data: { subscription },
-    } = supabaseClient.auth.onAuthStateChange((_event, session) => {
-      const userIdFromSubscription = session?.user?.id;
-      const userIdFromStorage = sessionFromStorage?.user?.id;
-      const shouldUpdate = userIdFromSubscription !== userIdFromStorage;
-      if (shouldUpdate) setSession(session);
-    });
-    return () => subscription.unsubscribe();
-  }, []);
+    async function getUser() {
+      const { data, error } = await supabaseClient.auth.getUser();
+      if (error) {
+        console.error(error);
+        return;
+      }
+      if (data) {
+        setUser(data.user);
+      }
+    }
+    getUser();
+  }, [setUser]);
 
   return <RouterProvider router={router} />;
 }

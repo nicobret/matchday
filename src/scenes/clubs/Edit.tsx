@@ -1,8 +1,11 @@
 import { useEffect, useState } from "react";
-import { Link, useParams } from "react-router-dom";
-import { useClubs } from "./useClubs";
+import { useParams } from "react-router-dom";
+import supabaseClient from "@/utils/supabase";
+import { Club } from "./clubs.service";
+import { countryList } from "@/lib/utils";
+import useStore from "@/utils/zustand";
+
 import { Button } from "@/components/ui/button";
-import { ChevronRight, Save, Trash } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
@@ -13,13 +16,16 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { countryList } from "@/lib/utils";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import Breadcrumbs from "@/components/Breadcrumbs";
+import Container from "@/layout/Container";
+import { Save, Trash } from "lucide-react";
 
-const CreateClub = () => {
-  const { createClub, updateClub } = useClubs();
+export default function EditClub() {
+  const { user } = useStore();
   const { id } = useParams();
-  const { fetchClub } = useClubs();
+  const [club, setClub] = useState<Club>();
+  const [loading, setLoading] = useState(false);
 
   const [formData, setFormData] = useState({
     id: "",
@@ -31,51 +37,115 @@ const CreateClub = () => {
     country: "France",
   });
 
-  async function get() {
-    if (!id) return;
-    const data = await fetchClub(id);
-    if (data) {
-      setFormData({
-        id,
-        name: data.name,
-        description: data.description,
-        address: data.address,
-        postcode: data.postcode,
-        city: data.city,
-        country: data.country,
-      });
+  async function getClub(id: string) {
+    try {
+      setLoading(true);
+      const { data, error } = await supabaseClient
+        .from("clubs")
+        .select("*, members: club_enrolments (*)")
+        .eq("id", parseInt(id))
+        .single();
+
+      if (error) {
+        throw new Error(error.message);
+      }
+
+      if (data) {
+        setClub(data);
+        setFormData({
+          id,
+          name: data.name,
+          description: data.description,
+          address: data.address,
+          postcode: data.postcode,
+          city: data.city,
+          country: data.country,
+        });
+      }
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  async function updateClub({
+    id,
+    name,
+    description,
+    address,
+    postcode,
+    city,
+    country,
+  }: {
+    id: string;
+    name: string;
+    description: string;
+    address: string;
+    postcode: string;
+    city: string;
+    country: string;
+  }) {
+    try {
+      setLoading(true);
+
+      if (!user) {
+        throw new Error("Vous devez être connecté pour modifier un club.");
+      }
+
+      const { error } = await supabaseClient
+        .from("clubs")
+        .update({ name, description, address, postcode, city, country })
+        .eq("id", parseInt(id));
+
+      if (error) {
+        throw new Error(error.message);
+      }
+
+      window.alert("Club modifié avec succès !");
+    } catch (error) {
+      window.alert(error);
+      console.error(error);
+    } finally {
+      setLoading(false);
     }
   }
 
   useEffect(() => {
-    get();
+    if (id) getClub(id);
   }, [id]);
 
   async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     if (id) await updateClub(formData);
-    else await createClub(formData);
+  }
+
+  if (loading) {
+    return <p className="text-center animate_pulse">Chargement...</p>;
+  }
+
+  if (!club) {
+    return <p className="text-center">Club non trouvé</p>;
   }
 
   return (
-    <div className="p-4">
-      <div className="flex items-center gap-1 text-sm text-gray-500">
-        <Link to="/clubs">Clubs</Link>
-        <ChevronRight className="w-4 h-4" />
-        <Link to="#"> {id ? "Modifier mon club" : "Créer un club"}</Link>
-      </div>
+    <Container>
+      <Breadcrumbs
+        links={[
+          { label: club?.name, link: `/club/${id}` },
+          { label: "Modifier", link: "#" },
+        ]}
+      />
 
       <h2 className="scroll-m-20 border-b pb-2 text-3xl font-semibold tracking-tight mt-6 mb-2">
-        {id ? "Modifier mon club" : "Créer un club"}
+        Modifier mon club
       </h2>
 
       <form onSubmit={onSubmit} className="grid md:grid-cols-2 gap-4 mt-4">
         <Card>
           <CardHeader>
-            <CardTitle>
-              <h2 className="scroll-m-20 border-b pb-2 text-3xl font-semibold tracking-tight first:mt-0">
-                Informations
-              </h2>
+            <CardTitle className="scroll-m-20 border-b pb-2 text-3xl font-semibold tracking-tight first:mt-0">
+              Informations
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -188,7 +258,7 @@ const CreateClub = () => {
         <div className="grid md:grid-cols-2 w-full gap-4">
           <Button type="submit" disabled={!formData.name}>
             <Save className="w-5 h-5 mr-2" />
-            {id ? "Enregistrer" : "Créer"}
+            Enregistrer
           </Button>
           {id && (
             <Button type="button" variant="secondary" disabled>
@@ -198,8 +268,6 @@ const CreateClub = () => {
           )}
         </div>
       </form>
-    </div>
+    </Container>
   );
-};
-
-export default CreateClub;
+}

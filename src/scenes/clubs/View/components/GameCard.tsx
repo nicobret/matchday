@@ -12,7 +12,10 @@ import { ArrowRight, MapPin, Users } from "lucide-react";
 import { buttonVariants } from "@/components/ui/button";
 
 export default function GameCard({ game }: { game: gameSummary }) {
-  const status = game.player_count[0].count === 10 ? "Complet" : "Incomplet";
+  const count = game.game_registrations.filter(
+    (e) => e.status === "confirmed"
+  ).length;
+  const status = count === 10 ? "Complet" : "Incomplet";
   const variant = status === "Complet" ? "default" : "outline";
 
   return (
@@ -38,7 +41,7 @@ export default function GameCard({ game }: { game: gameSummary }) {
 
         <div className="flex items-center gap-3 flex-wrap">
           <Users className="w-4 h-4 flex-none" />
-          <p>{game.player_count[0].count} / 10</p>
+          <p>{game.game_registrations.length} / 10</p>
           <Badge variant={variant}>{status}</Badge>
         </div>
       </CardContent>

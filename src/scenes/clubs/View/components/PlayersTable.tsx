@@ -7,11 +7,11 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { clubMember } from "@/scenes/users/users.service";
 import { ArrowRight } from "lucide-react";
 import { Link } from "react-router-dom";
+import { ClubMember } from "./ClubMembers";
 
-export default function PlayersTable({ players }: { players: clubMember[] }) {
+export default function PlayersTable({ players }: { players: ClubMember[] }) {
   return (
     <Table className="border">
       <TableHeader>
