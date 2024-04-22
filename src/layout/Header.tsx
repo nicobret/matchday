@@ -1,14 +1,5 @@
-import { Link, NavLink } from "react-router-dom";
+import { NavLink } from "react-router-dom";
 import { Trophy } from "lucide-react";
-import {
-  NavigationMenu,
-  NavigationMenuContent,
-  NavigationMenuItem,
-  NavigationMenuLink,
-  NavigationMenuList,
-  NavigationMenuTrigger,
-  navigationMenuTriggerStyle,
-} from "@/components/ui/navigation-menu";
 import { UserMenu } from "@/components/UserMenu";
 
 export default function Header() {
@@ -18,39 +9,11 @@ export default function Header() {
         <NavLink to="/">
           <div className="flex items-center gap-4 p-2">
             <Trophy className="text-primary" />
-            <h1 className="hidden md:block text-2xl font-extrabold tracking-tight text-primary">
+            <h1 className="block text-2xl font-extrabold tracking-tight text-primary">
               Matchday_
             </h1>
           </div>
         </NavLink>
-
-        <NavigationMenu>
-          <NavigationMenuList>
-            <NavigationMenuItem>
-              <NavigationMenuTrigger>Explorer</NavigationMenuTrigger>
-              <NavigationMenuContent>
-                <NavigationMenuLink
-                  asChild
-                  className={navigationMenuTriggerStyle()}
-                >
-                  <Link to="clubs">Clubs</Link>
-                </NavigationMenuLink>
-                <NavigationMenuLink
-                  asChild
-                  className={navigationMenuTriggerStyle()}
-                >
-                  <Link to="/games">Matches</Link>
-                </NavigationMenuLink>
-                <NavigationMenuLink
-                  asChild
-                  className={navigationMenuTriggerStyle()}
-                >
-                  <Link to="/players">Joueurs</Link>
-                </NavigationMenuLink>
-              </NavigationMenuContent>
-            </NavigationMenuItem>
-          </NavigationMenuList>
-        </NavigationMenu>
       </div>
 
       <UserMenu />

@@ -7,16 +7,14 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
-import { ArrowRight, MapPin, Users } from "lucide-react";
+import { ArrowRight, CheckCircle, Hourglass, Users } from "lucide-react";
 import { buttonVariants } from "@/components/ui/button";
 
 export default function GameCard({ game }: { game: gameSummary }) {
   const count = game.game_registrations.filter(
     (e) => e.status === "confirmed"
   ).length;
-  const status = count === 10 ? "Complet" : "Incomplet";
-  const variant = status === "Complet" ? "default" : "outline";
+  const isFull = count >= game.total_players;
 
   return (
     <Card className="bg-accent">
@@ -33,17 +31,16 @@ export default function GameCard({ game }: { game: gameSummary }) {
         </CardTitle>
       </CardHeader>
 
-      <CardContent>
-        <div className="flex items-center gap-3">
-          <MapPin className="w-4 h-4" />
-          <p>IND</p>
-        </div>
-
-        <div className="flex items-center gap-3 flex-wrap">
-          <Users className="w-4 h-4 flex-none" />
-          <p>{game.game_registrations.length} / 10</p>
-          <Badge variant={variant}>{status}</Badge>
-        </div>
+      <CardContent className="flex gap-4 items-center">
+        <Users className="w-6 h-6" />
+        <p className="text-2xl">
+          {count} / {game.total_players || 10}
+        </p>
+        {isFull ? (
+          <CheckCircle className="w-6 h-6 text-primary" />
+        ) : (
+          <Hourglass className="w-6 h-6 text-muted-foreground" />
+        )}
       </CardContent>
 
       <CardFooter className="flex justify-end gap-2">

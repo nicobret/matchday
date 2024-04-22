@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import useStore from "@/utils/zustand";
 import { Club, userIsAdmin } from "../../clubs.service";
 import supabaseClient from "@/utils/supabase";
+import { gameSummary } from "@/scenes/games/games.service";
 
 import {
   Card,
@@ -11,10 +12,16 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from "@/components/ui/carousel";
+import GameCard from "./GameCard";
 import { Plus, Trophy } from "lucide-react";
-import GamesCarousel from "./GamesCarousel";
 import { buttonVariants } from "@/components/ui/button";
-import { gameSummary } from "@/scenes/games/games.service";
 
 export default function UpcomingGames({ club }: { club: Club }) {
   const { user } = useStore();
@@ -64,7 +71,17 @@ export default function UpcomingGames({ club }: { club: Club }) {
         {loading ? (
           <p className="text-center">Chargement...</p>
         ) : games.length ? (
-          <GamesCarousel games={games} />
+          <Carousel className="mx-10">
+            <CarouselContent>
+              {games.map((game) => (
+                <CarouselItem key={game.id} className="md:basis-1/3">
+                  <GameCard game={game} />
+                </CarouselItem>
+              ))}
+            </CarouselContent>
+            <CarouselPrevious className="text-gray-500 hover:text-gray-800" />
+            <CarouselNext className="text-gray-500 hover:text-gray-800" />
+          </Carousel>
         ) : (
           <p className="text-center">Aucun match prévu.</p>
         )}
