@@ -3,7 +3,6 @@ import { useParams } from "react-router-dom";
 import supabaseClient from "@/utils/supabase";
 import { Club } from "./clubs.service";
 import { countryList } from "@/lib/utils";
-import useStore from "@/utils/zustand";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -22,7 +21,6 @@ import Container from "@/layout/Container";
 import { Save, Trash } from "lucide-react";
 
 export default function EditClub() {
-  const { user } = useStore();
   const { id } = useParams();
   const [club, setClub] = useState<Club>();
   const [loading, setLoading] = useState(false);
@@ -88,6 +86,10 @@ export default function EditClub() {
   }) {
     try {
       setLoading(true);
+
+      const {
+        data: { user },
+      } = await supabaseClient.auth.getUser();
 
       if (!user) {
         throw new Error("Vous devez être connecté pour modifier un club.");

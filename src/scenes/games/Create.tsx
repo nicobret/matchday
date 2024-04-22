@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { ChevronRight } from "lucide-react";
@@ -6,7 +6,6 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { createGame } from "./games.service";
-import useStore from "@/utils/zustand";
 import {
   Select,
   SelectContent,
@@ -17,15 +16,18 @@ import { SelectValue } from "@radix-ui/react-select";
 import { Club, userIsInClub } from "../clubs/clubs.service";
 import { User } from "@supabase/supabase-js";
 import supabaseClient from "@/utils/supabase";
+import { SessionContext } from "@/App";
 
 export default function CreateGame() {
   const clubId = new URLSearchParams(window.location.search).get("clubId");
-  const { user } = useStore();
+  const { session } = useContext(SessionContext);
 
   const [club, setClub] = useState<Club | null>(null);
+  const [loading, setLoading] = useState(false);
 
   async function getClub(id: string) {
     try {
+      setLoading(true);
       const { data, error } = await supabaseClient
         .from("clubs")
         .select("*, members: club_enrolments (*)")
@@ -37,6 +39,8 @@ export default function CreateGame() {
       if (data) setClub(data);
     } catch (error) {
       console.error(error);
+    } finally {
+      setLoading(false);
     }
   }
 
@@ -46,11 +50,15 @@ export default function CreateGame() {
     }
   }, [clubId]);
 
+  if (loading) {
+    return <p className="text-center">Chargement...</p>;
+  }
+
   if (!club) {
     return <p className="text-center">Aucun club trouvé</p>;
   }
 
-  if (!user) {
+  if (!session?.user) {
     return (
       <p className="text-center">
         Vous devez être connecté pour créer un match
@@ -58,11 +66,11 @@ export default function CreateGame() {
     );
   }
 
-  if (!userIsInClub(user, club)) {
+  if (!userIsInClub(session?.user, club)) {
     return <p className="text-center">Vous n'êtes pas membre de ce club</p>;
   }
 
-  return <GameForm user={user} club={club} />;
+  return <GameForm user={session?.user} club={club} />;
 }
 
 function GameForm({ user, club }: { user: User; club: Club }) {

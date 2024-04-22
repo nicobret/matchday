@@ -20,13 +20,11 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 import { countryList } from "@/lib/utils";
 import supabaseClient from "@/utils/supabase";
-import useStore from "@/utils/zustand";
 import { Plus } from "lucide-react";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 export default function CreateDialog() {
-  const { user } = useStore();
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
     name: "",
@@ -41,6 +39,9 @@ export default function CreateDialog() {
   async function handleSubmit() {
     try {
       setLoading(true);
+      const {
+        data: { user },
+      } = await supabaseClient.auth.getUser();
       if (!user) {
         throw new Error("Vous n'êtes pas connecté");
       }

@@ -1,6 +1,5 @@
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import useStore from "@/utils/zustand";
 import supabaseClient from "@/utils/supabase";
 import { Tables } from "types/supabase";
 
@@ -14,6 +13,7 @@ import Information from "./components/Information";
 import Players from "./components/Players";
 import Result from "./components/Result";
 import LineUp from "./components/LineUp";
+import { SessionContext } from "@/App";
 
 export type clubType = Tables<"clubs"> & {
   members: Tables<"club_enrolments">[] | null;
@@ -25,7 +25,9 @@ export type gamePlayer = Tables<"game_registrations"> & {
 
 export default function View() {
   const { id } = useParams();
-  const { user } = useStore();
+  const {
+    data: { user },
+  } = useContext(SessionContext);
   const [game, setGame] = useState<Tables<"games">>();
   const [clubs, setClubs] = useState<clubType[]>();
   const [players, setPlayers] = useState<gamePlayer[]>();

@@ -8,11 +8,12 @@ import {
 import { Book, Clipboard, MapPin, Pencil, Shield } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Club, userIsAdmin } from "../../clubs.service";
-import useStore from "@/utils/zustand";
 import { buttonVariants } from "@/components/ui/button";
+import { useContext } from "react";
+import { SessionContext } from "@/App";
 
 export default function ClubInfo({ club }: { club: Club }) {
-  const { user } = useStore();
+  const { session } = useContext(SessionContext);
 
   return (
     <Card className="flex flex-col">
@@ -59,7 +60,7 @@ export default function ClubInfo({ club }: { club: Club }) {
       </CardContent>
 
       <CardFooter className="mt-auto flex justify-end">
-        {user && userIsAdmin(user, club) && (
+        {session?.user && userIsAdmin(session?.user, club) && (
           <Link
             className={buttonVariants({ variant: "secondary" })}
             to={`/club/${club.id}/edit`}

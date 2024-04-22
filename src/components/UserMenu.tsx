@@ -1,5 +1,4 @@
 import supabaseClient from "@/utils/supabase";
-import useStore from "@/utils/zustand";
 import {
   Sheet,
   SheetContent,
@@ -14,13 +13,15 @@ import { Auth } from "@supabase/auth-ui-react";
 import { ThemeSupa } from "@supabase/auth-ui-shared";
 import { Button } from "./ui/button";
 import { ModeToggle } from "./mode-toggle";
+import { useContext } from "react";
+import { SessionContext } from "@/App";
 
 export function UserMenu() {
-  const { user, setUser } = useStore();
+  const { session, setSession } = useContext(SessionContext);
 
   async function logout() {
     await supabaseClient.auth.signOut();
-    setUser(null);
+    setSession(null);
   }
 
   return (
@@ -31,11 +32,11 @@ export function UserMenu() {
         </Button>
       </SheetTrigger>
       <SheetContent>
-        {user ? (
+        {session ? (
           <SheetHeader>
             <SheetTitle>Mon compte</SheetTitle>
             <SheetDescription>
-              <p>Bonjour, {user.email}.</p>
+              <p>Bonjour, {session.user.email}.</p>
               <p>Vous êtes connecté.</p>
             </SheetDescription>
             <Button onClick={logout} variant="outline">

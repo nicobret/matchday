@@ -22,7 +22,7 @@ export default function ClubCard({ club }: { club: Club }) {
         <CardDescription>
           {club.members.length} membres
           <br />
-          <p className="text-ellipsis">{club.description}</p>
+          <span className="text-ellipsis">{club.description}</span>
         </CardDescription>
       </CardContent>
       <CardFooter className="flex gap-4">

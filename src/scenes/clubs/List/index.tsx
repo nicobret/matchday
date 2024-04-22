@@ -1,13 +1,13 @@
-import { useEffect, useState } from "react";
-import useStore from "../../../utils/zustand";
+import { useContext, useEffect, useState } from "react";
 import { Club } from "../clubs.service";
 import ClubCard from "./components/ClubCard";
 import Container from "@/layout/Container";
 import supabaseClient from "@/utils/supabase";
 import CreateDialog from "./components/CreateDialog";
+import { SessionContext } from "@/App";
 
 export default function List() {
-  const { user } = useStore();
+  const { session } = useContext(SessionContext);
   const [loading, setLoading] = useState(false);
   const [clubs, setClubs] = useState<Club[]>([]);
 
@@ -34,11 +34,11 @@ export default function List() {
   }, []);
 
   const myClubs = clubs.filter((c) =>
-    c.members.some((m) => m.user_id === user?.id)
+    c.members.some((m) => m.user_id === session?.user?.id)
   );
 
   const notMyClubs = clubs.filter(
-    (c) => !c.members.some((m) => m.user_id === user?.id)
+    (c) => !c.members.some((m) => m.user_id === session?.user?.id)
   );
 
   if (loading) {
@@ -51,7 +51,7 @@ export default function List() {
 
   return (
     <Container>
-      {user && (
+      {session?.user && (
         <>
           <h2 className="scroll-m-20 border-b pb-2 text-3xl font-semibold tracking-tight mb-4">
             Mes clubs
@@ -71,7 +71,7 @@ export default function List() {
         Trouver un club
       </h2>
 
-      {user && <CreateDialog />}
+      {session?.user && <CreateDialog />}
 
       <div className="flex flex-wrap gap-6 mt-4">
         {notMyClubs.map((club) => (

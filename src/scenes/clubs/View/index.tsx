@@ -1,6 +1,5 @@
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import useStore from "@/utils/zustand";
 import supabaseClient from "@/utils/supabase";
 import { Club, userIsInClub } from "../clubs.service";
 
@@ -11,9 +10,10 @@ import ClubInfo from "./components/ClubInfo";
 import UpcomingGames from "./components/UpcomingGames";
 import ClubMembers from "./components/ClubMembers";
 import ClubHistory from "./components/ClubHistory";
+import { SessionContext } from "@/App";
 
 export default function View() {
-  const { user } = useStore();
+  const { session } = useContext(SessionContext);
   const { id } = useParams();
   const [club, setClub] = useState<Club>();
   const [loading, setLoading] = useState(false);
@@ -37,10 +37,10 @@ export default function View() {
     }
   }
 
-  async function joinClub(club_id: number) {
+  async function joinClub() {
     try {
       setLoading(true);
-      if (!user) {
+      if (!session?.user) {
         throw new Error("User must be logged in.");
       }
 
@@ -48,24 +48,24 @@ export default function View() {
         await supabaseClient
           .from("club_enrolments")
           .select("user_id")
-          .eq("club_id", club_id);
+          .eq("club_id", club.id);
       if (club_enrolments_error) {
         throw new Error(club_enrolments_error.message);
       }
-      if (club_enrolments.find((m) => m.user_id === user.id)) {
+      if (club_enrolments.find((m) => m.user_id === session?.user.id)) {
         throw new Error("Vous avez déjà rejoint ce club !");
       }
 
       const { data, error } = await supabaseClient
         .from("club_enrolments")
-        .insert({ club_id, user_id: user.id })
+        .insert({ club_id: club.id, user_id: session?.user.id })
         .select();
       if (error) {
         throw new Error(error.message);
       }
 
       if (data) {
-        await getClub(club_id.toString());
+        await getClub(club.id.toString());
       }
     } catch (error) {
       window.alert(error);
@@ -75,10 +75,10 @@ export default function View() {
     }
   }
 
-  async function leaveClub(club_id: number) {
+  async function leaveClub() {
     try {
       setLoading(true);
-      if (!user) {
+      if (!session?.user) {
         throw new Error("User must be logged in.");
       }
 
@@ -86,14 +86,14 @@ export default function View() {
         const { data, error } = await supabaseClient
           .from("club_enrolments")
           .delete()
-          .eq("club_id", club_id)
+          .eq("club_id", club.id)
           .select();
         if (error) {
           throw new Error(error.message);
         }
 
         if (data) {
-          await getClub(club_id.toString());
+          await getClub(club.id.toString());
         }
       }
     } catch (error) {
@@ -125,10 +125,10 @@ export default function View() {
       <div className="flex gap-4 items-end scroll-m-20 border-b pb-3 mt-6 mb-2">
         <h2 className="text-3xl font-semibold tracking-tight">{club.name}</h2>
 
-        {user &&
-          (userIsInClub(user, club) ? (
+        {session?.user &&
+          (userIsInClub(session.user, club) ? (
             <Button
-              onClick={() => leaveClub(club.id)}
+              onClick={() => leaveClub()}
               variant="secondary"
               className="flex gap-2 ml-auto"
             >
@@ -136,10 +136,7 @@ export default function View() {
               <span className="hidden md:block">Rejoint</span>
             </Button>
           ) : (
-            <Button
-              onClick={() => joinClub(club.id)}
-              className="flex gap-2 ml-auto"
-            >
+            <Button onClick={() => joinClub()} className="flex gap-2 ml-auto">
               <ClipboardSignature className="h-5 w-5" />
               Rejoindre
             </Button>

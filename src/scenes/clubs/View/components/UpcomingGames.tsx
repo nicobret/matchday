@@ -1,6 +1,5 @@
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import useStore from "@/utils/zustand";
 import { Club, userIsAdmin } from "../../clubs.service";
 import supabaseClient from "@/utils/supabase";
 import { gameSummary } from "@/scenes/games/games.service";
@@ -22,10 +21,10 @@ import {
 import GameCard from "./GameCard";
 import { Plus, Trophy } from "lucide-react";
 import { buttonVariants } from "@/components/ui/button";
+import { SessionContext } from "@/App";
 
 export default function UpcomingGames({ club }: { club: Club }) {
-  const { user } = useStore();
-
+  const { session } = useContext(SessionContext);
   const [games, setGames] = useState<gameSummary[]>([]);
   const [loading, setLoading] = useState(false);
 
@@ -88,7 +87,7 @@ export default function UpcomingGames({ club }: { club: Club }) {
       </CardContent>
 
       <CardFooter className="flex justify-end gap-2">
-        {user && club && userIsAdmin(user, club) && (
+        {session?.user && club && userIsAdmin(session?.user, club) && (
           <Link
             to={`/games/create?clubId=${club.id}`}
             className={buttonVariants({ variant: "secondary" })}
