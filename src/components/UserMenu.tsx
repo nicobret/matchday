@@ -36,8 +36,7 @@ export function UserMenu() {
           <SheetHeader>
             <SheetTitle>Mon compte</SheetTitle>
             <SheetDescription>
-              <p>Bonjour, {session.user.email}.</p>
-              <p>Vous êtes connecté.</p>
+              Bonjour, {session.user.email}. Vous êtes connecté.
             </SheetDescription>
             <Button onClick={logout} variant="outline">
               Se déconnecter

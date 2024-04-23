@@ -1,12 +1,11 @@
-import { Outlet } from "react-router-dom";
 import Header from "./Header";
 import Footer from "./Footer";
 
-export default function Layout() {
+export default function Layout({ children }) {
   return (
     <div className="max-w-screen-xl mx-auto">
       <Header />
-      <Outlet />
+      {children}
       <Footer />
     </div>
   );
