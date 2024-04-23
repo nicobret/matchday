@@ -56,7 +56,7 @@ export default function UpcomingGames({ club }: { club: Club }) {
   }
 
   return (
-    <Card className="md:col-span-2">
+    <Card className="md:col-span-2 flex flex-col">
       <CardHeader>
         <CardTitle>
           <div className="flex gap-3 items-center">
@@ -86,7 +86,7 @@ export default function UpcomingGames({ club }: { club: Club }) {
         )}
       </CardContent>
 
-      <CardFooter className="flex justify-end gap-2">
+      <CardFooter className="flex justify-end gap-2 mt-auto">
         {session?.user && club && userIsAdmin(session?.user, club) && (
           <Link
             to={`/games/create?clubId=${club.id}`}

@@ -4,7 +4,13 @@ import supabaseClient from "@/utils/supabase";
 import { Tables } from "types/supabase";
 
 import { buttonVariants } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import {
   Select,
   SelectContent,
@@ -73,7 +79,7 @@ export default function ClubHistory({ clubId }: { clubId: number }) {
         </CardTitle>
       </CardHeader>
 
-      <CardContent className="overflow-auto">
+      <CardContent className="max-h-96 overflow-auto">
         {loading ? (
           <p className="text-center">Chargement...</p>
         ) : games?.length ? (
@@ -117,6 +123,8 @@ export default function ClubHistory({ clubId }: { clubId: number }) {
           <p className="text-center">Aucun match joué.</p>
         )}
       </CardContent>
+
+      <CardFooter />
     </Card>
   );
 }

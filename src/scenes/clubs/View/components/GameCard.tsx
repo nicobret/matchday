@@ -19,19 +19,18 @@ export default function GameCard({ game }: { game: gameSummary }) {
   return (
     <Card className="bg-accent">
       <CardHeader>
-        <CardTitle>
-          <Link
-            to={"/games/" + game.id.toString()}
-            className="hover:underline underline-offset-4 decoration-2"
-          >
+        <CardTitle className="hover:underline underline-offset-4 decoration-2 text-primary capitalize">
+          <Link to={"/games/" + game.id.toString()}>
             {new Date(game.date).toLocaleDateString("fr-FR", {
-              dateStyle: "long",
+              weekday: "long",
+              month: "long",
+              day: "numeric",
             })}
           </Link>
         </CardTitle>
       </CardHeader>
 
-      <CardContent className="flex gap-4 items-center">
+      <CardContent className="flex gap-4 items-center justify-around">
         <Users className="w-6 h-6" />
         <p className="text-2xl">
           {count} / {game.total_players || 10}
@@ -43,7 +42,7 @@ export default function GameCard({ game }: { game: gameSummary }) {
         )}
       </CardContent>
 
-      <CardFooter className="flex justify-end gap-2">
+      <CardFooter>
         <Link
           to={"/games/" + game.id.toString()}
           className={`${buttonVariants()} w-full`}
