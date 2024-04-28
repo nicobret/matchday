@@ -14,6 +14,7 @@ import Players from "./components/Players";
 import Result from "./components/Result";
 import LineUp from "./components/LineUp";
 import { SessionContext } from "@/App";
+import Container from "@/layout/Container";
 
 export type clubType = Tables<"clubs"> & {
   members: Tables<"club_enrolments">[] | null;
@@ -127,7 +128,7 @@ export default function View() {
   const userCanJoinGame = userIsInClubs && !hasStarted && !userIsInGame;
 
   return (
-    <div className="p-4">
+    <Container>
       <Breadcrumbs
         links={[
           { label: "Matches", link: "/games" },
@@ -175,6 +176,6 @@ export default function View() {
         />
         <Result game={game} />
       </div>
-    </div>
+    </Container>
   );
 }

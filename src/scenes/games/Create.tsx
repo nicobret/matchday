@@ -13,7 +13,7 @@ import {
   SelectTrigger,
 } from "@/components/ui/select";
 import { SelectValue } from "@radix-ui/react-select";
-import { Club, userIsInClub } from "../clubs/clubs.service";
+import { Club, userIsMember } from "../clubs/clubs.service";
 import { User } from "@supabase/supabase-js";
 import supabaseClient from "@/utils/supabase";
 import { SessionContext } from "@/App";
@@ -66,7 +66,7 @@ export default function CreateGame() {
     );
   }
 
-  if (!userIsInClub(session?.user, club)) {
+  if (!userIsMember(session?.user, club)) {
     return <p className="text-center">Vous n'êtes pas membre de ce club</p>;
   }
 

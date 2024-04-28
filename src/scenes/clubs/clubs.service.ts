@@ -5,7 +5,7 @@ export type Club = Tables<"clubs"> & {
   members: Tables<"club_enrolments">[] | null;
 };
 
-export function userIsInClub(user: User, club: Club) {
+export function userIsMember(user: User, club: Club) {
   return club.members.map((m) => m.user_id).includes(user.id);
 }
 

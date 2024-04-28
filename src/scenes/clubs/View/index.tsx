@@ -1,7 +1,7 @@
 import { useContext, useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import supabaseClient from "@/utils/supabase";
-import { Club, userIsInClub } from "../clubs.service";
+import { Club, userIsMember } from "../clubs.service";
 
 import { Check, ClipboardSignature } from "lucide-react";
 import Breadcrumbs from "@/components/Breadcrumbs";
@@ -44,15 +44,15 @@ export default function View() {
         throw new Error("User must be logged in.");
       }
 
-      const { data: club_enrolments, error: club_enrolments_error } =
+      const { data: club_members, error: club_members_error } =
         await supabaseClient
           .from("club_enrolments")
           .select("user_id")
           .eq("club_id", club.id);
-      if (club_enrolments_error) {
-        throw new Error(club_enrolments_error.message);
+      if (club_members_error) {
+        throw new Error(club_members_error.message);
       }
-      if (club_enrolments.find((m) => m.user_id === session?.user.id)) {
+      if (club_members.find((m) => m.user_id === session?.user.id)) {
         throw new Error("Vous avez déjà rejoint ce club !");
       }
 
@@ -65,7 +65,10 @@ export default function View() {
       }
 
       if (data) {
-        await getClub(club.id.toString());
+        setClub((prev) => {
+          if (!prev) return prev;
+          return { ...prev, members: [...prev.members, data[0]] };
+        });
       }
     } catch (error) {
       window.alert(error);
@@ -93,7 +96,15 @@ export default function View() {
         }
 
         if (data) {
-          await getClub(club.id.toString());
+          setClub((prev) => {
+            if (!prev) return prev;
+            return {
+              ...prev,
+              members: prev.members.filter(
+                (m) => m.user_id !== session?.user.id
+              ),
+            };
+          });
         }
       }
     } catch (error) {
@@ -122,11 +133,11 @@ export default function View() {
     <div className="p-4">
       <Breadcrumbs links={[{ label: club.name, link: "#" }]} />
 
-      <div className="flex gap-4 items-end scroll-m-20 border-b pb-3 mt-6 mb-2">
+      <div className="flex gap-4 items-end scroll-m-20 border-b pb-3 mt-6 first:mt-0 mb-2">
         <h2 className="text-3xl font-semibold tracking-tight">{club.name}</h2>
 
         {session?.user &&
-          (userIsInClub(session.user, club) ? (
+          (userIsMember(session.user, club) ? (
             <Button
               onClick={() => leaveClub()}
               variant="secondary"

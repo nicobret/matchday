@@ -46,7 +46,7 @@ export default function CreateDialog() {
         throw new Error("Vous n'êtes pas connecté");
       }
 
-      const { data, error } = await supabaseClient
+      const { data: club, error: club_error } = await supabaseClient
         .from("clubs")
         .insert({
           creator_id: user.id,
@@ -59,13 +59,23 @@ export default function CreateDialog() {
         })
         .select();
 
-      if (error) {
-        throw new Error(error.message);
+      if (club_error) {
+        throw new Error(club_error.message);
       }
 
-      if (data) {
+      const { data: club_members, error: club_members_error } =
+        await supabaseClient
+          .from("club_enrolments")
+          .insert({ club_id: club[0].id, user_id: user.id, role: "admin" })
+          .select("user_id");
+
+      if (club_members_error) {
+        throw new Error(club_members_error.message);
+      }
+
+      if (club_members) {
         window.alert("Club créé avec succès !");
-        navigate(`/club/${data[0].id}`);
+        navigate(`/club/${club[0].id}`);
       }
     } catch (error) {
       console.error(error);
@@ -78,65 +88,68 @@ export default function CreateDialog() {
     <>
       <Dialog>
         <DialogTrigger asChild>
-          <Button className="mt-4">
+          <Button className="mt-6">
             <Plus className="w-5 h-5 mr-2" />
             <p>Créer</p>
           </Button>
         </DialogTrigger>
 
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Créer un club</DialogTitle>
-            <DialogDescription></DialogDescription>
-          </DialogHeader>
+        <form onSubmit={handleSubmit}>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Créer un club</DialogTitle>
+              <DialogDescription></DialogDescription>
+            </DialogHeader>
 
-          <Label htmlFor="clubname">Nom du club</Label>
-          <Input
-            type="text"
-            id="clubname"
-            placeholder="Le club des champions"
-            value={formData.name}
-            onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-          />
+            <Label htmlFor="clubname">Nom du club</Label>
+            <Input
+              type="text"
+              id="clubname"
+              placeholder="Le club des champions"
+              value={formData.name}
+              onChange={(e) =>
+                setFormData({ ...formData, name: e.target.value })
+              }
+            />
 
-          <Label htmlFor="clubdescription">Description</Label>
-          <Textarea
-            id="clubdescription"
-            placeholder="Le meilleur club de tous les temps."
-            value={formData.description}
-            onChange={(e) =>
-              setFormData({
-                ...formData,
-                description: e.target.value,
-              })
-            }
-            rows={5}
-          />
+            <Label htmlFor="clubdescription">Description</Label>
+            <Textarea
+              id="clubdescription"
+              placeholder="Le meilleur club de tous les temps."
+              value={formData.description}
+              onChange={(e) =>
+                setFormData({
+                  ...formData,
+                  description: e.target.value,
+                })
+              }
+              rows={5}
+            />
 
-          <Label htmlFor="clubdescription">Logo</Label>
-          <Input type="file" id="clublogo" />
+            <Label htmlFor="clubdescription">Logo</Label>
+            <Input type="file" id="clublogo" />
 
-          <Label htmlFor="country">Pays</Label>
-          <Select
-            onValueChange={(value) =>
-              setFormData({ ...formData, country: value })
-            }
-            value={formData.country}
-            defaultValue="France"
-          >
-            <SelectTrigger>
-              <SelectValue placeholder="Select a verified email to display" />
-            </SelectTrigger>
-            <SelectContent>
-              {countryList.map((country) => (
-                <SelectItem key={country} value={country}>
-                  {country}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+            <Label htmlFor="country">Pays</Label>
+            <Select
+              onValueChange={(value) =>
+                setFormData({ ...formData, country: value })
+              }
+              value={formData.country}
+              defaultValue="France"
+            >
+              <SelectTrigger>
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {countryList.map((country) => (
+                  <SelectItem key={country} value={country}>
+                    {country}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
 
-          <Label htmlFor="address">Numéro et rue</Label>
+            {/* <Label htmlFor="address">Numéro et rue</Label>
           <Input
             type="text"
             id="address"
@@ -173,17 +186,18 @@ export default function CreateDialog() {
                 }
               />
             </div>
-          </div>
-          <DialogFooter>
-            <Button
-              onClick={() => handleSubmit()}
-              disabled={loading || !formData.name}
-              className="w-full"
-            >
-              Créer
-            </Button>
-          </DialogFooter>
-        </DialogContent>
+          </div> */}
+            <DialogFooter>
+              <Button
+                type="submit"
+                disabled={loading || !formData.name}
+                className="w-full"
+              >
+                Créer
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </form>
       </Dialog>
     </>
   );

@@ -1,6 +1,6 @@
 import { useContext, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { Club, userIsAdmin } from "../../clubs.service";
+import { Club, userIsMember } from "../../clubs.service";
 import supabaseClient from "@/utils/supabase";
 import { gameSummary } from "@/scenes/games/games.service";
 
@@ -87,7 +87,7 @@ export default function UpcomingGames({ club }: { club: Club }) {
       </CardContent>
 
       <CardFooter className="flex justify-end gap-2 mt-auto">
-        {session?.user && club && userIsAdmin(session?.user, club) && (
+        {session?.user && club && userIsMember(session?.user, club) && (
           <Link
             to={`/games/create?clubId=${club.id}`}
             className={buttonVariants({ variant: "secondary" })}

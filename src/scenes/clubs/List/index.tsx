@@ -50,14 +50,16 @@ export default function List() {
   }
 
   return (
-    <Container>
+    <div className="p-4">
       {session?.user && (
         <>
-          <h2 className="scroll-m-20 border-b pb-2 text-3xl font-semibold tracking-tight mb-4">
+          <h2 className="scroll-m-20 border-b pb-2 text-3xl font-semibold tracking-tight mt-6 first:mt-0">
             Mes clubs
           </h2>
 
-          <div className="flex flex-wrap gap-6">
+          {session?.user && <CreateDialog />}
+
+          <div className="flex flex-wrap gap-6 mt-6">
             {myClubs.length ? (
               myClubs.map((club) => <ClubCard key={club.id} club={club} />)
             ) : (
@@ -67,17 +69,15 @@ export default function List() {
         </>
       )}
 
-      <h2 className="scroll-m-20 border-b pb-2 text-3xl font-semibold tracking-tight mt-6">
+      <h2 className="scroll-m-20 border-b pb-2 text-3xl font-semibold tracking-tight mt-6 first:mt-0">
         Trouver un club
       </h2>
-
-      {session?.user && <CreateDialog />}
 
       <div className="flex flex-wrap gap-6 mt-4">
         {notMyClubs.map((club) => (
           <ClubCard key={club.id} club={club} />
         ))}
       </div>
-    </Container>
+    </div>
   );
 }
