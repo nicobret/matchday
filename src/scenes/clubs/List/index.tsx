@@ -1,10 +1,9 @@
 import { useContext, useEffect, useState } from "react";
+import supabaseClient from "@/utils/supabase";
+import { SessionContext } from "@/App";
 import { Club } from "../clubs.service";
 import ClubCard from "./components/ClubCard";
-import Container from "@/layout/Container";
-import supabaseClient from "@/utils/supabase";
 import CreateDialog from "./components/CreateDialog";
-import { SessionContext } from "@/App";
 
 export default function List() {
   const { session } = useContext(SessionContext);
@@ -14,13 +13,12 @@ export default function List() {
   async function getClubs() {
     try {
       setLoading(true);
-      const { data, error } = await supabaseClient
+      const { data } = await supabaseClient
         .from("clubs")
         .select("*, members: club_enrolments (*)")
-        .order("created_at");
-      if (error) {
-        throw new Error(error.message);
-      }
+        .is("deleted_at", null)
+        .order("created_at")
+        .throwOnError();
       setClubs(data);
     } catch (error) {
       console.error(error);

@@ -101,7 +101,7 @@ export default function ClubMembers({ clubId }: { clubId: number }) {
 
       <CardFooter className="mt-auto flex justify-end gap-2">
         <Button variant="secondary" disabled>
-          Inviter un joueur
+          Inviter
         </Button>
       </CardFooter>
     </Card>

@@ -1,5 +1,5 @@
-import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useContext, useEffect, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 import supabaseClient from "@/utils/supabase";
 import { Club } from "./clubs.service";
 import { countryList } from "@/lib/utils";
@@ -19,11 +19,14 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import Breadcrumbs from "@/components/Breadcrumbs";
 import Container from "@/layout/Container";
 import { Save, Trash } from "lucide-react";
+import { SessionContext } from "@/App";
 
 export default function EditClub() {
   const { id } = useParams();
+  const { session } = useContext(SessionContext);
   const [club, setClub] = useState<Club>();
   const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
 
   const [formData, setFormData] = useState({
     id: "",
@@ -113,18 +116,26 @@ export default function EditClub() {
     }
   }
 
-  // async function deleteClub(club_id: number) {
-  //   if (window.confirm("Voulez-vous vraiment supprimer ce club ?")) {
-  //     const { error } = await supabaseClient
-  //       .from("clubs")
-  //       .delete()
-  //       .eq("id", club_id)
-  //       .select();
-  //     if (error) {
-  //       console.error(error);
-  //     }
-  //   }
-  // }
+  async function deleteClub(club_id: number) {
+    try {
+      if (session.user?.id !== club.creator_id) {
+        throw new Error("Vous n'êtes pas autorisé à supprimer ce club.");
+      }
+      if (window.confirm("Voulez-vous vraiment supprimer ce club ?")) {
+        const { error } = await supabaseClient
+          .from("clubs")
+          .update({ deleted_at: new Date().toISOString() })
+          .eq("id", club_id)
+          .throwOnError();
+        window.alert("Club supprimé avec succès !");
+        navigate("/");
+      }
+    } catch (error) {
+      window.alert(error);
+    } finally {
+      setLoading(false);
+    }
+  }
 
   useEffect(() => {
     if (id) getClub(id);
@@ -276,7 +287,12 @@ export default function EditClub() {
             Enregistrer
           </Button>
           {id && (
-            <Button type="button" variant="secondary" disabled>
+            <Button
+              type="button"
+              variant="secondary"
+              disabled={loading || club.creator_id !== session?.user?.id}
+              onClick={() => deleteClub(club.id)}
+            >
               <Trash className="w-5 h-5 mr-2" />
               Supprimer le club
             </Button>

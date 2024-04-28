@@ -36,8 +36,9 @@ export default function CreateDialog() {
   });
   const [loading, setLoading] = useState(false);
 
-  async function handleSubmit() {
+  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     try {
+      e.preventDefault();
       setLoading(true);
       const {
         data: { user },
@@ -94,13 +95,13 @@ export default function CreateDialog() {
           </Button>
         </DialogTrigger>
 
-        <form onSubmit={handleSubmit}>
-          <DialogContent>
-            <DialogHeader>
-              <DialogTitle>Créer un club</DialogTitle>
-              <DialogDescription></DialogDescription>
-            </DialogHeader>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Créer un club</DialogTitle>
+            <DialogDescription></DialogDescription>
+          </DialogHeader>
 
+          <form onSubmit={handleSubmit} id="create-club-form">
             <Label htmlFor="clubname">Nom du club</Label>
             <Input
               type="text"
@@ -126,8 +127,8 @@ export default function CreateDialog() {
               rows={5}
             />
 
-            <Label htmlFor="clubdescription">Logo</Label>
-            <Input type="file" id="clublogo" />
+            {/* <Label htmlFor="clubdescription">Logo</Label>
+            <Input type="file" id="clublogo" /> */}
 
             <Label htmlFor="country">Pays</Label>
             <Select
@@ -148,56 +149,18 @@ export default function CreateDialog() {
                 ))}
               </SelectContent>
             </Select>
-
-            {/* <Label htmlFor="address">Numéro et rue</Label>
-          <Input
-            type="text"
-            id="address"
-            placeholder="Rue du club 1, 1000 Bruxelles"
-            value={formData.address}
-            onChange={(e) =>
-              setFormData({ ...formData, address: e.target.value })
-            }
-          />
-
-          <div className="grid md:grid-cols-2 w-full gap-4 mt-4">
-            <div className="grid w-full max-w-sm items-center gap-2">
-              <Label htmlFor="postcode">Code Postal</Label>
-              <Input
-                type="text"
-                id="postcode"
-                placeholder="10 000"
-                value={formData.postcode}
-                onChange={(e) =>
-                  setFormData({ ...formData, postcode: e.target.value })
-                }
-              />
-            </div>
-
-            <div className="grid w-full max-w-sm items-center gap-2">
-              <Label htmlFor="city">Ville</Label>
-              <Input
-                type="text"
-                id="city"
-                placeholder="Bruxelles"
-                value={formData.city}
-                onChange={(e) =>
-                  setFormData({ ...formData, city: e.target.value })
-                }
-              />
-            </div>
-          </div> */}
-            <DialogFooter>
-              <Button
-                type="submit"
-                disabled={loading || !formData.name}
-                className="w-full"
-              >
-                Créer
-              </Button>
-            </DialogFooter>
-          </DialogContent>
-        </form>
+          </form>
+          <DialogFooter>
+            <Button
+              type="submit"
+              form="create-club-form"
+              disabled={loading || !formData.name}
+              className="w-full"
+            >
+              Créer
+            </Button>
+          </DialogFooter>
+        </DialogContent>
       </Dialog>
     </>
   );
