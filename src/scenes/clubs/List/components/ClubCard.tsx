@@ -1,4 +1,4 @@
-import { Button } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
 import {
   Card,
   CardContent,
@@ -9,12 +9,19 @@ import {
 } from "@/components/ui/card";
 import { Link } from "react-router-dom";
 import { Club } from "../../clubs.service";
+import { ArrowRight, Eye } from "lucide-react";
 
-export default function ClubCard({ club }: { club: Club }) {
+export default function ClubCard({
+  club,
+  isMember = false,
+}: {
+  club: Club;
+  isMember?: boolean;
+}) {
   return (
-    <Card className="w-full sm:w-72">
+    <Card className="w-full sm:w-72 flex flex-col">
       <CardHeader>
-        <CardTitle>
+        <CardTitle className="truncate">
           <Link to={"/club/" + club.id.toString()}>{club.name}</Link>
         </CardTitle>
       </CardHeader>
@@ -25,10 +32,24 @@ export default function ClubCard({ club }: { club: Club }) {
           <span className="text-ellipsis">{club.description}</span>
         </CardDescription>
       </CardContent>
-      <CardFooter className="flex gap-4">
-        <Link to={"/club/" + club.id.toString()}>
-          <Button variant="secondary">Voir</Button>
-        </Link>
+      <CardFooter className="flex justify-end mt-auto">
+        {isMember ? (
+          <Link
+            to={"/club/" + club.id.toString()}
+            className={`${buttonVariants()} w-full`}
+          >
+            Aller
+            <ArrowRight className="h-5 w-5 ml-2" />
+          </Link>
+        ) : (
+          <Link
+            to={"/club/" + club.id.toString()}
+            className={`${buttonVariants({ variant: "secondary" })} w-full`}
+          >
+            Voir
+            <Eye className="h-5 w-5 ml-2" />
+          </Link>
+        )}
       </CardFooter>
     </Card>
   );

@@ -51,7 +51,7 @@ export default function List() {
     <div className="p-4">
       {session?.user && (
         <>
-          <h2 className="scroll-m-20 border-b pb-2 text-3xl font-semibold tracking-tight mt-6 first:mt-0">
+          <h2 className="scroll-m-20 border-b pb-2 text-3xl font-semibold tracking-tight mt-8 first:mt-0">
             Mes clubs
           </h2>
 
@@ -59,7 +59,9 @@ export default function List() {
 
           <div className="flex flex-wrap gap-6 mt-6">
             {myClubs.length ? (
-              myClubs.map((club) => <ClubCard key={club.id} club={club} />)
+              myClubs.map((club) => (
+                <ClubCard key={club.id} club={club} isMember />
+              ))
             ) : (
               <p className="text-center">Vous n'êtes membre d'aucun club</p>
             )}
@@ -67,7 +69,7 @@ export default function List() {
         </>
       )}
 
-      <h2 className="scroll-m-20 border-b pb-2 text-3xl font-semibold tracking-tight mt-6 first:mt-0">
+      <h2 className="scroll-m-20 border-b pb-2 text-3xl font-semibold tracking-tight mt-8 first:mt-0">
         Trouver un club
       </h2>
 

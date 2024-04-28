@@ -89,7 +89,7 @@ export default function CreateDialog() {
     <>
       <Dialog>
         <DialogTrigger asChild>
-          <Button className="mt-6">
+          <Button variant="secondary" className="mt-6">
             <Plus className="w-5 h-5 mr-2" />
             <p>Créer</p>
           </Button>
