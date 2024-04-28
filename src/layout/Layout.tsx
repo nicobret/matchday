@@ -5,9 +5,9 @@ export default function Layout({ children }) {
   return (
     <>
       <Header />
-      <div className="max-w-screen-xl mx-auto mb-20 min-h-screen">
+      <main className="max-w-screen-xl mx-auto mb-20 min-h-screen">
         {children}
-      </div>
+      </main>
       <Footer />
     </>
   );

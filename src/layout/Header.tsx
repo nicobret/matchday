@@ -9,9 +9,9 @@ export default function Header() {
         <NavLink to="/">
           <div className="flex items-center gap-4 p-2">
             <Trophy className="text-primary" />
-            <h1 className="block text-2xl font-extrabold tracking-tight text-primary">
+            <p className="block text-2xl font-extrabold tracking-tight text-primary">
               Matchday_
-            </h1>
+            </p>
           </div>
         </NavLink>
       </div>
