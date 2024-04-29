@@ -1,6 +1,6 @@
 import { useContext, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { Club, userIsMember } from "../../clubs.service";
+import { Club, userIsMember } from "../clubs.service";
 import supabase from "@/utils/supabase";
 import { gameSummary } from "@/scenes/games/games.service";
 

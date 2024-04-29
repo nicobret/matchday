@@ -4,12 +4,11 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import supabaseClient from "@/utils/supabase";
 import Layout from "./layout/Layout.tsx";
 
-const Account = lazy(() => import("./scenes/account/index.tsx"));
-const ClubList = lazy(() => import("./scenes/clubs/List"));
-const ClubView = lazy(() => import("./scenes/clubs/View"));
-const ClubEditor = lazy(() => import("./scenes/clubs/Edit.tsx"));
-const GameView = lazy(() => import("./scenes/games/View.tsx"));
-const GameEditor = lazy(() => import("./scenes/games/Create.tsx"));
+const Account = lazy(() => import("./scenes/account"));
+const Club = lazy(() => import("./scenes/club"));
+const Game = lazy(() => import("./scenes/game"));
+const Home = lazy(() => import("./scenes/home"));
+const Player = lazy(() => import("./scenes/player"));
 
 export const SessionContext = createContext(null);
 
@@ -49,25 +48,20 @@ export default function App() {
         <Layout>
           <Suspense fallback={<div>Loading...</div>}>
             <Routes>
-              <Route path="/" element={<ClubList />} />
+              <Route path="/" element={<Home />} />
               <Route path="account" element={<Account />} />
-              <Route path="club/:id" element={<ClubView />} />
-              <Route path="club/:id/edit" element={<ClubEditor />} />
-              <Route path="games" element={<div>Games</div>} />
-              <Route path="games/:id" element={<GameView />} />
-              <Route path="games/create" element={<GameEditor />} />
-              <Route path="players" element={<div>Players</div>} />
-              <Route path="players/:id" element={<div>Player</div>} />
-              <Route
-                path="*"
-                element={
-                  <div className="text-center my-24">404 - Not Found</div>
-                }
-              />
+              <Route path="club/:id" element={<Club />} />
+              <Route path="game/:id" element={<Game />} />
+              <Route path="player/:id" element={<Player />} />
+              <Route path="*" element={<NotFound />} />
             </Routes>
           </Suspense>
         </Layout>
       </BrowserRouter>
     </SessionContext.Provider>
   );
+}
+
+function NotFound() {
+  return <div>404 - Not Found</div>;
 }

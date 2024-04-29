@@ -1,7 +1,7 @@
 import { useContext, useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import supabase from "@/utils/supabase";
-import { Club, userIsMember } from "../clubs.service";
+import { Club, userIsMember } from "./clubs.service";
 
 import { Check, ClipboardSignature } from "lucide-react";
 import Breadcrumbs from "@/components/Breadcrumbs";
