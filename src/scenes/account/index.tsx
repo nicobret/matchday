@@ -1,4 +1,5 @@
-import { SessionContext } from "@/App";
+import { useEffect, useState } from "react";
+import supabase from "@/utils/supabase";
 import Breadcrumbs from "@/components/Breadcrumbs";
 import { Button } from "@/components/ui/button";
 import {
@@ -10,8 +11,6 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import supabaseClient from "@/utils/supabase";
-import { useContext, useEffect, useState } from "react";
 
 export default function Account() {
   const [loading, setLoading] = useState(true);
@@ -21,8 +20,8 @@ export default function Account() {
     try {
       const {
         data: { user },
-      } = await supabaseClient.auth.getUser();
-      const { data } = await supabaseClient
+      } = await supabase.auth.getUser();
+      const { data } = await supabase
         .from("users")
         .select()
         .eq("id", user.id)
@@ -47,8 +46,8 @@ export default function Account() {
     try {
       const {
         data: { user },
-      } = await supabaseClient.auth.getUser();
-      const { data: updatedProfile } = await supabaseClient
+      } = await supabase.auth.getUser();
+      const { data: updatedProfile } = await supabase
         .from("users")
         .update({ firstname, lastname })
         .eq("id", user.id)
@@ -108,7 +107,13 @@ export default function Account() {
         </CardContent>
 
         <CardFooter>
-          <Button form="profile-form" type="submit">
+          <Button
+            form="profile-form"
+            type="submit"
+            disabled={
+              loading || !profile || !profile.firstname || !profile.lastname
+            }
+          >
             Enregistrer
           </Button>
         </CardFooter>

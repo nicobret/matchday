@@ -1,4 +1,4 @@
-import supabaseClient from "@/utils/supabase";
+import supabase from "@/utils/supabase";
 import { Tables } from "types/supabase";
 
 export type gameType = {
@@ -36,7 +36,7 @@ export type gameSummary = Tables<"games"> & {
 };
 
 export async function fetchGames() {
-  const { data, error } = await supabaseClient.from("games").select(
+  const { data, error } = await supabase.from("games").select(
     `
       id,
       created_at,
@@ -58,7 +58,7 @@ export async function fetchGames() {
 }
 
 export async function fetchGame(id: number) {
-  const { data, error } = await supabaseClient
+  const { data, error } = await supabase
     .from("games")
     .select(
       `
@@ -107,10 +107,7 @@ export async function createGame(game: {
   total_players: number;
   location: string;
 }) {
-  const { data, error } = await supabaseClient
-    .from("games")
-    .insert(game)
-    .select();
+  const { data, error } = await supabase.from("games").insert(game).select();
 
   if (error) {
     console.error(error);

@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import supabaseClient from "@/utils/supabase";
+import supabase from "@/utils/supabase";
 import { Tables } from "types/supabase";
 
 import { buttonVariants } from "@/components/ui/button";
@@ -36,7 +36,7 @@ export default function ClubHistory({ clubId }: { clubId: number }) {
   useEffect(() => {
     async function getGames() {
       setLoading(true);
-      const { data, error } = await supabaseClient
+      const { data, error } = await supabase
         .from("games")
         .select("*")
         .eq("club_id", clubId)

@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { Tables } from "types/supabase";
-import supabaseClient from "@/utils/supabase";
+import supabase from "@/utils/supabase";
 
 import {
   Card,
@@ -35,7 +35,7 @@ export default function ClubMembers({ clubId }: { clubId: number }) {
       try {
         setLoading(true);
 
-        const { data, error } = await supabaseClient
+        const { data, error } = await supabase
           .from("club_enrolments")
           .select("*, profile: users(*)")
           .eq("club_id", clubId);

@@ -1,6 +1,6 @@
 import { useContext, useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import supabaseClient from "@/utils/supabase";
+import supabase from "@/utils/supabase";
 import { Club } from "./clubs.service";
 import { countryList } from "@/lib/utils";
 
@@ -41,7 +41,7 @@ export default function EditClub() {
   async function getClub(id: string) {
     try {
       setLoading(true);
-      const { data, error } = await supabaseClient
+      const { data, error } = await supabase
         .from("clubs")
         .select("*, members: club_enrolments (*)")
         .eq("id", parseInt(id))
@@ -92,13 +92,13 @@ export default function EditClub() {
 
       const {
         data: { user },
-      } = await supabaseClient.auth.getUser();
+      } = await supabase.auth.getUser();
 
       if (!user) {
         throw new Error("Vous devez être connecté pour modifier un club.");
       }
 
-      const { error } = await supabaseClient
+      const { error } = await supabase
         .from("clubs")
         .update({ name, description, address, postcode, city, country })
         .eq("id", parseInt(id));
@@ -122,7 +122,7 @@ export default function EditClub() {
         throw new Error("Vous n'êtes pas autorisé à supprimer ce club.");
       }
       if (window.confirm("Voulez-vous vraiment supprimer ce club ?")) {
-        const { error } = await supabaseClient
+        const { error } = await supabase
           .from("clubs")
           .update({ deleted_at: new Date().toISOString() })
           .eq("id", club_id)

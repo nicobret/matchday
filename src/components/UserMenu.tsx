@@ -1,4 +1,4 @@
-import supabaseClient from "@/utils/supabase";
+import supabase from "@/utils/supabase";
 import {
   Sheet,
   SheetContent,
@@ -21,7 +21,7 @@ export function UserMenu() {
   const { session, setSession } = useContext(SessionContext);
 
   async function logout() {
-    await supabaseClient.auth.signOut();
+    await supabase.auth.signOut();
     setSession(null);
   }
 
@@ -51,7 +51,7 @@ export function UserMenu() {
               Connectez-vous ou inscrivez-vous pour accéder à votre compte.
             </SheetDescription>
             <Auth
-              supabaseClient={supabaseClient}
+              supabaseClient={supabase}
               appearance={{ theme: ThemeSupa }}
               providers={[]}
             />

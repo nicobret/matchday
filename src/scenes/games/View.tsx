@@ -1,6 +1,6 @@
 import { useContext, useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import supabaseClient from "@/utils/supabase";
+import supabase from "@/utils/supabase";
 import { Tables } from "types/supabase";
 
 import { gameHasStarted } from "./games.service";
@@ -32,7 +32,7 @@ export default function View() {
   const [players, setPlayers] = useState<gamePlayer[]>();
 
   async function getData(id: number) {
-    const { data: gameData, error: gameError } = await supabaseClient
+    const { data: gameData, error: gameError } = await supabase
       .from("games")
       .select()
       .eq("id", id)
@@ -42,7 +42,7 @@ export default function View() {
       return;
     }
 
-    const { data: clubsData, error: clubsError } = await supabaseClient
+    const { data: clubsData, error: clubsError } = await supabase
       .from("clubs")
       .select("*, members: club_enrolments (*)")
       .in("id", [
@@ -54,7 +54,7 @@ export default function View() {
       return;
     }
 
-    const { data: playersData, error: playersError } = await supabaseClient
+    const { data: playersData, error: playersError } = await supabase
       .from("game_registrations")
       .select("*, profile: users (*)")
       .eq("game_id", id);
@@ -69,7 +69,7 @@ export default function View() {
   }
 
   async function joinGame(game_id: number, user_id: string) {
-    const { data, error } = await supabaseClient
+    const { data, error } = await supabase
       .from("game_registrations")
       .insert({
         game_id,
@@ -88,7 +88,7 @@ export default function View() {
   }
 
   async function leaveGame(game_id: number, user_id: string) {
-    const { error } = await supabaseClient
+    const { error } = await supabase
       .from("game_registrations")
       .delete()
       .eq("game_id", game_id)

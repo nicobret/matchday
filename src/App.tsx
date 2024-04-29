@@ -1,15 +1,15 @@
 import "./index.css";
-import { createContext, useEffect, useState } from "react";
+import { Suspense, createContext, lazy, useEffect, useState } from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import supabaseClient from "@/utils/supabase";
-
-import Account from "./scenes/account/index.tsx";
-import ClubList from "./scenes/clubs/List";
-import ClubView from "./scenes/clubs/View";
-import ClubEditor from "./scenes/clubs/Edit.tsx";
-import GameView from "./scenes/games/View.tsx";
-import GameEditor from "./scenes/games/Create.tsx";
 import Layout from "./layout/Layout.tsx";
+
+const Account = lazy(() => import("./scenes/account/index.tsx"));
+const ClubList = lazy(() => import("./scenes/clubs/List"));
+const ClubView = lazy(() => import("./scenes/clubs/View"));
+const ClubEditor = lazy(() => import("./scenes/clubs/Edit.tsx"));
+const GameView = lazy(() => import("./scenes/games/View.tsx"));
+const GameEditor = lazy(() => import("./scenes/games/Create.tsx"));
 
 export const SessionContext = createContext(null);
 
@@ -47,21 +47,25 @@ export default function App() {
     <SessionContext.Provider value={{ session, setSession }}>
       <BrowserRouter>
         <Layout>
-          <Routes>
-            <Route path="/" element={<ClubList />} />
-            <Route path="account" element={<Account />} />
-            <Route path="club/:id" element={<ClubView />} />
-            <Route path="club/:id/edit" element={<ClubEditor />} />
-            <Route path="games" element={<div>Games</div>} />
-            <Route path="games/:id" element={<GameView />} />
-            <Route path="games/create" element={<GameEditor />} />
-            <Route path="players" element={<div>Players</div>} />
-            <Route path="players/:id" element={<div>Player</div>} />
-            <Route
-              path="*"
-              element={<div className="text-center my-24">404 - Not Found</div>}
-            />
-          </Routes>
+          <Suspense fallback={<div>Loading...</div>}>
+            <Routes>
+              <Route path="/" element={<ClubList />} />
+              <Route path="account" element={<Account />} />
+              <Route path="club/:id" element={<ClubView />} />
+              <Route path="club/:id/edit" element={<ClubEditor />} />
+              <Route path="games" element={<div>Games</div>} />
+              <Route path="games/:id" element={<GameView />} />
+              <Route path="games/create" element={<GameEditor />} />
+              <Route path="players" element={<div>Players</div>} />
+              <Route path="players/:id" element={<div>Player</div>} />
+              <Route
+                path="*"
+                element={
+                  <div className="text-center my-24">404 - Not Found</div>
+                }
+              />
+            </Routes>
+          </Suspense>
         </Layout>
       </BrowserRouter>
     </SessionContext.Provider>

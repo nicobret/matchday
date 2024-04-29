@@ -1,5 +1,5 @@
 import { useContext, useEffect, useState } from "react";
-import supabaseClient from "@/utils/supabase";
+import supabase from "@/utils/supabase";
 import { SessionContext } from "@/App";
 import { Club } from "../clubs.service";
 import ClubCard from "./components/ClubCard";
@@ -13,7 +13,7 @@ export default function List() {
   async function getClubs() {
     try {
       setLoading(true);
-      const { data } = await supabaseClient
+      const { data } = await supabase
         .from("clubs")
         .select("*, members: club_enrolments (*)")
         .is("deleted_at", null)

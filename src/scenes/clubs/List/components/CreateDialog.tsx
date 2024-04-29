@@ -19,7 +19,7 @@ import {
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { countryList } from "@/lib/utils";
-import supabaseClient from "@/utils/supabase";
+import supabase from "@/utils/supabase";
 import { Plus } from "lucide-react";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -42,12 +42,12 @@ export default function CreateDialog() {
       setLoading(true);
       const {
         data: { user },
-      } = await supabaseClient.auth.getUser();
+      } = await supabase.auth.getUser();
       if (!user) {
         throw new Error("Vous n'êtes pas connecté");
       }
 
-      const { data: club, error: club_error } = await supabaseClient
+      const { data: club, error: club_error } = await supabase
         .from("clubs")
         .insert({
           creator_id: user.id,
@@ -64,11 +64,10 @@ export default function CreateDialog() {
         throw new Error(club_error.message);
       }
 
-      const { data: club_members, error: club_members_error } =
-        await supabaseClient
-          .from("club_enrolments")
-          .insert({ club_id: club[0].id, user_id: user.id, role: "admin" })
-          .select("user_id");
+      const { data: club_members, error: club_members_error } = await supabase
+        .from("club_enrolments")
+        .insert({ club_id: club[0].id, user_id: user.id, role: "admin" })
+        .select("user_id");
 
       if (club_members_error) {
         throw new Error(club_members_error.message);

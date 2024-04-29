@@ -15,7 +15,7 @@ import {
 import { SelectValue } from "@radix-ui/react-select";
 import { Club, userIsMember } from "../clubs/clubs.service";
 import { User } from "@supabase/supabase-js";
-import supabaseClient from "@/utils/supabase";
+import supabase from "@/utils/supabase";
 import { SessionContext } from "@/App";
 
 export default function CreateGame() {
@@ -28,7 +28,7 @@ export default function CreateGame() {
   async function getClub(id: string) {
     try {
       setLoading(true);
-      const { data, error } = await supabaseClient
+      const { data, error } = await supabase
         .from("clubs")
         .select("*, members: club_enrolments (*)")
         .eq("id", id)

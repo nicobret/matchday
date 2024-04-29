@@ -1,7 +1,7 @@
 import { useContext, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { Club, userIsMember } from "../../clubs.service";
-import supabaseClient from "@/utils/supabase";
+import supabase from "@/utils/supabase";
 import { gameSummary } from "@/scenes/games/games.service";
 
 import {
@@ -33,7 +33,7 @@ export default function UpcomingGames({ club }: { club: Club }) {
       try {
         setLoading(true);
 
-        const { data, error } = await supabaseClient
+        const { data, error } = await supabase
           .from("games")
           .select("*, game_registrations(*)")
           .eq("club_id", club.id)

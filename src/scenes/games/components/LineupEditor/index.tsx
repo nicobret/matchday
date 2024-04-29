@@ -1,4 +1,4 @@
-import supabaseClient from "@/utils/supabase";
+import supabase from "@/utils/supabase";
 import { gamePlayer } from "../../View";
 import { DndContext } from "@dnd-kit/core";
 import { Shirt } from "lucide-react";
@@ -18,7 +18,7 @@ export default function LineupEditor({
     setPlayers(
       players.map((p) => (p.id === event.active.id ? { ...p, team } : p))
     );
-    const { error } = await supabaseClient
+    const { error } = await supabase
       .from("game_registrations")
       .update({ team })
       .eq("id", event.active.id);

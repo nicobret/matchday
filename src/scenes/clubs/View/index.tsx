@@ -1,6 +1,6 @@
 import { useContext, useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import supabaseClient from "@/utils/supabase";
+import supabase from "@/utils/supabase";
 import { Club, userIsMember } from "../clubs.service";
 
 import { Check, ClipboardSignature } from "lucide-react";
@@ -22,7 +22,7 @@ export default function View() {
     try {
       setLoading(true);
 
-      const { data, error } = await supabaseClient
+      const { data, error } = await supabase
         .from("clubs")
         .select("*, members: club_enrolments (*)")
         .eq("id", id)
@@ -44,11 +44,10 @@ export default function View() {
         throw new Error("User must be logged in.");
       }
 
-      const { data: club_members, error: club_members_error } =
-        await supabaseClient
-          .from("club_enrolments")
-          .select("user_id")
-          .eq("club_id", club.id);
+      const { data: club_members, error: club_members_error } = await supabase
+        .from("club_enrolments")
+        .select("user_id")
+        .eq("club_id", club.id);
       if (club_members_error) {
         throw new Error(club_members_error.message);
       }
@@ -56,7 +55,7 @@ export default function View() {
         throw new Error("Vous avez déjà rejoint ce club !");
       }
 
-      const { data, error } = await supabaseClient
+      const { data, error } = await supabase
         .from("club_enrolments")
         .insert({ club_id: club.id, user_id: session?.user.id })
         .select();
@@ -86,7 +85,7 @@ export default function View() {
       }
 
       if (window.confirm("Voulez-vous vraiment quitter ce club ?")) {
-        const { data, error } = await supabaseClient
+        const { data, error } = await supabase
           .from("club_enrolments")
           .delete()
           .eq("club_id", club.id)
