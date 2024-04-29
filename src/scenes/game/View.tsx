@@ -13,7 +13,7 @@ import Information from "./components/Information";
 import Players from "./components/Players";
 import Result from "./components/Result";
 import LineUp from "./components/LineUp";
-import { SessionContext } from "@/App";
+import { SessionContext } from "@/components/auth-provider";
 import Container from "@/layout/Container";
 
 export type clubType = Tables<"clubs"> & {

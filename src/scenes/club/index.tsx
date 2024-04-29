@@ -5,8 +5,8 @@ import Edit from "./Edit";
 export default function Club() {
   return (
     <Routes>
-      <Route path=":id/" element={<View />} />
-      <Route path=":id/edit" element={<Edit />} />
+      <Route path="/" element={<View />} />
+      <Route path="edit" element={<Edit />} />
     </Routes>
   );
 }

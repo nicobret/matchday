@@ -4,7 +4,7 @@ import { UserMenu } from "@/components/UserMenu";
 
 export default function Header() {
   return (
-    <header className="relative flex items-center justify-between p-2">
+    <header className="max-w-screen-xl mx-auto flex items-center justify-between p-2">
       <div className="flex items-center gap-2">
         <NavLink to="/">
           <div className="flex items-center gap-4 p-2">

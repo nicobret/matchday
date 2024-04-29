@@ -13,10 +13,10 @@ import {
   SelectTrigger,
 } from "@/components/ui/select";
 import { SelectValue } from "@radix-ui/react-select";
-import { Club, userIsMember } from "../clubs/clubs.service";
+import { Club, userIsMember } from "../club/club.service";
 import { User } from "@supabase/supabase-js";
 import supabase from "@/utils/supabase";
-import { SessionContext } from "@/App";
+import { SessionContext } from "@/components/auth-provider";
 
 export default function CreateGame() {
   const clubId = new URLSearchParams(window.location.search).get("clubId");
@@ -97,7 +97,7 @@ function GameForm({ user, club }: { user: User; club: Club }) {
     if (!game) return;
 
     window.alert("Match créé avec succès");
-    navigate(`/games/${game.id}`);
+    navigate(`/game/${game.id}`);
   }
 
   return (

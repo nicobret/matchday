@@ -1,4 +1,4 @@
-import { Button, buttonVariants } from "@/components/ui/button";
+import { buttonVariants } from "@/components/ui/button";
 import {
   Card,
   CardContent,
@@ -8,7 +8,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Link } from "react-router-dom";
-import { Club } from "../../clubs.service";
+import { Club } from "../../club/club.service";
 import { ArrowRight, Eye } from "lucide-react";
 
 export default function ClubCard({

@@ -1,7 +1,7 @@
 import { useContext, useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import supabase from "@/utils/supabase";
-import { Club, userIsMember } from "./clubs.service";
+import { Club, userIsMember } from "./club.service";
 
 import { Check, ClipboardSignature } from "lucide-react";
 import Breadcrumbs from "@/components/Breadcrumbs";
@@ -10,7 +10,7 @@ import ClubInfo from "./components/ClubInfo";
 import UpcomingGames from "./components/UpcomingGames";
 import ClubMembers from "./components/ClubMembers";
 import ClubHistory from "./components/ClubHistory";
-import { SessionContext } from "@/App";
+import { SessionContext } from "@/components/auth-provider";
 
 export default function View() {
   const { session } = useContext(SessionContext);

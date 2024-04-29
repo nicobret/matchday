@@ -26,7 +26,7 @@ export default function Information({
           <Clipboard className="h-5 w-5 flex-none" />
           Informations
           <Button asChild variant="link" className="gap-2 ml-auto h-auto p-0">
-            <Link to={`/games/${game.id}/edit`}>
+            <Link to={`/game/${game.id}/edit`}>
               <Pencil className="h-4 w-4" />
               Modifier
             </Link>

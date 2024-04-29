@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import { gameSummary } from "@/scenes/games/games.service";
+import { gameSummary } from "@/scenes/game/games.service";
 import {
   Card,
   CardContent,
@@ -20,7 +20,7 @@ export default function GameCard({ game }: { game: gameSummary }) {
     <Card className="bg-accent">
       <CardHeader>
         <CardTitle className="hover:underline underline-offset-4 decoration-2 text-primary capitalize">
-          <Link to={"/games/" + game.id.toString()}>
+          <Link to={"/game/" + game.id.toString()}>
             {new Date(game.date).toLocaleDateString("fr-FR", {
               weekday: "long",
               month: "long",
@@ -44,7 +44,7 @@ export default function GameCard({ game }: { game: gameSummary }) {
 
       <CardFooter>
         <Link
-          to={"/games/" + game.id.toString()}
+          to={"/game/" + game.id.toString()}
           className={`${buttonVariants()} w-full`}
         >
           Voir
