@@ -15,6 +15,7 @@ import { SessionContext } from "@/components/auth-provider";
 export default function View() {
   const { session } = useContext(SessionContext);
   const { id } = useParams();
+  console.log("🚀 ~ View ~ id:", id);
   const [club, setClub] = useState<Club>();
   const [loading, setLoading] = useState(false);
 

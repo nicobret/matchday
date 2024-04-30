@@ -17,7 +17,6 @@ import {
 } from "@/components/ui/select";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import Breadcrumbs from "@/components/Breadcrumbs";
-import Container from "@/layout/Container";
 import { Save, Trash } from "lucide-react";
 import { SessionContext } from "@/components/auth-provider";
 
@@ -155,7 +154,7 @@ export default function EditClub() {
   }
 
   return (
-    <Container>
+    <div className="p-4">
       <Breadcrumbs
         links={[
           { label: club?.name, link: `/club/${id}` },
@@ -299,6 +298,6 @@ export default function EditClub() {
           )}
         </div>
       </form>
-    </Container>
+    </div>
   );
 }

@@ -1,7 +1,7 @@
 import "./index.css";
 import { Suspense, lazy } from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import Layout from "./layout/Layout.tsx";
+import Layout from "./components/Layout.tsx";
 import { ThemeProvider } from "./components/theme-provider.tsx";
 import SessionProvider from "./components/auth-provider.tsx";
 
@@ -21,8 +21,8 @@ export default function App() {
               <Routes>
                 <Route path="/" element={<Home />} />
                 <Route path="account" element={<Account />} />
-                <Route path="club/:id" element={<Club />} />
-                <Route path="game/:id" element={<Game />} />
+                <Route path="club/*" element={<Club />} />
+                <Route path="game/*" element={<Game />} />
                 <Route path="player/:id" element={<Player />} />
                 <Route path="*" element={<NotFound />} />
               </Routes>
@@ -35,7 +35,7 @@ export default function App() {
 }
 
 function NotFound() {
-  return <div>404 - Not Found</div>;
+  return <div>404 - Route not Found</div>;
 }
 
 function Fallback() {
