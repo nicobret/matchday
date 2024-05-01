@@ -1,10 +1,16 @@
 import { useEffect, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import supabase from "@/utils/supabase";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Button, buttonVariants } from "@/components/ui/button";
+import Breadcrumbs from "@/components/Breadcrumbs";
+import { Tables } from "types/supabase";
 
 export default function EditGame() {
   const { id } = useParams();
   const [loading, setLoading] = useState(false);
+  const [club, setClub] = useState<Tables<"clubs">>();
   const navigate = useNavigate();
 
   const [formData, setFormData] = useState({
@@ -21,20 +27,20 @@ export default function EditGame() {
       setLoading(true);
       const { data } = await supabase
         .from("games")
-        .select()
+        .select("*, club: clubs!games_club_id_fkey(*)")
         .eq("id", parseInt(id))
         .single()
         .throwOnError();
-
       if (data) {
         setFormData({
-          date: data.date,
+          date: new Date(data.date).toISOString().split("T")[0],
           duration: data.duration,
           location: data.location,
           score: data.score,
           status: data.status,
           total_players: data.total_players,
         });
+        setClub(data.club);
       }
     } catch (error) {
       console.error(error);
@@ -46,16 +52,8 @@ export default function EditGame() {
   async function updateGame() {
     try {
       setLoading(true);
-      const { error } = await supabase
-        .from("games")
-        .update(formData)
-        .eq("id", id);
-
-      if (error) {
-        throw new Error(error.message);
-      }
-
-      navigate("/");
+      await supabase.from("games").update(formData).eq("id", id).throwOnError();
+      navigate(`/game/${id}`);
     } catch (error) {
       console.error(error);
     } finally {
@@ -64,11 +62,9 @@ export default function EditGame() {
   }
 
   useEffect(() => {
-    if (!id) {
-      console.error("No id provided");
-      return;
+    if (id) {
+      getGame(id);
     }
-    getGame(id);
   }, [id]);
 
   if (loading) {
@@ -76,39 +72,58 @@ export default function EditGame() {
   }
 
   return (
-    <div>
-      <h1>Edit Game</h1>
+    <div className="p-4">
+      <Breadcrumbs
+        links={[
+          { label: club?.name, link: `/club/${club?.id}` },
+          { label: "Edit Game", link: `/game/${id}/edit` },
+        ]}
+      />
+      <h1 className="mt-6 scroll-m-20 text-3xl font-bold tracking-tight">
+        Edit Game
+      </h1>
       <form
         onSubmit={async (e) => {
           e.preventDefault();
           await updateGame();
         }}
+        className="mt-6"
       >
-        <input
+        <Label htmlFor="date">Date</Label>
+        <Input
+          name="date"
           type="date"
           value={formData.date}
           onChange={(e) => setFormData({ ...formData, date: e.target.value })}
         />
-        <input
+        <Label htmlFor="duration">Durée</Label>
+        <Input
+          name="duration"
           type="number"
           value={formData.duration}
           onChange={(e) =>
             setFormData({ ...formData, duration: parseInt(e.target.value) })
           }
         />
-        <input
+        <Label htmlFor="location">Adresse</Label>
+        <Input
+          name="location"
           type="text"
           value={formData.location}
           onChange={(e) =>
             setFormData({ ...formData, location: e.target.value })
           }
         />
-        <input
+        <Label htmlFor="status">Statut</Label>
+        <Input
+          name="status"
           type="text"
           value={formData.status}
           onChange={(e) => setFormData({ ...formData, status: e.target.value })}
         />
-        <input
+        <Label htmlFor="total_players">Nombre de joueurs</Label>
+        <Input
+          name="total_players"
           type="number"
           value={formData.total_players}
           onChange={(e) =>
@@ -118,15 +133,22 @@ export default function EditGame() {
             })
           }
         />
-        <input
+        <Label htmlFor="score">Score</Label>
+        <Input
+          name="score"
           type="text"
           value={formData.score}
           onChange={(e) =>
             setFormData({ ...formData, score: e.target.value.split(",") })
           }
         />
-        <button onClick={() => navigate("/")}>Cancel</button>
-        <button type="submit">Save</button>
+        <Link
+          to={`/game/${id}`}
+          className={buttonVariants({ variant: "secondary" })}
+        >
+          Retour
+        </Link>
+        <Button type="submit">Enregistrer</Button>
       </form>
     </div>
   );
