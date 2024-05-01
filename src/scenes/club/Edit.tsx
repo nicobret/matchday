@@ -1,7 +1,7 @@
 import { useContext, useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import supabase from "@/utils/supabase";
-import { Club } from "./clubs.service";
+import { Club } from "./club.service";
 import { countryList } from "@/lib/utils";
 
 import { Button } from "@/components/ui/button";
@@ -17,9 +17,8 @@ import {
 } from "@/components/ui/select";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import Breadcrumbs from "@/components/Breadcrumbs";
-import Container from "@/layout/Container";
 import { Save, Trash } from "lucide-react";
-import { SessionContext } from "@/App";
+import { SessionContext } from "@/components/auth-provider";
 
 export default function EditClub() {
   const { id } = useParams();
@@ -122,7 +121,7 @@ export default function EditClub() {
         throw new Error("Vous n'êtes pas autorisé à supprimer ce club.");
       }
       if (window.confirm("Voulez-vous vraiment supprimer ce club ?")) {
-        const { error } = await supabase
+        await supabase
           .from("clubs")
           .update({ deleted_at: new Date().toISOString() })
           .eq("id", club_id)
@@ -155,7 +154,7 @@ export default function EditClub() {
   }
 
   return (
-    <Container>
+    <div className="p-4">
       <Breadcrumbs
         links={[
           { label: club?.name, link: `/club/${id}` },
@@ -299,6 +298,6 @@ export default function EditClub() {
           )}
         </div>
       </form>
-    </Container>
+    </div>
   );
 }

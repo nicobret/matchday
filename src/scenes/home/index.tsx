@@ -1,9 +1,9 @@
 import { useContext, useEffect, useState } from "react";
 import supabase from "@/utils/supabase";
-import { SessionContext } from "@/App";
-import { Club } from "../clubs.service";
-import ClubCard from "./components/ClubCard";
+import { SessionContext } from "@/components/auth-provider";
+import { Club } from "../club/club.service";
 import CreateDialog from "./components/CreateDialog";
+import ClubCard from "./components/ClubCard";
 
 export default function List() {
   const { session } = useContext(SessionContext);

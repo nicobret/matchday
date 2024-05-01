@@ -24,7 +24,7 @@ export default function PlayersTable({ players }: { players: gamePlayer[] }) {
           <TableRow key={player.id}>
             <TableCell>
               <Link
-                to={`/players/${player.id}`}
+                to={`/player/${player.profile.id}`}
                 className="underline underline-offset-2"
               >
                 {player.profile?.firstname}

@@ -14,7 +14,7 @@ import { ThemeSupa } from "@supabase/auth-ui-shared";
 import { Button } from "./ui/button";
 import { ModeToggle } from "./mode-toggle";
 import { useContext } from "react";
-import { SessionContext } from "@/App";
+import { SessionContext } from "@/components/auth-provider";
 import { Link } from "react-router-dom";
 
 export function UserMenu() {

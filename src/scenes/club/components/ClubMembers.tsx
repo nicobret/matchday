@@ -85,7 +85,7 @@ export default function ClubMembers({ clubId }: { clubId: number }) {
                   <TableCell>{player.role}</TableCell>
                   <TableCell>
                     <Link
-                      to={`/players/${player.id}`}
+                      to={`/player/${player.profile.id}`}
                       className={buttonVariants({ variant: "secondary" })}
                     >
                       Voir

@@ -1,8 +1,8 @@
 import { useContext, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { Club, userIsMember } from "../../clubs.service";
+import { Club, userIsMember } from "../club.service";
 import supabase from "@/utils/supabase";
-import { gameSummary } from "@/scenes/games/games.service";
+import { gameSummary } from "@/scenes/game/games.service";
 
 import {
   Card,
@@ -21,7 +21,7 @@ import {
 import GameCard from "./GameCard";
 import { Plus, Trophy } from "lucide-react";
 import { buttonVariants } from "@/components/ui/button";
-import { SessionContext } from "@/App";
+import { SessionContext } from "@/components/auth-provider";
 
 export default function UpcomingGames({ club }: { club: Club }) {
   const { session } = useContext(SessionContext);
@@ -89,7 +89,7 @@ export default function UpcomingGames({ club }: { club: Club }) {
       <CardFooter className="flex justify-end gap-2 mt-auto">
         {session?.user && club && userIsMember(session?.user, club) && (
           <Link
-            to={`/games/create?clubId=${club.id}`}
+            to={`/game/create?clubId=${club.id}`}
             className={buttonVariants({ variant: "secondary" })}
           >
             <Plus className="h-5 w-5 mr-2" />

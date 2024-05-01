@@ -7,10 +7,10 @@ import {
 } from "@/components/ui/card";
 import { Book, Clipboard, MapPin, Pencil, Shield } from "lucide-react";
 import { Link } from "react-router-dom";
-import { Club, userIsAdmin } from "../../clubs.service";
+import { Club, userIsAdmin } from "../club.service";
 import { buttonVariants } from "@/components/ui/button";
 import { useContext } from "react";
-import { SessionContext } from "@/App";
+import { SessionContext } from "@/components/auth-provider";
 
 export default function ClubInfo({ club }: { club: Club }) {
   const { session } = useContext(SessionContext);
