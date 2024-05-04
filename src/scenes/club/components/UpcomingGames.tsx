@@ -1,8 +1,6 @@
 import { useContext, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { Club, userIsMember } from "../club.service";
-import supabase from "@/utils/supabase";
-import { gameSummary } from "@/scenes/game/games.service";
+import { Club, Game, fetchUpcomingGames, isMember } from "../club.service";
 
 import {
   Card,
@@ -25,30 +23,15 @@ import { SessionContext } from "@/components/auth-provider";
 
 export default function UpcomingGames({ club }: { club: Club }) {
   const { session } = useContext(SessionContext);
-  const [games, setGames] = useState<gameSummary[]>([]);
+  const [games, setGames] = useState<Game[]>([]);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    async function getGames() {
-      try {
-        setLoading(true);
-
-        const { data, error } = await supabase
-          .from("games")
-          .select("*, game_registrations(*)")
-          .eq("club_id", club.id)
-          .gte("date", new Date().toISOString())
-          .order("date");
-
-        if (error) throw new Error(error.message);
-        if (data) setGames(data);
-      } catch (error) {
-        console.error(error);
-      } finally {
-        setLoading(false);
-      }
-    }
-    getGames();
+    setLoading(true);
+    fetchUpcomingGames(club.id)
+      .then((data) => setGames(data))
+      .catch(console.error)
+      .finally(() => setLoading(false));
   }, [club.id]);
 
   if (loading) {
@@ -56,10 +39,10 @@ export default function UpcomingGames({ club }: { club: Club }) {
   }
 
   return (
-    <Card className="md:col-span-2 flex flex-col">
+    <Card className="flex flex-col md:col-span-2">
       <CardHeader>
         <CardTitle>
-          <div className="flex gap-3 items-center">
+          <div className="flex items-center gap-3">
             <Trophy className="h-5 w-5" />
             Matches à venir
           </div>
@@ -86,13 +69,13 @@ export default function UpcomingGames({ club }: { club: Club }) {
         )}
       </CardContent>
 
-      <CardFooter className="flex justify-end gap-2 mt-auto">
-        {session?.user && club && userIsMember(session?.user, club) && (
+      <CardFooter className="mt-auto flex justify-end gap-2">
+        {session?.user && club && isMember(session?.user, club) && (
           <Link
             to={`/game/create?clubId=${club.id}`}
             className={buttonVariants({ variant: "secondary" })}
           >
-            <Plus className="h-5 w-5 mr-2" />
+            <Plus className="mr-2 h-5 w-5" />
             Créer
           </Link>
         )}

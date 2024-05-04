@@ -1,23 +1,30 @@
 import supabase from "@/utils/supabase";
+import { Session } from "@supabase/supabase-js";
 import { createContext, useEffect, useState } from "react";
 
-export const SessionContext = createContext(null);
+export const SessionContext = createContext<{
+  session: Session | null;
+  setSession: (session: Session | null) => void;
+}>({
+  session: null,
+  setSession: () => {},
+});
 
-export default function SessionProvider({ children }) {
-  const [session, setSession] = useState(null);
-
-  async function getSession() {
-    const {
-      data: { session },
-    } = await supabase.auth.getSession();
-    if (session) {
-      setSession(session);
-    }
+async function fetchSession() {
+  const { error } = await supabase.auth.getSession();
+  if (error) {
+    throw new Error(error.message);
   }
+}
+
+export default function SessionProvider({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  const [session, setSession] = useState<Session | null>(null);
 
   useEffect(() => {
-    getSession();
-
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((event, session) => {
@@ -27,6 +34,8 @@ export default function SessionProvider({ children }) {
         setSession(session);
       }
     });
+
+    fetchSession().catch(console.error);
 
     return () => {
       subscription.unsubscribe();
