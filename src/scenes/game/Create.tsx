@@ -63,26 +63,31 @@ function GameForm({ user, club }: { user: User; club: Club }) {
   const [date, setDate] = useState("");
   const [time, setTime] = useState("");
   const [playerCount, setPlayerCount] = useState(10);
+  const [loading, setLoading] = useState(false);
   const [location, setLocation] = useState(
     `${club?.address}, ${club?.postcode} ${club?.city}`,
   );
 
-  async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
+  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     if (!date || !time || !playerCount || !location) return;
     const dateString = new Date(`${date} ${time}`).toISOString();
-
-    const game = await createGame({
-      date: dateString,
-      location,
-      total_players: playerCount,
-      creator_id: user.id,
-      club_id: club.id,
-    });
-    if (!game) return;
-
-    window.alert("Match créé avec succès");
-    navigate(`/game/${game.id}`);
+    setLoading(true);
+    try {
+      const game = await createGame({
+        date: dateString,
+        location,
+        total_players: playerCount,
+        creator_id: user.id,
+        club_id: club.id,
+      });
+      window.alert("Match créé avec succès");
+      navigate(`/game/${game.id}`);
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setLoading(false);
+    }
   }
 
   return (
@@ -99,7 +104,7 @@ function GameForm({ user, club }: { user: User; club: Club }) {
         Créer un match
       </h2>
 
-      <form onSubmit={onSubmit}>
+      <form onSubmit={handleSubmit}>
         <div className="my-6 grid w-full max-w-sm grid-cols-2 gap-3">
           <div className="grid w-full max-w-sm items-center gap-2">
             <Label htmlFor="sportType">Sport</Label>
@@ -165,7 +170,9 @@ function GameForm({ user, club }: { user: User; club: Club }) {
           <Button type="button" asChild variant="secondary">
             <Link to={`/clubs/${club.id}`}>Annuler</Link>
           </Button>
-          <Button type="submit">Créer</Button>
+          <Button type="submit" disabled={loading}>
+            Créer
+          </Button>
         </div>
       </form>
     </div>
