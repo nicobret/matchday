@@ -1,5 +1,4 @@
-import { useEffect, useState } from "react";
-import supabase from "@/utils/supabase";
+import { useContext, useEffect, useState } from "react";
 import Breadcrumbs from "@/components/Breadcrumbs";
 import { Button } from "@/components/ui/button";
 import {
@@ -11,32 +10,14 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Tables } from "types/supabase";
+import { SessionContext } from "@/components/auth-provider";
+import { fetchProfile, updateProfile } from "./account.service";
 
 export default function Account() {
   const [loading, setLoading] = useState(true);
-  const [profile, setProfile] = useState(null);
-
-  async function getProfile() {
-    try {
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
-      const { data } = await supabase
-        .from("users")
-        .select()
-        .eq("id", user.id)
-        .single()
-        .throwOnError();
-      if (!data) {
-        throw new Error("Profile not found");
-      }
-      setProfile(data);
-    } catch (error) {
-      console.error(error);
-    } finally {
-      setLoading(false);
-    }
-  }
+  const [profile, setProfile] = useState<Tables<"users">>(null);
+  const { session } = useContext(SessionContext);
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -44,16 +25,8 @@ export default function Account() {
     const firstname = formData.get("firstName") as string;
     const lastname = formData.get("lastName") as string;
     try {
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
-      const { data: updatedProfile } = await supabase
-        .from("users")
-        .update({ firstname, lastname })
-        .eq("id", user.id)
-        .select("*")
-        .throwOnError();
-      setProfile(updatedProfile);
+      const data = await updateProfile(session.user.id, firstname, lastname);
+      setProfile(data);
       window.alert("Profil mis à jour");
     } catch (error) {
       console.error(error);
@@ -61,8 +34,12 @@ export default function Account() {
   }
 
   useEffect(() => {
-    getProfile();
-  }, []);
+    setLoading(true);
+    fetchProfile(session.user.id)
+      .then((data) => setProfile(data))
+      .catch(console.error)
+      .finally(() => setLoading(false));
+  }, [session.user.id]);
 
   if (loading) {
     return <div className="animate-pulse">Chargement...</div>;
@@ -76,7 +53,7 @@ export default function Account() {
     <div className="p-4">
       <Breadcrumbs links={[{ label: "Mon compte", link: "/account" }]} />
 
-      <h2 className="scroll-m-20 border-b pb-2 text-3xl font-semibold tracking-tight mt-6">
+      <h2 className="mt-6 scroll-m-20 border-b pb-2 text-3xl font-semibold tracking-tight">
         Mon compte
       </h2>
 

@@ -48,7 +48,7 @@ export async function fetchGames() {
       player_count: game_registrations (count)
       score,
       opponent: game!opponent_id (id, name)
-    `
+    `,
   );
   if (error) {
     console.error(error);
@@ -89,7 +89,7 @@ export async function fetchGame(id: number) {
           status
         )
       )
-    `
+    `,
     )
     .eq("id", id)
     .single();
@@ -107,14 +107,13 @@ export async function createGame(game: {
   total_players: number;
   location: string;
 }) {
-  const { data, error } = await supabase.from("games").insert(game).select();
-
-  if (error) {
-    console.error(error);
-    return;
-  }
-
-  return data[0];
+  const { data } = await supabase
+    .from("games")
+    .insert(game)
+    .select()
+    .single()
+    .throwOnError();
+  return data;
 }
 
 export function gameHasStarted(game: Tables<"games">) {

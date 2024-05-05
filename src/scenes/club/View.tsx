@@ -1,7 +1,7 @@
 import { useContext, useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import supabase from "@/utils/supabase";
-import { Club, userIsMember } from "./club.service";
+import { Club, joinClub, isMember, fetchClub, leaveClub } from "./club.service";
+import { SessionContext } from "@/components/auth-provider";
 
 import { Check, ClipboardSignature } from "lucide-react";
 import Breadcrumbs from "@/components/Breadcrumbs";
@@ -10,7 +10,6 @@ import ClubInfo from "./components/ClubInfo";
 import UpcomingGames from "./components/UpcomingGames";
 import ClubMembers from "./components/ClubMembers";
 import ClubHistory from "./components/ClubHistory";
-import { SessionContext } from "@/components/auth-provider";
 
 export default function View() {
   const { session } = useContext(SessionContext);
@@ -18,55 +17,17 @@ export default function View() {
   const [club, setClub] = useState<Club>();
   const [loading, setLoading] = useState(false);
 
-  async function getClub(id: string) {
-    try {
-      setLoading(true);
-
-      const { data, error } = await supabase
-        .from("clubs")
-        .select("*, members: club_enrolments (*)")
-        .eq("id", id)
-        .single();
-
-      if (error) throw new Error(error.message);
-      if (data) setClub(data);
-    } catch (error) {
-      console.error(error);
-    } finally {
-      setLoading(false);
+  async function handleJoin() {
+    if (!session.user) {
+      throw new Error("User must be logged in.");
     }
-  }
-
-  async function joinClub() {
+    setLoading(true);
     try {
-      setLoading(true);
-      if (!session?.user) {
-        throw new Error("User must be logged in.");
-      }
-
-      const { data: club_members, error: club_members_error } = await supabase
-        .from("club_enrolments")
-        .select("user_id")
-        .eq("club_id", club.id);
-      if (club_members_error) {
-        throw new Error(club_members_error.message);
-      }
-      if (club_members.find((m) => m.user_id === session?.user.id)) {
-        throw new Error("Vous avez déjà rejoint ce club !");
-      }
-
-      const { data, error } = await supabase
-        .from("club_enrolments")
-        .insert({ club_id: club.id, user_id: session?.user.id })
-        .select();
-      if (error) {
-        throw new Error(error.message);
-      }
-
+      const data = await joinClub(club.id, session.user.id);
       if (data) {
         setClub((prev) => {
           if (!prev) return prev;
-          return { ...prev, members: [...prev.members, data[0]] };
+          return { ...prev, members: [...prev.members, data] };
         });
       }
     } catch (error) {
@@ -77,30 +38,21 @@ export default function View() {
     }
   }
 
-  async function leaveClub() {
+  async function handleLeave() {
+    if (!session?.user) {
+      throw new Error("User must be logged in.");
+    }
+    setLoading(true);
     try {
-      setLoading(true);
-      if (!session?.user) {
-        throw new Error("User must be logged in.");
-      }
-
       if (window.confirm("Voulez-vous vraiment quitter ce club ?")) {
-        const { data, error } = await supabase
-          .from("club_enrolments")
-          .delete()
-          .eq("club_id", club.id)
-          .select();
-        if (error) {
-          throw new Error(error.message);
-        }
-
+        const data = await leaveClub(club.id, session.user.id);
         if (data) {
           setClub((prev) => {
             if (!prev) return prev;
             return {
               ...prev,
               members: prev.members.filter(
-                (m) => m.user_id !== session?.user.id
+                (m) => m.user_id !== session?.user.id,
               ),
             };
           });
@@ -116,12 +68,16 @@ export default function View() {
 
   useEffect(() => {
     if (id) {
-      getClub(id);
+      setLoading(true);
+      fetchClub(parseInt(id))
+        .then((data) => setClub(data))
+        .catch(console.error)
+        .finally(() => setLoading(false));
     }
   }, [id]);
 
   if (loading) {
-    return <p className="text-center animate_pulse">Chargement...</p>;
+    return <p className="animate_pulse text-center">Chargement...</p>;
   }
 
   if (!club) {
@@ -132,28 +88,28 @@ export default function View() {
     <div className="p-4">
       <Breadcrumbs links={[{ label: club.name, link: "#" }]} />
 
-      <div className="flex gap-4 items-end scroll-m-20 border-b pb-3 mt-6 first:mt-0 mb-2">
-        <h2 className="text-3xl font-semibold tracking-tight">{club.name}</h2>
+      <div className="mb-2 mt-6 flex scroll-m-20 items-end gap-4 border-b pb-3 first:mt-0">
+        <h1 className="text-3xl font-semibold tracking-tight">{club.name}</h1>
 
         {session?.user &&
-          (userIsMember(session.user, club) ? (
+          (isMember(session.user, club) ? (
             <Button
-              onClick={() => leaveClub()}
+              onClick={handleLeave}
               variant="secondary"
-              className="flex gap-2 ml-auto"
+              className="ml-auto flex gap-2"
             >
               <Check className="h-5 w-5" />
               <span className="hidden md:block">Rejoint</span>
             </Button>
           ) : (
-            <Button onClick={() => joinClub()} className="flex gap-2 ml-auto">
+            <Button onClick={handleJoin} className="ml-auto flex gap-2">
               <ClipboardSignature className="h-5 w-5" />
               Rejoindre
             </Button>
           ))}
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 py-2">
+      <div className="grid grid-cols-1 gap-4 py-2 md:grid-cols-3">
         <ClubInfo club={club} />
         <UpcomingGames club={club} />
         <ClubMembers clubId={club.id} />

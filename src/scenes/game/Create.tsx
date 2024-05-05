@@ -13,40 +13,23 @@ import {
   SelectTrigger,
 } from "@/components/ui/select";
 import { SelectValue } from "@radix-ui/react-select";
-import { Club, userIsMember } from "../club/club.service";
+import { Club, fetchClub, isMember } from "../club/club.service";
 import { User } from "@supabase/supabase-js";
-import supabase from "@/utils/supabase";
 import { SessionContext } from "@/components/auth-provider";
 
 export default function CreateGame() {
   const clubId = new URLSearchParams(window.location.search).get("clubId");
   const { session } = useContext(SessionContext);
-
   const [club, setClub] = useState<Club | null>(null);
   const [loading, setLoading] = useState(false);
 
-  async function getClub(id: string) {
-    try {
-      setLoading(true);
-      const { data, error } = await supabase
-        .from("clubs")
-        .select("*, members: club_enrolments (*)")
-        .eq("id", id)
-        .single();
-      if (error) {
-        throw new Error(error.message);
-      }
-      if (data) setClub(data);
-    } catch (error) {
-      console.error(error);
-    } finally {
-      setLoading(false);
-    }
-  }
-
   useEffect(() => {
     if (clubId) {
-      getClub(clubId);
+      setLoading(true);
+      fetchClub(parseInt(clubId))
+        .then((data) => setClub(data))
+        .catch(console.error)
+        .finally(() => setLoading(false));
     }
   }, [clubId]);
 
@@ -66,8 +49,10 @@ export default function CreateGame() {
     );
   }
 
-  if (!userIsMember(session?.user, club)) {
-    return <p className="text-center">Vous n'êtes pas membre de ce club</p>;
+  if (!isMember(session?.user, club)) {
+    return (
+      <p className="text-center">Vous n&apos;êtes pas membre de ce club</p>
+    );
   }
 
   return <GameForm user={session?.user} club={club} />;
@@ -78,44 +63,49 @@ function GameForm({ user, club }: { user: User; club: Club }) {
   const [date, setDate] = useState("");
   const [time, setTime] = useState("");
   const [playerCount, setPlayerCount] = useState(10);
+  const [loading, setLoading] = useState(false);
   const [location, setLocation] = useState(
-    `${club?.address}, ${club?.postcode} ${club?.city}`
+    `${club?.address}, ${club?.postcode} ${club?.city}`,
   );
 
-  async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
+  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     if (!date || !time || !playerCount || !location) return;
     const dateString = new Date(`${date} ${time}`).toISOString();
-
-    const game = await createGame({
-      date: dateString,
-      location,
-      total_players: playerCount,
-      creator_id: user.id,
-      club_id: club.id,
-    });
-    if (!game) return;
-
-    window.alert("Match créé avec succès");
-    navigate(`/game/${game.id}`);
+    setLoading(true);
+    try {
+      const game = await createGame({
+        date: dateString,
+        location,
+        total_players: playerCount,
+        creator_id: user.id,
+        club_id: club.id,
+      });
+      window.alert("Match créé avec succès");
+      navigate(`/game/${game.id}`);
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setLoading(false);
+    }
   }
 
   return (
     <div className="p-4">
       <div className="flex items-center gap-1 text-sm text-muted-foreground">
         <Link to="/">Accueil</Link>
-        <ChevronRight className="w-4 h-4" />
+        <ChevronRight className="h-4 w-4" />
         <Link to="/games">Matches</Link>
-        <ChevronRight className="w-4 h-4" />
+        <ChevronRight className="h-4 w-4" />
         <Link to="#">Créer un match</Link>
       </div>
 
-      <h2 className="scroll-m-20 border-b pb-2 text-3xl font-semibold tracking-tight mt-6 mb-2">
+      <h2 className="mb-2 mt-6 scroll-m-20 border-b pb-2 text-3xl font-semibold tracking-tight">
         Créer un match
       </h2>
 
-      <form onSubmit={onSubmit}>
-        <div className="grid w-full max-w-sm grid-cols-2 gap-3 my-6">
+      <form onSubmit={handleSubmit}>
+        <div className="my-6 grid w-full max-w-sm grid-cols-2 gap-3">
           <div className="grid w-full max-w-sm items-center gap-2">
             <Label htmlFor="sportType">Sport</Label>
             <Select name="sportType" disabled>
@@ -143,7 +133,7 @@ function GameForm({ user, club }: { user: User; club: Club }) {
           </div>
         </div>
 
-        <div className="grid w-full max-w-sm grid-cols-2 gap-3 my-6">
+        <div className="my-6 grid w-full max-w-sm grid-cols-2 gap-3">
           <div className="grid w-full max-w-sm items-center gap-2">
             <Label htmlFor="date">Date du match</Label>
             <Input
@@ -165,7 +155,7 @@ function GameForm({ user, club }: { user: User; club: Club }) {
           </div>
         </div>
 
-        <div className="grid w-full max-w-sm items-center gap-2 my-6">
+        <div className="my-6 grid w-full max-w-sm items-center gap-2">
           <Label htmlFor="location">Lieu</Label>
           <Textarea
             id="location"
@@ -176,11 +166,13 @@ function GameForm({ user, club }: { user: User; club: Club }) {
           />
         </div>
 
-        <div className="flex items-center gap-3 max-w-sm justify-end">
+        <div className="flex max-w-sm items-center justify-end gap-3">
           <Button type="button" asChild variant="secondary">
             <Link to={`/clubs/${club.id}`}>Annuler</Link>
           </Button>
-          <Button type="submit">Créer</Button>
+          <Button type="submit" disabled={loading}>
+            Créer
+          </Button>
         </div>
       </form>
     </div>

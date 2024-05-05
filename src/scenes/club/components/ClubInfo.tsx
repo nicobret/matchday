@@ -7,7 +7,7 @@ import {
 } from "@/components/ui/card";
 import { Book, Clipboard, MapPin, Pencil, Shield } from "lucide-react";
 import { Link } from "react-router-dom";
-import { Club, userIsAdmin } from "../club.service";
+import { Club, isAdmin } from "../club.service";
 import { buttonVariants } from "@/components/ui/button";
 import { useContext } from "react";
 import { SessionContext } from "@/components/auth-provider";
@@ -19,7 +19,7 @@ export default function ClubInfo({ club }: { club: Club }) {
     <Card className="flex flex-col">
       <CardHeader>
         <CardTitle>
-          <div className="flex gap-3 items-center">
+          <div className="flex items-center gap-3">
             <Clipboard className="h-5 w-5" />
             Informations
           </div>
@@ -27,7 +27,7 @@ export default function ClubInfo({ club }: { club: Club }) {
       </CardHeader>
 
       <CardContent className="space-y-4">
-        <div className="flex gap-3 items-center">
+        <div className="flex items-center gap-3">
           <Shield className="h-5 w-5" />
           <p>
             Créé le{" "}
@@ -60,12 +60,12 @@ export default function ClubInfo({ club }: { club: Club }) {
       </CardContent>
 
       <CardFooter className="mt-auto flex justify-end">
-        {session?.user && userIsAdmin(session?.user, club) && (
+        {session?.user && isAdmin(session?.user, club) && (
           <Link
             className={buttonVariants({ variant: "secondary" })}
             to={`/club/${club.id}/edit`}
           >
-            <Pencil className="h-4 w-4 mr-2" />
+            <Pencil className="mr-2 h-4 w-4" />
             Modifier
           </Link>
         )}
