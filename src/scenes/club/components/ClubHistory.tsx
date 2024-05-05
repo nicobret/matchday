@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import supabase from "@/utils/supabase";
 import { Tables } from "types/supabase";
 
 import { buttonVariants } from "@/components/ui/button";
@@ -27,6 +26,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { ArrowRight, History as HistoryPicto } from "lucide-react";
+import { fetchPastGames } from "../club.service";
 
 export default function ClubHistory({ clubId }: { clubId: number }) {
   const [loading, setLoading] = useState(false);
@@ -34,23 +34,11 @@ export default function ClubHistory({ clubId }: { clubId: number }) {
   const [year, setYear] = useState("2024");
 
   useEffect(() => {
-    async function getGames() {
-      setLoading(true);
-      const { data, error } = await supabase
-        .from("games")
-        .select("*")
-        .eq("club_id", clubId)
-        .gte("date", new Date(parseInt(year), 0, 1).toISOString())
-        .lte("date", new Date(parseInt(year), 11, 31).toISOString())
-        .lte("date", new Date().toISOString())
-        .order("date", { ascending: false });
-      if (error) {
-        console.error(error);
-      }
-      setGames(data);
-      setLoading(false);
-    }
-    getGames();
+    setLoading(true);
+    fetchPastGames(clubId, year)
+      .then((data) => setGames(data))
+      .catch(console.error)
+      .finally(() => setLoading(false));
   }, [clubId, year]);
 
   return (
@@ -58,7 +46,7 @@ export default function ClubHistory({ clubId }: { clubId: number }) {
       <CardHeader>
         <CardTitle>
           <div className="flex items-center justify-between">
-            <div className="flex gap-3 items-center">
+            <div className="flex items-center gap-3">
               <HistoryPicto className="h-5 w-5" />
               Historique
             </div>
@@ -112,7 +100,7 @@ export default function ClubHistory({ clubId }: { clubId: number }) {
                       }
                     >
                       Voir
-                      <ArrowRight className="w-5 h-5 ml-2" />
+                      <ArrowRight className="ml-2 h-5 w-5" />
                     </Link>
                   </TableCell>
                 </TableRow>

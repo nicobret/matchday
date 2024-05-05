@@ -7,6 +7,16 @@ import { Button, buttonVariants } from "@/components/ui/button";
 import Breadcrumbs from "@/components/Breadcrumbs";
 import { Tables } from "types/supabase";
 
+async function fetchGame(id: string) {
+  const { data } = await supabase
+    .from("games")
+    .select("*, club: clubs!games_club_id_fkey(*)")
+    .eq("id", parseInt(id))
+    .single()
+    .throwOnError();
+  return data;
+}
+
 export default function EditGame() {
   const { id } = useParams();
   const [loading, setLoading] = useState(false);
@@ -15,39 +25,12 @@ export default function EditGame() {
 
   const [formData, setFormData] = useState({
     date: "",
-    duration: null,
+    duration: 60,
     location: "",
     score: [],
     status: "",
     total_players: 0,
   });
-
-  async function getGame(id: string) {
-    try {
-      setLoading(true);
-      const { data } = await supabase
-        .from("games")
-        .select("*, club: clubs!games_club_id_fkey(*)")
-        .eq("id", parseInt(id))
-        .single()
-        .throwOnError();
-      if (data) {
-        setFormData({
-          date: new Date(data.date).toISOString().split("T")[0],
-          duration: data.duration,
-          location: data.location,
-          score: data.score,
-          status: data.status,
-          total_players: data.total_players,
-        });
-        setClub(data.club);
-      }
-    } catch (error) {
-      console.error(error);
-    } finally {
-      setLoading(false);
-    }
-  }
 
   async function updateGame() {
     try {
@@ -63,7 +46,23 @@ export default function EditGame() {
 
   useEffect(() => {
     if (id) {
-      getGame(id);
+      setLoading(true);
+      fetchGame(id)
+        .then((data) => {
+          if (data) {
+            setFormData({
+              date: new Date(data.date).toISOString().split("T")[0],
+              duration: data.duration as number,
+              location: data.location,
+              score: data.score,
+              status: data.status,
+              total_players: data.total_players,
+            });
+            setClub(data.club);
+          }
+        })
+        .catch(console.error)
+        .finally(() => setLoading(false));
     }
   }, [id]);
 

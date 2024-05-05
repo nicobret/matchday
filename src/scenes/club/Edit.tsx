@@ -38,77 +38,25 @@ export default function EditClub() {
   });
 
   async function getClub(id: string) {
+    setLoading(true);
     try {
-      setLoading(true);
-      const { data, error } = await supabase
+      const { data } = await supabase
         .from("clubs")
         .select("*, members: club_enrolments (*)")
         .eq("id", parseInt(id))
-        .single();
-
-      if (error) {
-        throw new Error(error.message);
-      }
-
-      if (data) {
-        setClub(data);
-        setFormData({
-          id,
-          name: data.name,
-          description: data.description,
-          address: data.address,
-          postcode: data.postcode,
-          city: data.city,
-          country: data.country,
-        });
-      }
+        .single()
+        .throwOnError();
+      setClub(data);
+      setFormData({
+        id,
+        name: data.name,
+        description: data.description,
+        address: data.address,
+        postcode: data.postcode,
+        city: data.city,
+        country: data.country,
+      });
     } catch (error) {
-      console.error(error);
-    } finally {
-      setLoading(false);
-    }
-  }
-
-  async function updateClub({
-    id,
-    name,
-    description,
-    address,
-    postcode,
-    city,
-    country,
-  }: {
-    id: string;
-    name: string;
-    description: string;
-    address: string;
-    postcode: string;
-    city: string;
-    country: string;
-  }) {
-    try {
-      setLoading(true);
-
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
-
-      if (!user) {
-        throw new Error("Vous devez être connecté pour modifier un club.");
-      }
-
-      const { error } = await supabase
-        .from("clubs")
-        .update({ name, description, address, postcode, city, country })
-        .eq("id", parseInt(id));
-
-      if (error) {
-        throw new Error(error.message);
-      }
-
-      window.alert("Club modifié avec succès !");
-    } catch (error) {
-      window.alert(error);
       console.error(error);
     } finally {
       setLoading(false);
@@ -137,16 +85,44 @@ export default function EditClub() {
   }
 
   useEffect(() => {
-    if (id) getClub(id);
+    if (id) getClub(id).catch(console.error);
   }, [id]);
 
-  async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
+  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    if (id) await updateClub(formData);
+    setLoading(true);
+    try {
+      if (!session.user) {
+        throw new Error("Vous devez être connecté pour modifier un club.");
+      }
+
+      const { error } = await supabase
+        .from("clubs")
+        .update({
+          name: formData.name,
+          description: formData.description,
+          address: formData.address,
+          postcode: formData.postcode,
+          city: formData.city,
+          country: formData.country,
+        })
+        .eq("id", parseInt(id));
+
+      if (error) {
+        throw new Error(error.message);
+      }
+
+      window.alert("Club modifié avec succès !");
+    } catch (error) {
+      window.alert(error);
+      console.error(error);
+    } finally {
+      setLoading(false);
+    }
   }
 
   if (loading) {
-    return <p className="text-center animate_pulse">Chargement...</p>;
+    return <p className="animate_pulse text-center">Chargement...</p>;
   }
 
   if (!club) {
@@ -162,11 +138,11 @@ export default function EditClub() {
         ]}
       />
 
-      <h2 className="scroll-m-20 border-b pb-2 text-3xl font-semibold tracking-tight mt-6 mb-2">
+      <h2 className="mb-2 mt-6 scroll-m-20 border-b pb-2 text-3xl font-semibold tracking-tight">
         Modifier mon club
       </h2>
 
-      <form onSubmit={onSubmit} className="grid md:grid-cols-2 gap-4 mt-4">
+      <form onSubmit={handleSubmit} className="mt-4 grid gap-4 md:grid-cols-2">
         <Card>
           <CardHeader>
             <CardTitle className="scroll-m-20 border-b pb-2 text-3xl font-semibold tracking-tight first:mt-0">
@@ -187,7 +163,7 @@ export default function EditClub() {
               />
             </div>
 
-            <div className="grid w-full items-center gap-2 mt-4">
+            <div className="mt-4 grid w-full items-center gap-2">
               <Label htmlFor="clubdescription">Description</Label>
               <Textarea
                 id="clubdescription"
@@ -200,7 +176,7 @@ export default function EditClub() {
               />
             </div>
 
-            <div className="grid w-full items-center gap-2 mt-4">
+            <div className="mt-4 grid w-full items-center gap-2">
               <Label htmlFor="clubdescription">Logo</Label>
               <Input type="file" id="clublogo" />
             </div>
@@ -237,7 +213,7 @@ export default function EditClub() {
               </Select>
             </div>
 
-            <div className="grid w-full items-center gap-2 mt-4">
+            <div className="mt-4 grid w-full items-center gap-2">
               <Label htmlFor="address">Numéro et rue</Label>
               <Input
                 type="text"
@@ -250,7 +226,7 @@ export default function EditClub() {
               />
             </div>
 
-            <div className="grid md:grid-cols-2 w-full gap-4 mt-4">
+            <div className="mt-4 grid w-full gap-4 md:grid-cols-2">
               <div className="grid w-full max-w-sm items-center gap-2">
                 <Label htmlFor="postcode">Code Postal</Label>
                 <Input
@@ -280,9 +256,9 @@ export default function EditClub() {
           </CardContent>
         </Card>
 
-        <div className="grid md:grid-cols-2 w-full gap-4">
+        <div className="grid w-full gap-4 md:grid-cols-2">
           <Button type="submit" disabled={!formData.name}>
-            <Save className="w-5 h-5 mr-2" />
+            <Save className="mr-2 h-5 w-5" />
             Enregistrer
           </Button>
           {id && (
@@ -292,7 +268,7 @@ export default function EditClub() {
               disabled={loading || club.creator_id !== session?.user?.id}
               onClick={() => deleteClub(club.id)}
             >
-              <Trash className="w-5 h-5 mr-2" />
+              <Trash className="mr-2 h-5 w-5" />
               Supprimer le club
             </Button>
           )}
