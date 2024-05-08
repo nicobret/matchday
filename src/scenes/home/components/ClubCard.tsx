@@ -19,7 +19,7 @@ export default function ClubCard({
   isMember?: boolean;
 }) {
   return (
-    <Card className="w-full sm:w-72 flex flex-col">
+    <Card className="flex w-full flex-col sm:w-72">
       <CardHeader>
         <CardTitle className="truncate">
           <Link to={"/club/" + club.id.toString()}>{club.name}</Link>
@@ -27,19 +27,19 @@ export default function ClubCard({
       </CardHeader>
       <CardContent>
         <CardDescription>
-          {club.members.length} membres
+          {club.members ? club.members.length + "membres" : "Aucun membre"}
           <br />
           <span className="text-ellipsis">{club.description}</span>
         </CardDescription>
       </CardContent>
-      <CardFooter className="flex justify-end mt-auto">
+      <CardFooter className="mt-auto flex justify-end">
         {isMember ? (
           <Link
             to={"/club/" + club.id.toString()}
             className={`${buttonVariants()} w-full`}
           >
             Aller
-            <ArrowRight className="h-5 w-5 ml-2" />
+            <ArrowRight className="ml-2 h-5 w-5" />
           </Link>
         ) : (
           <Link
@@ -47,7 +47,7 @@ export default function ClubCard({
             className={`${buttonVariants({ variant: "secondary" })} w-full`}
           >
             Voir
-            <Eye className="h-5 w-5 ml-2" />
+            <Eye className="ml-2 h-5 w-5" />
           </Link>
         )}
       </CardFooter>

@@ -1,9 +1,7 @@
 import { useContext, useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import supabase from "@/utils/supabase";
-import { Club } from "./club.service";
+import { Club, deleteClub, fetchClub, updateClub } from "./club.service";
 import { countryList } from "@/lib/utils";
-
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -16,17 +14,16 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import Breadcrumbs from "@/components/Breadcrumbs";
+import { Breadcrumbs } from "@/components/Breadcrumbs";
 import { Save, Trash } from "lucide-react";
 import { SessionContext } from "@/components/auth-provider";
 
 export default function EditClub() {
   const { id } = useParams();
   const { session } = useContext(SessionContext);
+  const navigate = useNavigate();
   const [club, setClub] = useState<Club>();
   const [loading, setLoading] = useState(false);
-  const navigate = useNavigate();
-
   const [formData, setFormData] = useState({
     id: "",
     name: "",
@@ -34,27 +31,22 @@ export default function EditClub() {
     address: "",
     postcode: "",
     city: "",
-    country: "France",
+    country: "",
   });
 
   async function getClub(id: string) {
     setLoading(true);
     try {
-      const { data } = await supabase
-        .from("clubs")
-        .select("*, members: club_enrolments (*)")
-        .eq("id", parseInt(id))
-        .single()
-        .throwOnError();
+      const data = await fetchClub(parseInt(id));
       setClub(data);
       setFormData({
         id,
-        name: data.name,
-        description: data.description,
-        address: data.address,
-        postcode: data.postcode,
-        city: data.city,
-        country: data.country,
+        name: data.name || "",
+        description: data.description || "",
+        address: data.address || "",
+        postcode: data.postcode || "",
+        city: data.city || "",
+        country: data.country || "",
       });
     } catch (error) {
       console.error(error);
@@ -63,17 +55,16 @@ export default function EditClub() {
     }
   }
 
-  async function deleteClub(club_id: number) {
+  async function handleDelete(club: Club) {
     try {
+      if (!session?.user) {
+        throw new Error("Vous devez être connecté pour supprimer un club.");
+      }
       if (session.user?.id !== club.creator_id) {
         throw new Error("Vous n'êtes pas autorisé à supprimer ce club.");
       }
       if (window.confirm("Voulez-vous vraiment supprimer ce club ?")) {
-        await supabase
-          .from("clubs")
-          .update({ deleted_at: new Date().toISOString() })
-          .eq("id", club_id)
-          .throwOnError();
+        await deleteClub(club);
         window.alert("Club supprimé avec succès !");
         navigate("/");
       }
@@ -92,26 +83,14 @@ export default function EditClub() {
     e.preventDefault();
     setLoading(true);
     try {
-      if (!session.user) {
+      if (!session?.user) {
         throw new Error("Vous devez être connecté pour modifier un club.");
       }
-
-      const { error } = await supabase
-        .from("clubs")
-        .update({
-          name: formData.name,
-          description: formData.description,
-          address: formData.address,
-          postcode: formData.postcode,
-          city: formData.city,
-          country: formData.country,
-        })
-        .eq("id", parseInt(id));
-
-      if (error) {
-        throw new Error(error.message);
+      if (!id) {
+        throw new Error("Club non trouvé.");
       }
-
+      const data = await updateClub(formData, id);
+      setClub(data);
       window.alert("Club modifié avec succès !");
     } catch (error) {
       window.alert(error);
@@ -124,16 +103,14 @@ export default function EditClub() {
   if (loading) {
     return <p className="animate_pulse text-center">Chargement...</p>;
   }
-
   if (!club) {
     return <p className="text-center">Club non trouvé</p>;
   }
-
   return (
     <div className="p-4">
       <Breadcrumbs
         links={[
-          { label: club?.name, link: `/club/${id}` },
+          { label: club.name || "", link: `/club/${id}` },
           { label: "Modifier", link: "#" },
         ]}
       />
@@ -201,7 +178,7 @@ export default function EditClub() {
                 defaultValue="France"
               >
                 <SelectTrigger>
-                  <SelectValue placeholder="Select a verified email to display" />
+                  <SelectValue placeholder="Belgique" />
                 </SelectTrigger>
                 <SelectContent>
                   {countryList.map((country) => (
@@ -266,7 +243,7 @@ export default function EditClub() {
               type="button"
               variant="secondary"
               disabled={loading || club.creator_id !== session?.user?.id}
-              onClick={() => deleteClub(club.id)}
+              onClick={() => handleDelete(club)}
             >
               <Trash className="mr-2 h-5 w-5" />
               Supprimer le club

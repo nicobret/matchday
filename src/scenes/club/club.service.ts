@@ -3,7 +3,7 @@ import { User } from "@supabase/supabase-js";
 import { Tables } from "types/supabase";
 
 export type Club = Tables<"clubs"> & {
-  members: Tables<"club_enrolments">[] | null;
+  members: Tables<"club_enrolments">[];
 };
 
 export type Game = Tables<"games"> & {
@@ -15,10 +15,12 @@ export type Member = Tables<"club_enrolments"> & {
 };
 
 export function isMember(user: User, club: Club) {
+  if (!club.members) return false;
   return club.members.map((m) => m.user_id).includes(user.id);
 }
 
 export function isAdmin(user: User, club: Club) {
+  if (!club.members) return false;
   return club.members
     .filter((m) => m.role === "admin")
     .map((m) => m.user_id)
@@ -32,6 +34,36 @@ export async function fetchClub(id: number) {
     .eq("id", id)
     .single()
     .throwOnError();
+  if (!data) {
+    throw new Error("Club not found");
+  }
+  return data;
+}
+
+export async function updateClub(formData: any, id: string) {
+  const { data } = await supabase
+    .from("clubs")
+    .update({
+      name: formData.name,
+      description: formData.description,
+      address: formData.address,
+      postcode: formData.postcode,
+      city: formData.city,
+      country: formData.country,
+    })
+    .eq("id", parseInt(id))
+    .throwOnError();
+  if (data) return data;
+}
+
+export async function deleteClub(club: Club) {
+  const { data } = await supabase
+    .from("clubs")
+    .update({ deleted_at: new Date().toISOString() })
+    .eq("id", club.id)
+    .select()
+    .single()
+    .throwOnError();
   return data;
 }
 
@@ -43,6 +75,7 @@ export async function fetchUpcomingGames(clubId: number) {
     .gte("date", new Date().toISOString())
     .order("date")
     .throwOnError();
+  if (!data) return [];
   return data;
 }
 
@@ -56,6 +89,7 @@ export async function fetchPastGames(clubId: number, year: string) {
     .lte("date", new Date().toISOString())
     .order("date", { ascending: false })
     .throwOnError();
+  if (!data) return [];
   return data;
 }
 
@@ -76,6 +110,7 @@ export async function fetchMembers(clubId: number) {
     .select("*, profile: users(*)")
     .eq("club_id", clubId)
     .throwOnError();
+  if (!data) return [];
   return data;
 }
 
@@ -90,6 +125,9 @@ export async function joinClub(clubId: number, userId: string) {
     .select()
     .single()
     .throwOnError();
+  if (!data) {
+    throw new Error("Impossible de rejoindre ce club.");
+  }
   return data;
 }
 
@@ -106,5 +144,8 @@ export async function leaveClub(clubId: number, userId: string) {
     .select()
     .single()
     .throwOnError();
+  if (!data) {
+    throw new Error("Impossible de quitter ce club.");
+  }
   return data;
 }

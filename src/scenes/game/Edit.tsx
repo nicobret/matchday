@@ -4,7 +4,7 @@ import supabase from "@/utils/supabase";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button, buttonVariants } from "@/components/ui/button";
-import Breadcrumbs from "@/components/Breadcrumbs";
+import { Breadcrumbs } from "@/components/Breadcrumbs";
 import { Tables } from "types/supabase";
 
 async function fetchGame(id: string) {

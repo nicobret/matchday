@@ -1,9 +1,9 @@
 import "./index.css";
 import { Suspense, lazy } from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import Layout from "./components/Layout.tsx";
 import { ThemeProvider } from "./components/theme-provider.tsx";
-import SessionProvider from "./components/auth-provider.tsx";
+import { SessionProvider } from "./components/auth-provider.tsx";
+import Layout from "./components/Layout.tsx";
 
 const Account = lazy(() => import("./scenes/account"));
 const Club = lazy(() => import("./scenes/club"));
@@ -35,9 +35,13 @@ export default function App() {
 }
 
 function NotFound() {
-  return <div>404 - Route not Found</div>;
+  return <div className="text-center">404 - Page non trouvée</div>;
 }
 
 function Fallback() {
-  return <div>Loading...</div>;
+  return (
+    <div className="animate-pulse text-center">
+      Chargement de l'application...
+    </div>
+  );
 }

@@ -7,7 +7,7 @@ import { gameHasStarted } from "./games.service";
 import { Check, ClipboardSignature } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import Breadcrumbs from "@/components/Breadcrumbs";
+import { Breadcrumbs } from "@/components/Breadcrumbs";
 
 import Information from "./components/Information";
 import Players from "./components/Players";
@@ -110,7 +110,7 @@ export default function View() {
   }, [id]);
 
   if (!session?.user || !clubs || !game || !players) {
-    return <p className="text-center animate_pulse">Chargement...</p>;
+    return <p className="animate_pulse text-center">Chargement...</p>;
   }
 
   const hasStarted = gameHasStarted(game);
@@ -120,8 +120,8 @@ export default function View() {
     .map((p) => p.profile?.id)
     .includes(session?.user.id);
 
-  const userIsInClubs = clubs.map(
-    (c) => c.members?.map((m) => m.id).includes(parseInt(session?.user.id))
+  const userIsInClubs = clubs.map((c) =>
+    c.members?.map((m) => m.id).includes(parseInt(session?.user.id)),
   );
 
   const userCanJoinGame = userIsInClubs && !hasStarted && !userIsInGame;
@@ -135,7 +135,7 @@ export default function View() {
         ]}
       />
 
-      <div className="flex gap-4 items-end scroll-m-20 border-b pb-2 mt-6 mb-2">
+      <div className="mb-2 mt-6 flex scroll-m-20 items-end gap-4 border-b pb-2">
         <h2 className="text-3xl font-semibold tracking-tight">
           Match #{game.id}
         </h2>
@@ -147,7 +147,7 @@ export default function View() {
           <Button
             onClick={() => leaveGame(game.id, session?.user.id)}
             variant="secondary"
-            className="flex gap-2 ml-auto"
+            className="ml-auto flex gap-2"
           >
             <Check className="h-5 w-5" />
             <span className="hidden md:block">Inscrit</span>
@@ -157,7 +157,7 @@ export default function View() {
         {userCanJoinGame && (
           <Button
             onClick={() => joinGame(game.id, session?.user.id)}
-            className="flex gap-2 ml-auto"
+            className="ml-auto flex gap-2"
           >
             <ClipboardSignature className="h-5 w-5" />
             <span className="hidden md:block">S'inscrire</span>
@@ -165,7 +165,7 @@ export default function View() {
         )}
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 py-2">
+      <div className="grid grid-cols-1 gap-4 py-2 md:grid-cols-3">
         <Information game={game} clubs={clubs} />
         <Players game={game} players={players} />
         <LineUp
