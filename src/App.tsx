@@ -39,5 +39,9 @@ function NotFound() {
 }
 
 function Fallback() {
-  return <div>Loading...</div>;
+  return (
+    <div className="flex items-center justify-center h-screen w-full bg-red-600">
+      Chargement de l'application...
+    </div>
+  );
 }
