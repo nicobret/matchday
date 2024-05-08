@@ -2,18 +2,15 @@ import { useContext, useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import supabase from "@/utils/supabase";
 import { Tables } from "types/supabase";
-
+import { SessionContext } from "@/components/auth-provider";
 import { gameHasStarted } from "./games.service";
 import { Check, ClipboardSignature } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import { Breadcrumbs } from "@/components/Breadcrumbs";
-
 import Information from "./components/Information";
 import Players from "./components/Players";
 import Result from "./components/Result";
 import LineUp from "./components/LineUp";
-import { SessionContext } from "@/components/auth-provider";
 
 export type clubType = Tables<"clubs"> & {
   members: Tables<"club_enrolments">[] | null;
@@ -26,45 +23,39 @@ export type gamePlayer = Tables<"game_registrations"> & {
 export default function View() {
   const { id } = useParams();
   const { session } = useContext(SessionContext);
+  const [loading, setLoading] = useState(true);
   const [game, setGame] = useState<Tables<"games">>();
-  const [clubs, setClubs] = useState<clubType[]>();
+  const [club, setClub] = useState<clubType>();
   const [players, setPlayers] = useState<gamePlayer[]>();
 
   async function getData(id: number) {
-    const { data: gameData, error: gameError } = await supabase
-      .from("games")
-      .select()
-      .eq("id", id)
-      .single();
-    if (gameError) {
-      console.error(gameError);
-      return;
+    try {
+      setLoading(true);
+      const { data: game } = await supabase
+        .from("games")
+        .select()
+        .eq("id", id)
+        .single()
+        .throwOnError();
+      const { data: club } = await supabase
+        .from("clubs")
+        .select("*, members: club_enrolments (*)")
+        .eq("id", game.club_id)
+        .single()
+        .throwOnError();
+      const { data: players } = await supabase
+        .from("game_registrations")
+        .select("*, profile: users (*)")
+        .eq("game_id", id)
+        .throwOnError();
+      setGame(game);
+      setClub(club);
+      setPlayers(players);
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setLoading(false);
     }
-
-    const { data: clubsData, error: clubsError } = await supabase
-      .from("clubs")
-      .select("*, members: club_enrolments (*)")
-      .in("id", [
-        gameData.club_id,
-        gameData.opponent_id ? gameData.opponent_id : 0,
-      ]);
-    if (clubsError) {
-      console.error(clubsError);
-      return;
-    }
-
-    const { data: playersData, error: playersError } = await supabase
-      .from("game_registrations")
-      .select("*, profile: users (*)")
-      .eq("game_id", id);
-    if (playersError) {
-      console.error(playersError);
-      return;
-    }
-
-    setGame(gameData);
-    setClubs(clubsData);
-    setPlayers(playersData);
   }
 
   async function joinGame(game_id: number, user_id: string) {
@@ -102,15 +93,21 @@ export default function View() {
   }
 
   useEffect(() => {
-    if (!id) {
-      console.error("No id provided");
-      return;
+    if (id) {
+      getData(parseInt(id));
     }
-    getData(parseInt(id));
   }, [id]);
 
-  if (!session?.user || !clubs || !game || !players) {
-    return <p className="animate_pulse text-center">Chargement...</p>;
+  if (loading) {
+    return (
+      <div className="p-4">
+        <p className="animate_pulse text-center">Chargement des données...</p>
+      </div>
+    );
+  }
+
+  if (!game) {
+    return <div />;
   }
 
   const hasStarted = gameHasStarted(game);
@@ -120,28 +117,34 @@ export default function View() {
     .map((p) => p.profile?.id)
     .includes(session?.user.id);
 
-  const userIsInClubs = clubs.map((c) =>
-    c.members?.map((m) => m.id).includes(parseInt(session?.user.id)),
-  );
+  const userIsInClub = club?.members
+    ?.map((m) => m.user_id)
+    .includes(session?.user.id);
 
-  const userCanJoinGame = userIsInClubs && !hasStarted && !userIsInGame;
+  const userCanJoinGame = userIsInClub && !hasStarted && !userIsInGame;
 
   return (
     <div className="p-4">
       <Breadcrumbs
         links={[
-          { label: "Matches", link: "/games" },
-          { label: "Match #" + game?.id, link: "#" },
+          { label: club?.name, link: `/club/${club?.id}` },
+          {
+            label:
+              "Match du " +
+              new Date(game.date).toLocaleDateString("fr-FR", {
+                dateStyle: "long",
+              }),
+            link: "#",
+          },
         ]}
       />
 
-      <div className="mb-2 mt-6 flex scroll-m-20 items-end gap-4 border-b pb-2">
-        <h2 className="text-3xl font-semibold tracking-tight">
-          Match #{game.id}
-        </h2>
-        <div className="pb-1">
-          <Badge className="text-sm">{game.status}</Badge>
-        </div>
+      <div className="mb-2 mt-6 flex scroll-m-20 items-end gap-4">
+        <h1 className="text-3xl font-semibold tracking-tight">
+          {new Date(game.date).toLocaleDateString("fr-FR", {
+            dateStyle: "long",
+          })}
+        </h1>
 
         {userIsInGame && (
           <Button
@@ -165,15 +168,15 @@ export default function View() {
         )}
       </div>
 
-      <div className="grid grid-cols-1 gap-4 py-2 md:grid-cols-3">
-        <Information game={game} clubs={clubs} />
+      <div className="mt-6 grid grid-cols-1 gap-4 py-2 md:grid-cols-3">
+        <Information game={game} club={club} />
         <Players game={game} players={players} />
+        <Result game={game} />
         <LineUp
           players={players}
           setPlayers={setPlayers}
           disabled={!userIsInGame || hasStarted}
         />
-        <Result game={game} />
       </div>
     </div>
   );

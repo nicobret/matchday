@@ -1,43 +1,45 @@
 import { Tables } from "types/supabase";
 import { clubType } from "../View";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import {
   Calendar,
-  Clipboard,
   ClipboardSignature,
   Clock,
   MapPin,
   Pencil,
 } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
+import { buttonVariants } from "@/components/ui/button";
+import { AddToCalendarButton } from "add-to-calendar-button-react";
 
 export default function Information({
   game,
-  clubs,
+  club,
 }: {
   game: Tables<"games">;
-  clubs: clubType[];
+  club: clubType;
 }) {
+  const endTimestamp = new Date(game.date).getTime() + 2 * 60 * 60 * 1000;
+
   return (
     <Card>
       <CardHeader>
         <CardTitle className="flex gap-3 items-center">
-          <Clipboard className="h-5 w-5 flex-none" />
+          {/* <Clipboard className="h-5 w-5 flex-none" /> */}
           Informations
-          <Button asChild variant="link" className="gap-2 ml-auto h-auto p-0">
-            <Link to={`/game/${game.id}/edit`}>
-              <Pencil className="h-4 w-4" />
-              Modifier
-            </Link>
-          </Button>
         </CardTitle>
       </CardHeader>
+
       <CardContent className="space-y-2">
         <div className="flex gap-3 items-center">
           <ClipboardSignature className="h-4 w-4" />
-          {clubs[0].name}
-          {game.opponent_id ? " vs " + clubs[1].name : ""}
+          {club.name}
         </div>
 
         <div className="flex gap-3 items-center">
@@ -59,6 +61,34 @@ export default function Information({
           {game.location}
         </div>
       </CardContent>
+
+      <CardFooter className="flex gap-2 justify-end">
+        <AddToCalendarButton
+          name={`${club.name} - Match du ${new Date(
+            game.date
+          ).toLocaleDateString("fr-FR", {
+            dateStyle: "long",
+          })}`}
+          options={["Google", "Yahoo", "iCal"]}
+          location={game.location}
+          startDate={new Date(game.date).toISOString().slice(0, 10)}
+          endDate={new Date(game.date).toISOString().slice(0, 10)}
+          startTime={new Date(game.date).toLocaleTimeString("fr-FR", {
+            timeStyle: "short",
+          })}
+          endTime={new Date(endTimestamp).toLocaleTimeString("fr-FR", {
+            timeStyle: "short",
+          })}
+          timeZone="Europe/Paris"
+        />
+        <Link
+          to={`/game/${game.id}/edit`}
+          className={buttonVariants({ variant: "secondary" })}
+        >
+          <Pencil className="h-4 w-4 mr-2" />
+          Modifier
+        </Link>
+      </CardFooter>
     </Card>
   );
 }
