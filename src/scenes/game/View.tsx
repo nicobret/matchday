@@ -1,9 +1,8 @@
 import { useContext, useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import supabase from "@/utils/supabase";
-import { Tables } from "types/supabase";
 import { SessionContext } from "@/components/auth-provider";
-import { gameHasStarted } from "./games.service";
+import { Game, Player, fetchGame, fetchPlayers } from "./games.service";
 import { Check, ClipboardSignature } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Breadcrumbs } from "@/components/Breadcrumbs";
@@ -12,45 +11,28 @@ import Players from "./components/Players";
 import Result from "./components/Result";
 import LineUp from "./components/LineUp";
 
-export type clubType = Tables<"clubs"> & {
-  members: Tables<"club_enrolments">[] | null;
-};
-
-export type gamePlayer = Tables<"game_registrations"> & {
-  profile: Tables<"users"> | null;
-};
-
 export default function View() {
   const { id } = useParams();
   const { session } = useContext(SessionContext);
   const [loading, setLoading] = useState(true);
-  const [game, setGame] = useState<Tables<"games">>();
-  const [club, setClub] = useState<clubType>();
-  const [players, setPlayers] = useState<gamePlayer[]>();
+  const [game, setGame] = useState<Game>();
+  console.log("🚀 ~ View ~ game:", game);
+  const [players, setPlayers] = useState<Player[]>([]);
+  console.log("🚀 ~ View ~ players:", players);
 
-  async function getData(id: number) {
+  async function handleJoin(game_id: number, user_id: string) {
+    setLoading(true);
     try {
-      setLoading(true);
-      const { data: game } = await supabase
-        .from("games")
-        .select()
-        .eq("id", id)
-        .single()
-        .throwOnError();
-      const { data: club } = await supabase
-        .from("clubs")
-        .select("*, members: club_enrolments (*)")
-        .eq("id", game.club_id)
-        .single()
-        .throwOnError();
-      const { data: players } = await supabase
+      const { data } = await supabase
         .from("game_registrations")
+        .insert({ game_id, user_id, status: "confirmed" })
         .select("*, profile: users (*)")
-        .eq("game_id", id)
+        .single()
         .throwOnError();
-      setGame(game);
-      setClub(club);
-      setPlayers(players);
+      if (!data) {
+        throw new Error("Player not found");
+      }
+      setPlayers([...players, data]);
     } catch (error) {
       console.error(error);
     } finally {
@@ -58,44 +40,26 @@ export default function View() {
     }
   }
 
-  async function joinGame(game_id: number, user_id: string) {
-    const { data, error } = await supabase
-      .from("game_registrations")
-      .insert({
-        game_id,
-        user_id,
-        status: "confirmed",
-      })
-      .select("*, profile: users (*)")
-      .single();
-
-    if (error) {
-      console.error(error);
-      return;
-    }
-
-    setPlayers([...players, data]);
-  }
-
   async function leaveGame(game_id: number, user_id: string) {
-    const { error } = await supabase
+    await supabase
       .from("game_registrations")
       .delete()
       .eq("game_id", game_id)
-      .eq("user_id", user_id);
-
-    if (error) {
-      console.error(error);
-      return;
-    }
-
+      .eq("user_id", user_id)
+      .throwOnError();
     setPlayers(players.filter((p) => p.user_id !== user_id));
   }
 
   useEffect(() => {
-    if (id) {
-      getData(parseInt(id));
-    }
+    if (!id) return;
+    setLoading(true);
+    fetchGame(parseInt(id))
+      .then((data) => setGame(data))
+      .catch(console.error);
+    fetchPlayers(parseInt(id))
+      .then((data) => setPlayers(data))
+      .catch(console.error)
+      .finally(() => setLoading(false));
   }, [id]);
 
   if (loading) {
@@ -106,28 +70,20 @@ export default function View() {
     );
   }
 
-  if (!game) {
+  if (!game || !players) {
     return <div />;
   }
 
-  const hasStarted = gameHasStarted(game);
-
-  const userIsInGame = players
-    .filter((p) => p.status === "confirmed")
-    .map((p) => p.profile?.id)
-    .includes(session?.user.id);
-
-  const userIsInClub = club?.members
-    ?.map((m) => m.user_id)
-    .includes(session?.user.id);
-
-  const userCanJoinGame = userIsInClub && !hasStarted && !userIsInGame;
+  const hasStarted = new Date(game.date) < new Date();
+  const isPlayer = players.map((p) => p.profile?.id).includes(session?.user.id);
+  const isMember = club.members.some((m) => m.user_id === session?.user.id);
+  const canJoinGame = session?.user && isMember && !hasStarted && !isPlayer;
 
   return (
     <div className="p-4">
       <Breadcrumbs
         links={[
-          { label: club?.name, link: `/club/${club?.id}` },
+          { label: game.club.name || "Club", link: `/club/${game.club?.id}` },
           {
             label:
               "Match du " +
@@ -146,9 +102,9 @@ export default function View() {
           })}
         </h1>
 
-        {userIsInGame && (
+        {session && isPlayer && (
           <Button
-            onClick={() => leaveGame(game.id, session?.user.id)}
+            onClick={() => leaveGame(game.id, session.user.id)}
             variant="secondary"
             className="ml-auto flex gap-2"
           >
@@ -157,9 +113,9 @@ export default function View() {
           </Button>
         )}
 
-        {userCanJoinGame && (
+        {session && canJoinGame && (
           <Button
-            onClick={() => joinGame(game.id, session?.user.id)}
+            onClick={() => handleJoin(game.id, session.user.id)}
             className="ml-auto flex gap-2"
           >
             <ClipboardSignature className="h-5 w-5" />
@@ -169,13 +125,13 @@ export default function View() {
       </div>
 
       <div className="mt-6 grid grid-cols-1 gap-4 py-2 md:grid-cols-3">
-        <Information game={game} club={club} />
+        <Information game={game} />
         <Players game={game} players={players} />
         <Result game={game} />
         <LineUp
           players={players}
           setPlayers={setPlayers}
-          disabled={!userIsInGame || hasStarted}
+          disabled={!isPlayer || hasStarted}
         />
       </div>
     </div>
