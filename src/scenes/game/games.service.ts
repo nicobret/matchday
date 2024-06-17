@@ -6,7 +6,9 @@ export type Player = Tables<"game_registrations"> & {
 };
 
 export type Game = Tables<"games"> & {
-  club: Tables<"clubs">;
+  club: Tables<"clubs"> & {
+    members: Tables<"club_enrolments">[];
+  };
   players: Tables<"game_registrations">[];
 };
 
@@ -14,7 +16,11 @@ export async function fetchGame(id: number) {
   const { data } = await supabase
     .from("games")
     .select(
-      "*, club: clubs!games_club_id_fkey (*), players: game_registrations (*)",
+      `
+        *,
+        club: clubs!games_club_id_fkey (*, members: club_enrolments (*)),
+        players: game_registrations (*)
+      `,
     )
     .eq("id", id)
     .single()

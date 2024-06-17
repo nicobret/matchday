@@ -54,11 +54,16 @@ export default function View() {
     if (!id) return;
     setLoading(true);
     fetchGame(parseInt(id))
-      .then((data) => setGame(data))
-      .catch(console.error);
+      .then((data) => {
+        if (!data.club) {
+          throw new Error("Club not found");
+        }
+        setGame(data);
+      })
+      .catch((error) => console.error(error));
     fetchPlayers(parseInt(id))
       .then((data) => setPlayers(data))
-      .catch(console.error)
+      .catch((error) => console.error(error))
       .finally(() => setLoading(false));
   }, [id]);
 
@@ -76,14 +81,16 @@ export default function View() {
 
   const hasStarted = new Date(game.date) < new Date();
   const isPlayer = players.map((p) => p.profile?.id).includes(session?.user.id);
-  const isMember = club.members.some((m) => m.user_id === session?.user.id);
+  const isMember = game.club?.members.some(
+    (m) => m.user_id === session?.user.id,
+  );
   const canJoinGame = session?.user && isMember && !hasStarted && !isPlayer;
 
   return (
     <div className="p-4">
       <Breadcrumbs
         links={[
-          { label: game.club.name || "Club", link: `/club/${game.club?.id}` },
+          { label: game.club?.name || "Club", link: `/club/${game.club?.id}` },
           {
             label:
               "Match du " +
