@@ -7,9 +7,9 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Link } from "react-router-dom";
-import { gamePlayer } from "../View";
+import { Player } from "../games.service";
 
-export default function PlayersTable({ players }: { players: gamePlayer[] }) {
+export default function PlayersTable({ players }: { players: Player[] }) {
   return (
     <Table className="border">
       <TableHeader>
@@ -24,7 +24,7 @@ export default function PlayersTable({ players }: { players: gamePlayer[] }) {
           <TableRow key={player.id}>
             <TableCell>
               <Link
-                to={`/player/${player.profile.id}`}
+                to={`/player/${player.profile?.id}`}
                 className="underline underline-offset-2"
               >
                 {player.profile?.firstname}

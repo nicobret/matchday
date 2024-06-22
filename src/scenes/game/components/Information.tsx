@@ -31,7 +31,7 @@ export default function Information({ game }: { game: Game }) {
       <CardContent className="space-y-2">
         <div className="flex items-center gap-3">
           <ClipboardSignature className="h-4 w-4" />
-          {game.club.name}
+          {game.club?.name}
         </div>
 
         <div className="flex items-center gap-3">
@@ -56,7 +56,7 @@ export default function Information({ game }: { game: Game }) {
 
       <CardFooter className="flex justify-end gap-2">
         <AddToCalendarButton
-          name={`${game.club.name} - Match du ${new Date(
+          name={`${game.club?.name} - Match du ${new Date(
             game.date,
           ).toLocaleDateString("fr-FR", {
             dateStyle: "long",
@@ -64,7 +64,7 @@ export default function Information({ game }: { game: Game }) {
           options={["Google", "Yahoo", "iCal"]}
           location={
             game.location ||
-            `${game.club.address}, ${game.club.city} ${game.club.postcode}`
+            `${game.club?.address}, ${game.club?.city} ${game.club?.postcode}`
           }
           startDate={new Date(game.date).toISOString().slice(0, 10)}
           endDate={new Date(game.date).toISOString().slice(0, 10)}

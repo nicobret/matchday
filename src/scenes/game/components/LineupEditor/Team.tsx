@@ -1,6 +1,6 @@
 import { useDroppable } from "@dnd-kit/core";
-import { gamePlayer } from "../../View";
 import Player from "./Player";
+import { Player as PlayerType } from "../../games.service";
 
 export default function Team({
   label,
@@ -11,13 +11,13 @@ export default function Team({
   label: string;
   id: string;
   icon?: JSX.Element;
-  players: gamePlayer[];
+  players: PlayerType[];
 }) {
   const { isOver, setNodeRef } = useDroppable({ id: id as string });
   return (
     <div
       ref={setNodeRef}
-      className={`border-dashed border-2 bg-card-background rounded-lg p-3 min-h-24 ${
+      className={`bg-card-background min-h-24 rounded-lg border-2 border-dashed p-3 ${
         isOver ? "border-primary" : "border-input"
       }`}
     >

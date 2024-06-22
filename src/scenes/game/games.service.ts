@@ -6,10 +6,12 @@ export type Player = Tables<"game_registrations"> & {
 };
 
 export type Game = Tables<"games"> & {
-  club: Tables<"clubs"> & {
-    members: Tables<"club_enrolments">[];
-  };
-  players: Tables<"game_registrations">[];
+  club:
+    | (Tables<"clubs"> & {
+        members: Tables<"club_enrolments">[];
+      })
+    | null;
+  players?: Tables<"game_registrations">[];
 };
 
 export async function fetchGame(id: number) {
