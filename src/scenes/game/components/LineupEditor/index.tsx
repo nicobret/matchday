@@ -1,22 +1,27 @@
 import supabase from "@/utils/supabase";
-import { gamePlayer } from "../../View";
-import { DndContext } from "@dnd-kit/core";
+import { Player } from "../../games.service";
+import { DndContext, DragEndEvent } from "@dnd-kit/core";
 import { Shirt } from "lucide-react";
 import Team from "./Team";
 
-const teams = { none: null, home: 0, away: 1 };
+const teams: { [key: string]: number | null } = {
+  none: null,
+  home: 0,
+  away: 1,
+};
 
 export default function LineupEditor({
   players,
   setPlayers,
 }: {
-  players: gamePlayer[];
-  setPlayers: React.Dispatch<React.SetStateAction<gamePlayer[]>>;
+  players: Player[];
+  setPlayers: React.Dispatch<React.SetStateAction<Player[]>>;
 }) {
-  async function handleDrop(event) {
+  async function handleDrop(event: DragEndEvent) {
+    if (!event.over) return;
     const team = teams[event.over.id];
     setPlayers(
-      players.map((p) => (p.id === event.active.id ? { ...p, team } : p))
+      players.map((p) => (p.id === event.active.id ? { ...p, team } : p)),
     );
     const { error } = await supabase
       .from("game_registrations")
@@ -30,22 +35,22 @@ export default function LineupEditor({
 
   return (
     <DndContext onDragEnd={handleDrop}>
-      <div className="grid md:grid-cols-3 gap-4">
+      <div className="grid gap-4 md:grid-cols-3">
         <Team
           label="Disponible"
-          icon={<Shirt className="h-5 w-5 text-muted inline-block ml-2" />}
+          icon={<Shirt className="ml-2 inline-block h-5 w-5 text-muted" />}
           id="none"
           players={players.filter((p) => p.team === null)}
         />
         <Team
           label="Domicile"
-          icon={<Shirt className="h-5 w-5 text-yellow-300 inline-block ml-2" />}
+          icon={<Shirt className="ml-2 inline-block h-5 w-5 text-yellow-300" />}
           id="home"
           players={players.filter((p) => p.team === 0)}
         />
         <Team
           label="Visiteurs"
-          icon={<Shirt className="h-5 w-5 text-red-400 inline-block ml-2" />}
+          icon={<Shirt className="ml-2 inline-block h-5 w-5 text-red-400" />}
           id="away"
           players={players.filter((p) => p.team === 1)}
         />

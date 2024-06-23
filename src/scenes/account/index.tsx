@@ -1,5 +1,5 @@
-import { useContext, useEffect, useState } from "react";
-import Breadcrumbs from "@/components/Breadcrumbs";
+import { useEffect, useState } from "react";
+import { Breadcrumbs } from "@/components/Breadcrumbs";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -11,21 +11,22 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Tables } from "types/supabase";
-import { SessionContext } from "@/components/auth-provider";
 import { fetchProfile, updateProfile } from "./account.service";
 
 export default function Account() {
   const [loading, setLoading] = useState(true);
-  const [profile, setProfile] = useState<Tables<"users">>(null);
-  const { session } = useContext(SessionContext);
+  const [profile, setProfile] = useState<Tables<"users">>();
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const formData = new FormData(event.currentTarget);
     const firstname = formData.get("firstName") as string;
     const lastname = formData.get("lastName") as string;
+    if (!firstname || !lastname) {
+      return;
+    }
     try {
-      const data = await updateProfile(session.user.id, firstname, lastname);
+      const data = await updateProfile(firstname, lastname);
       setProfile(data);
       window.alert("Profil mis à jour");
     } catch (error) {
@@ -35,20 +36,18 @@ export default function Account() {
 
   useEffect(() => {
     setLoading(true);
-    fetchProfile(session.user.id)
+    fetchProfile()
       .then((data) => setProfile(data))
       .catch(console.error)
       .finally(() => setLoading(false));
-  }, [session.user.id]);
+  }, []);
 
   if (loading) {
     return <div className="animate-pulse">Chargement...</div>;
   }
-
   if (!profile) {
     return <div>Profil non trouvé</div>;
   }
-
   return (
     <div className="p-4">
       <Breadcrumbs links={[{ label: "Mon compte", link: "/account" }]} />
@@ -69,7 +68,7 @@ export default function Account() {
               name="firstName"
               className="input"
               placeholder="Prénom"
-              defaultValue={profile.firstname}
+              defaultValue={profile.firstname || ""}
             />
 
             <Label htmlFor="lastName">Nom</Label>
@@ -78,7 +77,7 @@ export default function Account() {
               name="lastName"
               className="input"
               placeholder="Nom"
-              defaultValue={profile.lastname}
+              defaultValue={profile.lastname || ""}
             />
           </form>
         </CardContent>

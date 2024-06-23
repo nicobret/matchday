@@ -2,9 +2,8 @@ import { useContext, useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { Club, joinClub, isMember, fetchClub, leaveClub } from "./club.service";
 import { SessionContext } from "@/components/auth-provider";
-
 import { Check, ClipboardSignature } from "lucide-react";
-import Breadcrumbs from "@/components/Breadcrumbs";
+import { Breadcrumbs } from "@/components/Breadcrumbs";
 import { Button } from "@/components/ui/button";
 import ClubInfo from "./components/ClubInfo";
 import UpcomingGames from "./components/UpcomingGames";
@@ -17,19 +16,17 @@ export default function View() {
   const [club, setClub] = useState<Club>();
   const [loading, setLoading] = useState(false);
 
-  async function handleJoin() {
-    if (!session.user) {
-      throw new Error("User must be logged in.");
-    }
-    setLoading(true);
+  async function handleJoin(club: Club) {
     try {
-      const data = await joinClub(club.id, session.user.id);
-      if (data) {
-        setClub((prev) => {
-          if (!prev) return prev;
-          return { ...prev, members: [...prev.members, data] };
-        });
+      if (!session?.user) {
+        throw new Error("User must be logged in.");
       }
+      setLoading(true);
+      const data = await joinClub(club.id, session.user.id);
+      setClub((prev) => {
+        if (!prev) return prev;
+        return { ...prev, members: [...prev.members, data] };
+      });
     } catch (error) {
       window.alert(error);
       console.error(error);
@@ -38,25 +35,21 @@ export default function View() {
     }
   }
 
-  async function handleLeave() {
-    if (!session?.user) {
-      throw new Error("User must be logged in.");
-    }
-    setLoading(true);
+  async function handleLeave(club: Club) {
     try {
+      if (!session?.user) {
+        throw new Error("Vous n'êtes pas connecté.");
+      }
       if (window.confirm("Voulez-vous vraiment quitter ce club ?")) {
-        const data = await leaveClub(club.id, session.user.id);
-        if (data) {
-          setClub((prev) => {
-            if (!prev) return prev;
-            return {
-              ...prev,
-              members: prev.members.filter(
-                (m) => m.user_id !== session?.user.id,
-              ),
-            };
-          });
-        }
+        setLoading(true);
+        await leaveClub(club.id, session.user.id);
+        setClub((prev) => {
+          if (!prev) return prev;
+          return {
+            ...prev,
+            members: prev.members.filter((m) => m.user_id !== session?.user.id),
+          };
+        });
       }
     } catch (error) {
       window.alert(error);
@@ -79,14 +72,12 @@ export default function View() {
   if (loading) {
     return <p className="animate_pulse text-center">Chargement...</p>;
   }
-
   if (!club) {
     return <p className="text-center">Club non trouvé</p>;
   }
-
   return (
     <div className="p-4">
-      <Breadcrumbs links={[{ label: club.name, link: "#" }]} />
+      <Breadcrumbs links={[{ label: club.name || "Club", link: "#" }]} />
 
       <div className="mb-2 mt-6 flex scroll-m-20 items-end gap-4 border-b pb-3 first:mt-0">
         <h1 className="text-3xl font-semibold tracking-tight">{club.name}</h1>
@@ -94,7 +85,7 @@ export default function View() {
         {session?.user &&
           (isMember(session.user, club) ? (
             <Button
-              onClick={handleLeave}
+              onClick={() => handleLeave(club)}
               variant="secondary"
               className="ml-auto flex gap-2"
             >
@@ -102,7 +93,10 @@ export default function View() {
               <span className="hidden md:block">Rejoint</span>
             </Button>
           ) : (
-            <Button onClick={handleJoin} className="ml-auto flex gap-2">
+            <Button
+              onClick={() => handleJoin(club)}
+              className="ml-auto flex gap-2"
+            >
               <ClipboardSignature className="h-5 w-5" />
               Rejoindre
             </Button>

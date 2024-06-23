@@ -32,6 +32,9 @@ export default function ClubMembers({ clubId }: { clubId: number }) {
       .finally(() => setLoading(false));
   }, [clubId]);
 
+  if (loading) {
+    return <p className="text-center">Chargement...</p>;
+  }
   return (
     <Card>
       <CardHeader>
@@ -58,15 +61,15 @@ export default function ClubMembers({ clubId }: { clubId: number }) {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {members.map((player) => (
-                <TableRow key={player.id}>
+              {members.map((member) => (
+                <TableRow key={member.id}>
                   <TableCell>
-                    {player.profile.firstname} {player.profile.lastname}
+                    {member.profile?.firstname} {member.profile?.lastname}
                   </TableCell>
-                  <TableCell>{player.role}</TableCell>
+                  <TableCell>{member.role}</TableCell>
                   <TableCell>
                     <Link
-                      to={`/player/${player.profile.id}`}
+                      to={`/member/${member.profile?.id}`}
                       className={buttonVariants({ variant: "secondary" })}
                     >
                       Voir

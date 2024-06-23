@@ -2,7 +2,7 @@ import supabase from "@/utils/supabase";
 import { Session } from "@supabase/supabase-js";
 import { createContext, useEffect, useState } from "react";
 
-export const SessionContext = createContext<{
+const SessionContext = createContext<{
   session: Session | null;
   setSession: (session: Session | null) => void;
 }>({
@@ -17,11 +17,7 @@ async function fetchSession() {
   }
 }
 
-export default function SessionProvider({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+function SessionProvider({ children }: { children: React.ReactNode }) {
   const [session, setSession] = useState<Session | null>(null);
 
   useEffect(() => {
@@ -48,3 +44,5 @@ export default function SessionProvider({
     </SessionContext.Provider>
   );
 }
+
+export { SessionContext, SessionProvider };

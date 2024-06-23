@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { Tables } from "types/supabase";
-
 import { buttonVariants } from "@/components/ui/button";
 import {
   Card,
@@ -41,6 +40,9 @@ export default function ClubHistory({ clubId }: { clubId: number }) {
       .finally(() => setLoading(false));
   }, [clubId, year]);
 
+  if (loading) {
+    return <p className="text-center">Chargement...</p>;
+  }
   return (
     <Card className="md:col-span-2">
       <CardHeader>

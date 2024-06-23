@@ -12,7 +12,7 @@ import { Game } from "../club.service";
 
 export default function GameCard({ game }: { game: Game }) {
   const count = game.players.filter((e) => e.status === "confirmed").length;
-  const isFull = count >= game.total_players;
+  const isFull = count >= (game.total_players || 10);
 
   return (
     <Card className="bg-accent">

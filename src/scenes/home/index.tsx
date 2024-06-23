@@ -19,7 +19,7 @@ export default function List() {
         .is("deleted_at", null)
         .order("created_at")
         .throwOnError();
-      setClubs(data);
+      if (data) setClubs(data);
     } catch (error) {
       console.error(error);
     } finally {
@@ -32,32 +32,32 @@ export default function List() {
   }, []);
 
   const myClubs = clubs.filter((c) =>
-    c.members.some((m) => m.user_id === session?.user?.id)
+    c.members?.some((m) => m.user_id === session?.user?.id),
   );
 
   const notMyClubs = clubs.filter(
-    (c) => !c.members.some((m) => m.user_id === session?.user?.id)
+    (c) => !c.members?.some((m) => m.user_id === session?.user?.id),
   );
 
   if (loading) {
-    return <p className="text-center animate-pulse">Chargement...</p>;
+    return (
+      <p className="animate-pulse text-center">Chargement des données...</p>
+    );
   }
-
   if (!clubs) {
     return <p className="text-center">Aucun club</p>;
   }
-
   return (
     <div className="p-4">
       {session?.user && (
         <>
-          <h2 className="scroll-m-20 border-b pb-2 text-3xl font-semibold tracking-tight mt-8 first:mt-0">
+          <h2 className="mt-8 scroll-m-20 border-b pb-2 text-3xl font-semibold tracking-tight first:mt-0">
             Mes clubs
           </h2>
 
           {session?.user && <CreateDialog />}
 
-          <div className="flex flex-wrap gap-6 mt-6">
+          <div className="mt-6 flex flex-wrap gap-6">
             {myClubs.length ? (
               myClubs.map((club) => (
                 <ClubCard key={club.id} club={club} isMember />
@@ -69,11 +69,11 @@ export default function List() {
         </>
       )}
 
-      <h2 className="scroll-m-20 border-b pb-2 text-3xl font-semibold tracking-tight mt-8 first:mt-0">
+      <h2 className="mt-8 scroll-m-20 border-b pb-2 text-3xl font-semibold tracking-tight first:mt-0">
         Trouver un club
       </h2>
 
-      <div className="flex flex-wrap gap-6 mt-4">
+      <div className="mt-4 flex flex-wrap gap-6">
         {notMyClubs.map((club) => (
           <ClubCard key={club.id} club={club} />
         ))}

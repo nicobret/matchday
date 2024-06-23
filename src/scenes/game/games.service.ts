@@ -1,101 +1,49 @@
 import supabase from "@/utils/supabase";
 import { Tables } from "types/supabase";
 
-export type gameType = {
-  id: number;
-  created_at: string;
-  status: "draft" | "published" | "canceled" | "finished";
-  club_id: string;
-  creator: {
-    id: string;
-    firstname: string;
-    lastname: string;
-    avatar: string;
-    status: string;
-  };
-  date: Date;
-  score: Array<{ count: number }>;
-  location: string;
-  total_players: number;
-  players: Array<{
-    id: string;
-    status: "accepted" | "pending" | "declined";
-    created_at: Date;
-    profile: {
-      id: string;
-      firstname: string;
-      lastname: string;
-      avatar: string;
-      status: string;
-    };
-  }>;
+export type Player = Tables<"game_registrations"> & {
+  profile: Tables<"users"> | null;
 };
 
-export type gameSummary = Tables<"games"> & {
-  game_registrations: Tables<"game_registrations">[];
+export type Game = Tables<"games"> & {
+  club:
+    | (Tables<"clubs"> & {
+        members: Tables<"club_enrolments">[];
+      })
+    | null;
+  players?: Tables<"game_registrations">[];
 };
-
-export async function fetchGames() {
-  const { data, error } = await supabase.from("games").select(
-    `
-      id,
-      created_at,
-      status,
-      club_id,
-      creator_id,
-      date,
-      location,
-      player_count: game_registrations (count)
-      score,
-      opponent: game!opponent_id (id, name)
-    `,
-  );
-  if (error) {
-    console.error(error);
-    return [];
-  }
-  return data as unknown as gameType[];
-}
 
 export async function fetchGame(id: number) {
-  const { data, error } = await supabase
+  const { data } = await supabase
     .from("games")
     .select(
       `
-      id,
-      created_at,
-      status,
-      score,
-      club_id,
-      creator: users (
-        id,
-        firstname,
-        lastname,
-        avatar,
-        status
-      ),
-      date,
-      location,
-      total_players,
-      players: game_registrations (
-        id,
-        status,
-        created_at,
-        profile: users (
-          id,
-          firstname,
-          lastname,
-          avatar,
-          status
-        )
-      )
-    `,
+        *,
+        club: clubs!games_club_id_fkey (*, members: club_enrolments (*)),
+        players: game_registrations (*)
+      `,
     )
     .eq("id", id)
-    .single();
-  if (error) {
-    console.error(error);
-    return;
+    .single()
+    .throwOnError();
+  if (!data) {
+    throw new Error("Game not found");
+  }
+  if (!data.club) {
+    throw new Error("Club not found");
+  }
+  return data;
+}
+
+export async function fetchPlayers(game_id: number) {
+  const { data } = await supabase
+    .from("game_registrations")
+    .select("*, profile: users (*)")
+    .eq("game_id", game_id)
+    .throwOnError();
+  if (!data) {
+    throw new Error("Players not found");
   }
   return data;
 }
@@ -114,9 +62,4 @@ export async function createGame(game: {
     .single()
     .throwOnError();
   return data;
-}
-
-export function gameHasStarted(game: Tables<"games">) {
-  if (!game.date) return false;
-  return new Date(game.date) < new Date();
 }
