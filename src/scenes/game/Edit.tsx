@@ -50,7 +50,6 @@ function Editor({
     duration: game.duration as number,
     location: game.location || "",
     score: game.score || [0, 0],
-    status: game.status,
     total_players: game.total_players || 10,
   });
   const navigate = useNavigate();
@@ -79,9 +78,11 @@ function Editor({
           { label: "Edit Game", link: `/game/${game.id}/edit` },
         ]}
       />
-      <h1 className="mt-6 scroll-m-20 text-3xl font-bold tracking-tight">
+
+      <h1 className="mt-6 scroll-m-20 text-2xl font-semibold tracking-tight">
         Edit Game
       </h1>
+
       <form
         onSubmit={async (e) => {
           e.preventDefault();
@@ -89,35 +90,38 @@ function Editor({
         }}
         className="mt-6"
       >
-        <Label htmlFor="date">Date</Label>
-        <Input
-          name="date"
-          type="date"
-          value={data.date}
-          onChange={(e) => setData({ ...data, date: e.target.value })}
-        />
-        <Label htmlFor="duration">Durée</Label>
-        <Input
-          name="duration"
-          type="number"
-          value={data.duration}
-          onChange={(e) =>
-            setData({ ...data, duration: parseInt(e.target.value) })
-          }
-        />
-        <Label htmlFor="location">Adresse</Label>
+        <div className="grid grid-cols-2 gap-4">
+          <div>
+            <Label htmlFor="date">Date</Label>
+            <Input
+              name="date"
+              type="date"
+              value={data.date}
+              onChange={(e) => setData({ ...data, date: e.target.value })}
+            />
+          </div>
+
+          <div>
+            <Label htmlFor="duration">Durée</Label>
+            <Input
+              name="duration"
+              type="number"
+              value={data.duration}
+              onChange={(e) =>
+                setData({ ...data, duration: parseInt(e.target.value) })
+              }
+            />
+          </div>
+        </div>
+
+        <Label htmlFor="location" className="m-2 bg-red-600">
+          Adresse
+        </Label>
         <Input
           name="location"
           type="text"
           value={data.location}
           onChange={(e) => setData({ ...data, location: e.target.value })}
-        />
-        <Label htmlFor="status">Statut</Label>
-        <Input
-          name="status"
-          type="text"
-          value={data.status}
-          onChange={(e) => setData({ ...data, status: e.target.value })}
         />
         <Label htmlFor="total_players">Nombre de joueurs</Label>
         <Input
@@ -132,9 +136,9 @@ function Editor({
           }
         />
 
+        <Label>Score</Label>
         <div className="grid grid-cols-2 gap-4">
           <div>
-            <Label htmlFor="score_home">Score home</Label>
             <Input
               name="score_home"
               type="text"
@@ -149,7 +153,6 @@ function Editor({
           </div>
 
           <div>
-            <Label htmlFor="score_away">Score visiteurs</Label>
             <Input
               name="score_away"
               type="text"
@@ -164,16 +167,18 @@ function Editor({
           </div>
         </div>
 
-        <Link
-          to={`/game/${game.id}`}
-          className={buttonVariants({ variant: "secondary" })}
-        >
-          Retour
-        </Link>
+        <div className="mt-8 grid grid-cols-2 gap-4">
+          <Link
+            to={`/game/${game.id}`}
+            className={buttonVariants({ variant: "secondary" })}
+          >
+            Retour
+          </Link>
 
-        <Button type="submit" disabled={loading}>
-          Enregistrer
-        </Button>
+          <Button type="submit" disabled={loading}>
+            Enregistrer
+          </Button>
+        </div>
       </form>
     </div>
   );
