@@ -4,8 +4,9 @@ import supabase from "@/utils/supabase";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button, buttonVariants } from "@/components/ui/button";
+import { Textarea } from "@/components/ui/textarea";
 import { Breadcrumbs } from "@/components/Breadcrumbs";
-import { Game, fetchGame } from "./games.service";
+import { Game, fetchGame, getGameDurationInMinutes } from "./games.service";
 
 export default function EditGame() {
   const { id } = useParams();
@@ -46,10 +47,12 @@ function Editor({
   setLoading: (loading: boolean) => void;
 }) {
   const [data, setData] = useState({
-    date: game.date,
-    duration: game.duration as number,
+    date: game.date.split("T")[0] || "",
+    time: new Date(game.date).toLocaleTimeString("fr-FR", {
+      timeStyle: "short",
+    }),
+    durationInMinutes: getGameDurationInMinutes(game.duration as string),
     location: game.location || "",
-    score: game.score || [0, 0],
     total_players: game.total_players || 10,
   });
   const navigate = useNavigate();
@@ -59,15 +62,21 @@ function Editor({
     try {
       await supabase
         .from("games")
-        .update(data)
+        .update({
+          date: `${data.date}T${data.time}+02:00`,
+          duration: data.durationInMinutes * 60,
+          location: data.location,
+          total_players: data.total_players,
+        })
         .eq("id", game.id)
+        .select("*")
+        .single()
         .throwOnError();
-      setLoading(false);
       navigate(`/game/${game.id}`);
     } catch (error) {
       console.error(error);
-      setLoading(false);
     }
+    setLoading(false);
   }
 
   return (
@@ -75,7 +84,13 @@ function Editor({
       <Breadcrumbs
         links={[
           { label: game.club?.name || "", link: `/club/${game.club?.id}` },
-          { label: "Edit Game", link: `/game/${game.id}/edit` },
+          {
+            label: `Match du ${new Date(game.date).toLocaleDateString("fr-FR", {
+              dateStyle: "long",
+            })}`,
+            link: `/game/${game.id}`,
+          },
+          { label: "Edition", link: `/game/${game.id}/edit` },
         ]}
       />
 
@@ -100,71 +115,53 @@ function Editor({
               onChange={(e) => setData({ ...data, date: e.target.value })}
             />
           </div>
-
           <div>
-            <Label htmlFor="duration">Durée</Label>
+            <Label htmlFor="time">Heure</Label>
             <Input
-              name="duration"
-              type="number"
-              value={data.duration}
-              onChange={(e) =>
-                setData({ ...data, duration: parseInt(e.target.value) })
-              }
+              name="time"
+              type="time"
+              value={data.time}
+              onChange={(e) => setData({ ...data, time: e.target.value })}
             />
           </div>
         </div>
 
-        <Label htmlFor="location" className="m-2 bg-red-600">
-          Adresse
-        </Label>
-        <Input
-          name="location"
-          type="text"
-          value={data.location}
-          onChange={(e) => setData({ ...data, location: e.target.value })}
-        />
-        <Label htmlFor="total_players">Nombre de joueurs</Label>
-        <Input
-          name="total_players"
-          type="number"
-          value={data.total_players}
-          onChange={(e) =>
-            setData({
-              ...data,
-              total_players: parseInt(e.target.value),
-            })
-          }
-        />
+        <div className="mt-4">
+          <Label htmlFor="location" className="">
+            Adresse
+          </Label>
+          <Textarea
+            name="location"
+            value={data.location}
+            onChange={(e) => setData({ ...data, location: e.target.value })}
+          />
+        </div>
 
-        <Label>Score</Label>
-        <div className="grid grid-cols-2 gap-4">
-          <div>
-            <Input
-              name="score_home"
-              type="text"
-              value={data.score[0]}
-              onChange={(e) =>
-                setData({
-                  ...data,
-                  score: [parseInt(e.target.value), data.score[1]],
-                })
-              }
-            />
-          </div>
+        <div className="mt-4">
+          <Label htmlFor="duration">Durée en minutes</Label>
+          <Input
+            name="duration"
+            type="number"
+            value={data.durationInMinutes}
+            onChange={(e) =>
+              setData({ ...data, durationInMinutes: parseInt(e.target.value) })
+            }
+          />
+        </div>
 
-          <div>
-            <Input
-              name="score_away"
-              type="text"
-              value={data.score[1]}
-              onChange={(e) =>
-                setData({
-                  ...data,
-                  score: [data.score[0], parseInt(e.target.value)],
-                })
-              }
-            />
-          </div>
+        <div className="mt-4">
+          <Label htmlFor="total_players">Nombre de joueurs</Label>
+          <Input
+            name="total_players"
+            type="number"
+            value={data.total_players}
+            onChange={(e) =>
+              setData({
+                ...data,
+                total_players: parseInt(e.target.value),
+              })
+            }
+          />
         </div>
 
         <div className="mt-8 grid grid-cols-2 gap-4">

@@ -72,10 +72,11 @@ export default function CreateGame() {
 
 function GameForm({ user, club }: { user: User; club: Club }) {
   const navigate = useNavigate();
+  const [loading, setLoading] = useState(false);
   const [date, setDate] = useState("");
   const [time, setTime] = useState("");
+  const [duration, setDuration] = useState(60);
   const [playerCount, setPlayerCount] = useState(10);
-  const [loading, setLoading] = useState(false);
   const [location, setLocation] = useState(
     `${club?.address}, ${club?.postcode} ${club?.city}`,
   );
@@ -93,6 +94,8 @@ function GameForm({ user, club }: { user: User; club: Club }) {
           date: new Date(`${date} ${time}`).toISOString(),
           total_players: playerCount,
           location: location,
+          status: "published",
+          duration: duration * 60,
         })
         .select()
         .single()
@@ -172,6 +175,16 @@ function GameForm({ user, club }: { user: User; club: Club }) {
               onChange={(e) => setTime(e.target.value)}
             />
           </div>
+        </div>
+
+        <div className="grid w-full max-w-sm items-center gap-2">
+          <Label htmlFor="duration">Durée en minutes</Label>
+          <Input
+            type="number"
+            id="duration"
+            value={duration}
+            onChange={(e) => setDuration(parseInt(e.target.value))}
+          />
         </div>
 
         <div className="my-6 grid w-full max-w-sm items-center gap-2">

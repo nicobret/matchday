@@ -63,3 +63,8 @@ export async function createGame(game: {
     .throwOnError();
   return data;
 }
+
+export function getGameDurationInMinutes(duration: string) {
+  const [hours, minutes] = duration.split(":");
+  return parseInt(hours) * 60 + parseInt(minutes);
+}
