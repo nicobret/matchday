@@ -6,7 +6,19 @@ import { Label } from "@/components/ui/label";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Breadcrumbs } from "@/components/Breadcrumbs";
-import { Game, fetchGame, getGameDurationInMinutes } from "./games.service";
+import {
+  Game,
+  categories,
+  fetchGame,
+  getGameDurationInMinutes,
+} from "./games.service";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 export default function EditGame() {
   const { id } = useParams();
@@ -51,9 +63,12 @@ function Editor({
     time: new Date(game.date).toLocaleTimeString("fr-FR", {
       timeStyle: "short",
     }),
-    durationInMinutes: getGameDurationInMinutes(game.duration as string),
+    durationInMinutes: getGameDurationInMinutes(
+      (game.duration as string) || "00:60:00",
+    ),
     location: game.location || "",
     total_players: game.total_players || 10,
+    category: game.category || "futsal",
   });
   const navigate = useNavigate();
 
@@ -149,19 +164,43 @@ function Editor({
           />
         </div>
 
-        <div className="mt-4">
-          <Label htmlFor="total_players">Nombre de joueurs</Label>
-          <Input
-            name="total_players"
-            type="number"
-            value={data.total_players}
-            onChange={(e) =>
-              setData({
-                ...data,
-                total_players: parseInt(e.target.value),
-              })
-            }
-          />
+        <div className="mt-4 grid grid-cols-2 gap-4">
+          <div>
+            <Label htmlFor="category">Sport</Label>
+            <Select
+              name="category"
+              value={data.category}
+              onValueChange={(v) => setData({ ...data, category: v })}
+              defaultValue={
+                categories.find((c) => c.value === data.category)?.value
+              }
+            >
+              <SelectTrigger>
+                <SelectValue placeholder="Choisir un sport" />
+              </SelectTrigger>
+              <SelectContent>
+                {categories.map((category) => (
+                  <SelectItem key={category.value} value={category.value}>
+                    {category.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+          <div>
+            <Label htmlFor="total_players">Nombre de joueurs</Label>
+            <Input
+              name="total_players"
+              type="number"
+              value={data.total_players}
+              onChange={(e) =>
+                setData({
+                  ...data,
+                  total_players: parseInt(e.target.value),
+                })
+              }
+            />
+          </div>
         </div>
 
         <div className="mt-8 grid grid-cols-2 gap-4">

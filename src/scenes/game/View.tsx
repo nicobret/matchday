@@ -16,9 +16,7 @@ export default function View() {
   const { session } = useContext(SessionContext);
   const [loading, setLoading] = useState(true);
   const [game, setGame] = useState<Game>();
-  console.log("🚀 ~ View ~ game:", game);
   const [players, setPlayers] = useState<Player[]>([]);
-  console.log("🚀 ~ View ~ players:", players);
 
   async function handleJoin(game_id: number, user_id: string) {
     setLoading(true);

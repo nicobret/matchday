@@ -68,3 +68,13 @@ export function getGameDurationInMinutes(duration: string) {
   const [hours, minutes] = duration.split(":");
   return parseInt(hours) * 60 + parseInt(minutes);
 }
+
+export const categories = [
+  { value: "futsal", label: "Futsal" },
+  { value: "football", label: "Football" },
+  { value: "basketball", label: "Basketball" },
+  { value: "handball", label: "Handball" },
+  { value: "volleyball", label: "Volleyball" },
+  { value: "rugby", label: "Rugby" },
+  { value: "party", label: "Troisième mi-temps" },
+];

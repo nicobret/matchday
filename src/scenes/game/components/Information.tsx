@@ -37,9 +37,6 @@ export default function Information({ game }: { game: Game }) {
           {new Date(game.date).toLocaleDateString("fr-FR", {
             dateStyle: "long",
           })}
-        </div>
-
-        <div className="flex items-center gap-3">
           <Clock className="h-4 w-4" />
           {new Date(game.date).toLocaleTimeString("fr-FR", {
             timeStyle: "short",
@@ -48,7 +45,8 @@ export default function Information({ game }: { game: Game }) {
 
         <div className="flex items-center gap-3">
           <Hourglass className="h-4 w-4" />
-          {getGameDurationInMinutes(game.duration as string)} minutes
+          {getGameDurationInMinutes(game.duration as string)} minutes -{" "}
+          {game.category}
         </div>
 
         <div className="flex items-center gap-3">
