@@ -184,6 +184,7 @@ export type Database = {
       };
       games: {
         Row: {
+          category: string | null;
           club_id: number;
           created_at: string;
           creator_id: string;
@@ -198,6 +199,7 @@ export type Database = {
           total_players: number | null;
         };
         Insert: {
+          category?: string | null;
           club_id: number;
           created_at?: string;
           creator_id: string;
@@ -212,6 +214,7 @@ export type Database = {
           total_players?: number | null;
         };
         Update: {
+          category?: string | null;
           club_id?: number;
           created_at?: string;
           creator_id?: string;
