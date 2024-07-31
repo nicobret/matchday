@@ -1,6 +1,7 @@
 import supabase from "@/utils/supabase";
 import { Session } from "@supabase/supabase-js";
 import { createContext, useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 const SessionContext = createContext<{
   session: Session | null;
@@ -19,6 +20,7 @@ async function fetchSession() {
 
 function SessionProvider({ children }: { children: React.ReactNode }) {
   const [session, setSession] = useState<Session | null>(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const {
@@ -26,6 +28,10 @@ function SessionProvider({ children }: { children: React.ReactNode }) {
     } = supabase.auth.onAuthStateChange((event, session) => {
       if (event === "SIGNED_OUT") {
         setSession(null);
+        navigate("/");
+      } else if (event === "SIGNED_IN") {
+        setSession(session);
+        navigate("/");
       } else if (session) {
         setSession(session);
       }

@@ -155,10 +155,10 @@ export default function EditClub() {
               />
             </div>
 
-            <div className="mt-4 grid w-full items-center gap-2">
-              <Label htmlFor="clubdescription">Logo</Label>
+            {/* <div className="mt-4 grid w-full items-center gap-2">
+              <Label htmlFor="clublogo">Logo</Label>
               <Input type="file" id="clublogo" />
-            </div>
+            </div> */}
           </CardContent>
         </Card>
 

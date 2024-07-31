@@ -1,11 +1,27 @@
-import { UserMenu } from "@/components/UserMenu";
-import { Trophy } from "lucide-react";
-import { NavLink } from "react-router-dom";
+import supabase from "@/utils/supabase";
+import { Trophy, UserCircle } from "lucide-react";
+import { useContext } from "react";
+import { Link, NavLink } from "react-router-dom";
+import { SessionContext } from "./auth-provider";
+import { ModeToggle } from "./mode-toggle";
+import { Button, buttonVariants } from "./ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "./ui/dropdown-menu";
 
 export default function Layout({ children }: { children: React.ReactNode }) {
+  const { session, setSession } = useContext(SessionContext);
+
+  async function logout() {
+    await supabase.auth.signOut();
+    setSession(null);
+  }
   return (
     <div className="relative">
-      <header className="fixed top-0 z-10 mx-auto flex w-full items-center justify-between bg-secondary p-2">
+      <header className="fixed top-0 z-10 mx-auto flex w-full items-center gap-2 border-b-[1px] border-b-border p-2 backdrop-blur">
         <div className="flex items-center gap-2">
           <NavLink to="/">
             <div className="flex items-center gap-4 p-2">
@@ -16,10 +32,36 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             </div>
           </NavLink>
         </div>
-        <UserMenu />
+        <div className="ml-auto">
+          <ModeToggle />
+        </div>
+        {session ? (
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="secondary" size="icon">
+                <UserCircle className="h-[1.2rem] w-[1.2rem]" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuItem>
+                <Link to="/account">Mon compte</Link>
+              </DropdownMenuItem>
+
+              <DropdownMenuItem onClick={logout}>
+                Se déconnecter
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        ) : (
+          <Link to="/auth" className={buttonVariants()}>
+            Connexion
+          </Link>
+        )}
       </header>
 
-      <main className="mx-auto mb-20 mt-20 max-w-7xl">{children}</main>
+      <main className="mx-auto mb-20 mt-20 min-h-screen max-w-7xl">
+        {children}
+      </main>
 
       <footer className="flex justify-center bg-muted p-6 text-muted-foreground">
         <p className="text-sm">

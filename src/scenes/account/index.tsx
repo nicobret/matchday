@@ -1,4 +1,3 @@
-import { useEffect, useState } from "react";
 import { Breadcrumbs } from "@/components/Breadcrumbs";
 import { Button } from "@/components/ui/button";
 import {
@@ -10,6 +9,7 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { useEffect, useState } from "react";
 import { Tables } from "types/supabase";
 import { fetchProfile, updateProfile } from "./account.service";
 
@@ -23,6 +23,7 @@ export default function Account() {
     const firstname = formData.get("firstName") as string;
     const lastname = formData.get("lastName") as string;
     if (!firstname || !lastname) {
+      window.alert("Veuillez remplir tous les champs");
       return;
     }
     try {
@@ -83,13 +84,7 @@ export default function Account() {
         </CardContent>
 
         <CardFooter>
-          <Button
-            form="profile-form"
-            type="submit"
-            disabled={
-              loading || !profile || !profile.firstname || !profile.lastname
-            }
-          >
+          <Button form="profile-form" type="submit" disabled={loading}>
             Enregistrer
           </Button>
         </CardFooter>

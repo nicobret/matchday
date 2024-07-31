@@ -1,9 +1,10 @@
 import { SessionContext } from "@/components/auth-provider";
 import { Breadcrumbs } from "@/components/Breadcrumbs";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { Check, ClipboardSignature } from "lucide-react";
 import { useContext, useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import { Club, fetchClub, isMember, joinClub, leaveClub } from "./club.service";
 import ClubHistory from "./components/ClubHistory";
 import ClubInfo from "./components/ClubInfo";
@@ -83,8 +84,7 @@ export default function View() {
   return (
     <div className="p-4">
       <Breadcrumbs links={[{ label: club.name || "Club", link: "#" }]} />
-
-      <div className="mb-2 mt-6 flex scroll-m-20 items-end gap-4 border-b pb-3 first:mt-0">
+      <div className="mb-4 mt-8 flex scroll-m-20 items-end gap-4 first:mt-0">
         <h1 className="text-3xl font-semibold tracking-tight">{club.name}</h1>
 
         {session?.user &&
@@ -108,6 +108,21 @@ export default function View() {
           ))}
       </div>
 
+      {session ? null : (
+        <Alert className="mb-2">
+          <AlertTitle>A savoir</AlertTitle>
+          <AlertDescription>
+            Pour rejoindre un club, veuillez{" "}
+            <Link
+              to="/auth"
+              className="decoration- underline underline-offset-4"
+            >
+              vous connecter
+            </Link>
+            .
+          </AlertDescription>
+        </Alert>
+      )}
       <div className="grid grid-cols-1 gap-4 py-2 md:grid-cols-3">
         <ClubInfo club={club} />
         <UpcomingGames club={club} />
