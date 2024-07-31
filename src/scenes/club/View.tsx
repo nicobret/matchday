@@ -1,14 +1,14 @@
-import { useContext, useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
-import { Club, joinClub, isMember, fetchClub, leaveClub } from "./club.service";
 import { SessionContext } from "@/components/auth-provider";
-import { Check, ClipboardSignature } from "lucide-react";
 import { Breadcrumbs } from "@/components/Breadcrumbs";
 import { Button } from "@/components/ui/button";
-import ClubInfo from "./components/ClubInfo";
-import UpcomingGames from "./components/UpcomingGames";
-import ClubMembers from "./components/ClubMembers";
+import { Check, ClipboardSignature } from "lucide-react";
+import { useContext, useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
+import { Club, fetchClub, isMember, joinClub, leaveClub } from "./club.service";
 import ClubHistory from "./components/ClubHistory";
+import ClubInfo from "./components/ClubInfo";
+import ClubMembers from "./components/ClubMembers";
+import UpcomingGames from "./components/UpcomingGames";
 
 export default function View() {
   const { session } = useContext(SessionContext);
@@ -25,7 +25,7 @@ export default function View() {
       const data = await joinClub(club.id, session.user.id);
       setClub((prev) => {
         if (!prev) return prev;
-        return { ...prev, members: [...prev.members, data] };
+        return { ...prev, members: [...(prev.members || []), data] };
       });
     } catch (error) {
       window.alert(error);
@@ -47,7 +47,9 @@ export default function View() {
           if (!prev) return prev;
           return {
             ...prev,
-            members: prev.members.filter((m) => m.user_id !== session?.user.id),
+            members: (prev.members || []).filter(
+              (m) => m.user_id !== session?.user.id,
+            ),
           };
         });
       }
