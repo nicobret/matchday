@@ -117,10 +117,6 @@ export async function fetchMembers(clubId: number) {
 }
 
 export async function joinClub(clubId: number, userId: string) {
-  const member = await fetchMember(clubId, userId);
-  if (member) {
-    throw new Error("Vous êtes déjà membre de ce club.");
-  }
   const { data } = await supabase
     .from("club_enrolments")
     .insert({ club_id: clubId, user_id: userId })

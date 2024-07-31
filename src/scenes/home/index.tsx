@@ -1,9 +1,9 @@
-import { useContext, useEffect, useState } from "react";
-import supabase from "@/utils/supabase";
 import { SessionContext } from "@/components/auth-provider";
+import supabase from "@/utils/supabase";
+import { useContext, useEffect, useState } from "react";
 import { Club } from "../club/club.service";
-import CreateDialog from "./components/CreateDialog";
 import ClubCard from "./components/ClubCard";
+import CreateDialog from "./components/CreateDialog";
 
 export default function List() {
   const { session } = useContext(SessionContext);
@@ -69,7 +69,7 @@ export default function List() {
         </>
       )}
 
-      <h2 className="mt-8 scroll-m-20 border-b pb-2 text-3xl font-semibold tracking-tight first:mt-0">
+      <h2 className="mb-4 mt-8 scroll-m-20 text-3xl font-semibold tracking-tight first:mt-0">
         Trouver un club
       </h2>
 

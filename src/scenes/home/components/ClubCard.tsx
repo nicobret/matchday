@@ -1,5 +1,3 @@
-import { Link } from "react-router-dom";
-import { Club } from "@/scenes/club/club.service";
 import { buttonVariants } from "@/components/ui/button";
 import {
   Card,
@@ -9,7 +7,9 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { Club } from "@/scenes/club/club.service";
 import { ArrowRight, Eye } from "lucide-react";
+import { Link } from "react-router-dom";
 
 export default function ClubCard({
   club,
@@ -27,7 +27,7 @@ export default function ClubCard({
       </CardHeader>
       <CardContent>
         <CardDescription>
-          {club.members ? club.members.length + "membres" : "Aucun membre"}
+          {club.members ? club.members.length + " membres" : "Aucun membre"}
           <br />
           <span className="text-ellipsis">{club.description}</span>
         </CardDescription>

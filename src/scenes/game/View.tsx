@@ -114,7 +114,7 @@ export default function View() {
             className="ml-auto flex gap-2"
           >
             <Check className="h-5 w-5" />
-            <span className="hidden md:block">Inscrit</span>
+            <span>Inscrit</span>
           </Button>
         )}
 
@@ -124,7 +124,7 @@ export default function View() {
             className="ml-auto flex gap-2"
           >
             <ClipboardSignature className="h-5 w-5" />
-            <span className="hidden md:block">S'inscrire</span>
+            <span>S'inscrire</span>
           </Button>
         )}
       </div>

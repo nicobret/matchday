@@ -21,6 +21,9 @@ export default function View() {
       if (!session?.user) {
         throw new Error("User must be logged in.");
       }
+      if (club.members?.some((m) => m.user_id === session.user.id)) {
+        throw new Error("User is already a member.");
+      }
       setLoading(true);
       const data = await joinClub(club.id, session.user.id);
       setClub((prev) => {
@@ -28,7 +31,7 @@ export default function View() {
         return { ...prev, members: [...(prev.members || []), data] };
       });
     } catch (error) {
-      window.alert(error);
+      window.alert("Une erreur est survenue.");
       console.error(error);
     } finally {
       setLoading(false);

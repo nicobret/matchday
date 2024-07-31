@@ -10,7 +10,9 @@ function Breadcrumbs({ links }: { links: { label: string; link: string }[] }) {
       <ChevronRight className="h-4 w-4" />
       {links.map((l, i) => (
         <div key={i} className="flex items-center gap-1">
-          <Link to={l.link}>{l.label}</Link>
+          <Link to={l.link} className="line-clamp-1">
+            {l.label}
+          </Link>
           {i < links.length - 1 && <ChevronRight className="h-4 w-4" />}
         </div>
       ))}

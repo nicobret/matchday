@@ -1,4 +1,3 @@
-import supabase from "@/utils/supabase";
 import {
   Sheet,
   SheetContent,
@@ -7,15 +6,15 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
+import supabase from "@/utils/supabase";
 
-import { UserCircle } from "lucide-react";
-import { Auth } from "@supabase/auth-ui-react";
-import { ThemeSupa } from "@supabase/auth-ui-shared";
-import { Button } from "./ui/button";
-import { ModeToggle } from "./mode-toggle";
-import { useContext } from "react";
 import { SessionContext } from "@/components/auth-provider";
+import { Auth } from "@supabase/auth-ui-react";
+import { UserCircle } from "lucide-react";
+import { useContext } from "react";
 import { Link } from "react-router-dom";
+import { ModeToggle } from "./mode-toggle";
+import { Button } from "./ui/button";
 
 export function UserMenu() {
   const { session, setSession } = useContext(SessionContext);
@@ -28,9 +27,13 @@ export function UserMenu() {
   return (
     <Sheet>
       <SheetTrigger asChild>
-        <Button variant="outline" size="icon">
-          <UserCircle className="h-[1.2rem] w-[1.2rem]" />
-        </Button>
+        {session ? (
+          <Button variant="outline" size="icon">
+            <UserCircle className="h-[1.2rem] w-[1.2rem]" />
+          </Button>
+        ) : (
+          <Button>Connexion</Button>
+        )}
       </SheetTrigger>
       <SheetContent>
         {session ? (
@@ -50,11 +53,9 @@ export function UserMenu() {
             <SheetDescription>
               Connectez-vous ou inscrivez-vous pour accéder à votre compte.
             </SheetDescription>
-            <Auth
-              supabaseClient={supabase}
-              appearance={{ theme: ThemeSupa }}
-              providers={[]}
-            />
+            <div>
+              <Auth supabaseClient={supabase} providers={[]} />
+            </div>
           </SheetHeader>
         )}
         <br />

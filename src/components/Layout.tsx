@@ -1,11 +1,11 @@
-import { NavLink } from "react-router-dom";
-import { Trophy } from "lucide-react";
 import { UserMenu } from "@/components/UserMenu";
+import { Trophy } from "lucide-react";
+import { NavLink } from "react-router-dom";
 
 export default function Layout({ children }: { children: React.ReactNode }) {
   return (
-    <>
-      <header className="mx-auto flex max-w-screen-xl items-center justify-between p-2">
+    <div className="relative">
+      <header className="fixed top-0 z-10 mx-auto flex w-full items-center justify-between bg-secondary p-2">
         <div className="flex items-center gap-2">
           <NavLink to="/">
             <div className="flex items-center gap-4 p-2">
@@ -19,9 +19,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
         <UserMenu />
       </header>
 
-      <main className="mx-auto mb-20 min-h-screen max-w-screen-xl">
-        {children}
-      </main>
+      <main className="mx-auto mb-20 mt-20 max-w-7xl">{children}</main>
 
       <footer className="flex justify-center bg-muted p-6 text-muted-foreground">
         <p className="text-sm">
@@ -36,6 +34,6 @@ export default function Layout({ children }: { children: React.ReactNode }) {
           </a>
         </p>
       </footer>
-    </>
+    </div>
   );
 }
