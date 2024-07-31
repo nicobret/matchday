@@ -1,6 +1,4 @@
-import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
-import { Member, fetchMembers } from "../club.service";
+import { Button, buttonVariants } from "@/components/ui/button";
 import {
   Card,
   CardContent,
@@ -16,9 +14,20 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Button, buttonVariants } from "@/components/ui/button";
-import { ArrowRight } from "lucide-react";
-import { Users } from "lucide-react";
+import { ArrowRight, Users } from "lucide-react";
+import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
+import { Member, fetchMembers } from "../club.service";
+
+function getUsername(member: Member) {
+  if (member.profile?.firstname && member.profile?.lastname) {
+    return `${member.profile?.firstname} ${member.profile?.lastname}`;
+  }
+  if (member.profile?.firstname) {
+    return member.profile?.firstname;
+  }
+  return "Utilisateur sans nom";
+}
 
 export default function ClubMembers({ clubId }: { clubId: number }) {
   const [members, setMembers] = useState<Member[]>([]);
@@ -63,9 +72,7 @@ export default function ClubMembers({ clubId }: { clubId: number }) {
             <TableBody>
               {members.map((member) => (
                 <TableRow key={member.id}>
-                  <TableCell>
-                    {member.profile?.firstname} {member.profile?.lastname}
-                  </TableCell>
+                  <TableCell>{getUsername(member)}</TableCell>
                   <TableCell>{member.role}</TableCell>
                   <TableCell>
                     <Link
