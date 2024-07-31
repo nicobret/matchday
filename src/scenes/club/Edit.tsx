@@ -1,11 +1,9 @@
-import { useContext, useEffect, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
-import { Club, deleteClub, fetchClub, updateClub } from "./club.service";
-import { countryList } from "@/lib/utils";
+import { SessionContext } from "@/components/auth-provider";
+import { Breadcrumbs } from "@/components/Breadcrumbs";
 import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
 import {
   Select,
   SelectContent,
@@ -13,16 +11,19 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Breadcrumbs } from "@/components/Breadcrumbs";
+import { Textarea } from "@/components/ui/textarea";
+import { countryList } from "@/lib/utils";
 import { Save, Trash } from "lucide-react";
-import { SessionContext } from "@/components/auth-provider";
+import { useContext, useEffect, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
+import { Club, deleteClub, fetchClub, updateClub } from "./club.service";
 
 export default function EditClub() {
   const { id } = useParams();
   const { session } = useContext(SessionContext);
   const navigate = useNavigate();
   const [club, setClub] = useState<Club>();
+  console.log("🚀 ~ EditClub ~ club:", club);
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
     id: "",
@@ -90,6 +91,7 @@ export default function EditClub() {
         throw new Error("Club non trouvé.");
       }
       const data = await updateClub(formData, id);
+      console.log("🚀 ~ handleSubmit ~ data:", data);
       setClub(data);
       window.alert("Club modifié avec succès !");
     } catch (error) {

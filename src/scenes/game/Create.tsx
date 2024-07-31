@@ -16,10 +16,10 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { categories } from "./games.service";
 
 export default function CreateGame() {
   const clubId = new URLSearchParams(window.location.search).get("clubId");
-  console.log("🚀 ~ CreateGame ~ clubId:", clubId);
   const { session } = useContext(SessionContext);
   const [club, setClub] = useState<Club | null>(null);
   const [loading, setLoading] = useState(true);
@@ -52,15 +52,15 @@ export default function CreateGame() {
   if (loading) {
     return <p className="text-center">Chargement des données...</p>;
   }
-  if (!club) {
-    return <p className="text-center">Aucun club trouvé</p>;
-  }
   if (!session?.user) {
     return (
       <p className="text-center">
         Vous devez être connecté pour créer un match
       </p>
     );
+  }
+  if (!club) {
+    return <p className="text-center">Aucun club trouvé</p>;
   }
   if (!isMember(session.user, club)) {
     return (
@@ -72,17 +72,28 @@ export default function CreateGame() {
 
 function GameForm({ user, club }: { user: User; club: Club }) {
   const navigate = useNavigate();
+  const [loading, setLoading] = useState(false);
+  const [category, setCategory] = useState("football"); // ["football", "futsal", "basketball", "handball"]
   const [date, setDate] = useState("");
   const [time, setTime] = useState("");
+  const [durationInMinutes, setDurationInMinutes] = useState(60);
   const [playerCount, setPlayerCount] = useState(10);
-  const [loading, setLoading] = useState(false);
   const [location, setLocation] = useState(
     `${club?.address}, ${club?.postcode} ${club?.city}`,
   );
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    if (!date || !time || !playerCount || !location) return;
+    if (
+      !date ||
+      !time ||
+      !playerCount ||
+      !location ||
+      !durationInMinutes ||
+      !category
+    ) {
+      return window.alert("Veuillez remplir tous les champs");
+    }
     setLoading(true);
     try {
       const { data } = await supabase
@@ -93,6 +104,9 @@ function GameForm({ user, club }: { user: User; club: Club }) {
           date: new Date(`${date} ${time}`).toISOString(),
           total_players: playerCount,
           location: location,
+          status: "published",
+          duration: durationInMinutes * 60,
+          category,
         })
         .select()
         .single()
@@ -126,16 +140,21 @@ function GameForm({ user, club }: { user: User; club: Club }) {
       <form onSubmit={handleSubmit}>
         <div className="my-6 grid w-full max-w-sm grid-cols-2 gap-3">
           <div className="grid w-full max-w-sm items-center gap-2">
-            <Label htmlFor="sportType">Sport</Label>
-            <Select name="sportType" disabled>
+            <Label htmlFor="category">Sport</Label>
+            <Select
+              name="category"
+              value={category}
+              onValueChange={setCategory}
+            >
               <SelectTrigger>
                 <SelectValue placeholder="Choisir un sport" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="football">Football</SelectItem>
-                <SelectItem value="futsal">Futsal</SelectItem>
-                <SelectItem value="basketball">Basketball</SelectItem>
-                <SelectItem value="handball">Handball</SelectItem>
+                {categories.map((category) => (
+                  <SelectItem key={category.value} value={category.value}>
+                    {category.label}
+                  </SelectItem>
+                ))}
               </SelectContent>
             </Select>
           </div>
@@ -174,6 +193,16 @@ function GameForm({ user, club }: { user: User; club: Club }) {
           </div>
         </div>
 
+        <div className="grid w-full max-w-sm items-center gap-2">
+          <Label htmlFor="duration">Durée en minutes</Label>
+          <Input
+            type="number"
+            id="duration"
+            value={durationInMinutes}
+            onChange={(e) => setDurationInMinutes(parseInt(e.target.value))}
+          />
+        </div>
+
         <div className="my-6 grid w-full max-w-sm items-center gap-2">
           <Label htmlFor="location">Lieu</Label>
           <Textarea
@@ -187,7 +216,7 @@ function GameForm({ user, club }: { user: User; club: Club }) {
 
         <div className="flex max-w-sm items-center justify-end gap-3">
           <Button type="button" asChild variant="secondary">
-            <Link to={`/clubs/${club.id}`}>Annuler</Link>
+            <Link to={`/club/${club.id}`}>Annuler</Link>
           </Button>
           <Button type="submit" disabled={loading}>
             Créer

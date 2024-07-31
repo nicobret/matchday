@@ -4,8 +4,21 @@ import supabase from "@/utils/supabase";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button, buttonVariants } from "@/components/ui/button";
+import { Textarea } from "@/components/ui/textarea";
 import { Breadcrumbs } from "@/components/Breadcrumbs";
-import { Game, fetchGame } from "./games.service";
+import {
+  Game,
+  categories,
+  fetchGame,
+  getGameDurationInMinutes,
+} from "./games.service";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 export default function EditGame() {
   const { id } = useParams();
@@ -46,12 +59,16 @@ function Editor({
   setLoading: (loading: boolean) => void;
 }) {
   const [data, setData] = useState({
-    date: game.date,
-    duration: game.duration as number,
+    date: game.date.split("T")[0] || "",
+    time: new Date(game.date).toLocaleTimeString("fr-FR", {
+      timeStyle: "short",
+    }),
+    durationInMinutes: getGameDurationInMinutes(
+      (game.duration as string) || "00:60:00",
+    ),
     location: game.location || "",
-    score: game.score || [0, 0],
-    status: game.status,
     total_players: game.total_players || 10,
+    category: game.category || "futsal",
   });
   const navigate = useNavigate();
 
@@ -60,15 +77,21 @@ function Editor({
     try {
       await supabase
         .from("games")
-        .update(data)
+        .update({
+          date: `${data.date}T${data.time}+02:00`,
+          duration: data.durationInMinutes * 60,
+          location: data.location,
+          total_players: data.total_players,
+        })
         .eq("id", game.id)
+        .select("*")
+        .single()
         .throwOnError();
-      setLoading(false);
       navigate(`/game/${game.id}`);
     } catch (error) {
       console.error(error);
-      setLoading(false);
     }
+    setLoading(false);
   }
 
   return (
@@ -76,12 +99,20 @@ function Editor({
       <Breadcrumbs
         links={[
           { label: game.club?.name || "", link: `/club/${game.club?.id}` },
-          { label: "Edit Game", link: `/game/${game.id}/edit` },
+          {
+            label: `Match du ${new Date(game.date).toLocaleDateString("fr-FR", {
+              dateStyle: "long",
+            })}`,
+            link: `/game/${game.id}`,
+          },
+          { label: "Edition", link: `/game/${game.id}/edit` },
         ]}
       />
-      <h1 className="mt-6 scroll-m-20 text-3xl font-bold tracking-tight">
+
+      <h1 className="mt-6 scroll-m-20 text-2xl font-semibold tracking-tight">
         Edit Game
       </h1>
+
       <form
         onSubmit={async (e) => {
           e.preventDefault();
@@ -89,91 +120,101 @@ function Editor({
         }}
         className="mt-6"
       >
-        <Label htmlFor="date">Date</Label>
-        <Input
-          name="date"
-          type="date"
-          value={data.date}
-          onChange={(e) => setData({ ...data, date: e.target.value })}
-        />
-        <Label htmlFor="duration">Durée</Label>
-        <Input
-          name="duration"
-          type="number"
-          value={data.duration}
-          onChange={(e) =>
-            setData({ ...data, duration: parseInt(e.target.value) })
-          }
-        />
-        <Label htmlFor="location">Adresse</Label>
-        <Input
-          name="location"
-          type="text"
-          value={data.location}
-          onChange={(e) => setData({ ...data, location: e.target.value })}
-        />
-        <Label htmlFor="status">Statut</Label>
-        <Input
-          name="status"
-          type="text"
-          value={data.status}
-          onChange={(e) => setData({ ...data, status: e.target.value })}
-        />
-        <Label htmlFor="total_players">Nombre de joueurs</Label>
-        <Input
-          name="total_players"
-          type="number"
-          value={data.total_players}
-          onChange={(e) =>
-            setData({
-              ...data,
-              total_players: parseInt(e.target.value),
-            })
-          }
-        />
-
         <div className="grid grid-cols-2 gap-4">
           <div>
-            <Label htmlFor="score_home">Score home</Label>
+            <Label htmlFor="date">Date</Label>
             <Input
-              name="score_home"
-              type="text"
-              value={data.score[0]}
-              onChange={(e) =>
-                setData({
-                  ...data,
-                  score: [parseInt(e.target.value), data.score[1]],
-                })
-              }
+              name="date"
+              type="date"
+              value={data.date}
+              onChange={(e) => setData({ ...data, date: e.target.value })}
             />
           </div>
-
           <div>
-            <Label htmlFor="score_away">Score visiteurs</Label>
+            <Label htmlFor="time">Heure</Label>
             <Input
-              name="score_away"
-              type="text"
-              value={data.score[1]}
+              name="time"
+              type="time"
+              value={data.time}
+              onChange={(e) => setData({ ...data, time: e.target.value })}
+            />
+          </div>
+        </div>
+
+        <div className="mt-4">
+          <Label htmlFor="location" className="">
+            Adresse
+          </Label>
+          <Textarea
+            name="location"
+            value={data.location}
+            onChange={(e) => setData({ ...data, location: e.target.value })}
+          />
+        </div>
+
+        <div className="mt-4">
+          <Label htmlFor="duration">Durée en minutes</Label>
+          <Input
+            name="duration"
+            type="number"
+            value={data.durationInMinutes}
+            onChange={(e) =>
+              setData({ ...data, durationInMinutes: parseInt(e.target.value) })
+            }
+          />
+        </div>
+
+        <div className="mt-4 grid grid-cols-2 gap-4">
+          <div>
+            <Label htmlFor="category">Sport</Label>
+            <Select
+              name="category"
+              value={data.category}
+              onValueChange={(v) => setData({ ...data, category: v })}
+              defaultValue={
+                categories.find((c) => c.value === data.category)?.value
+              }
+            >
+              <SelectTrigger>
+                <SelectValue placeholder="Choisir un sport" />
+              </SelectTrigger>
+              <SelectContent>
+                {categories.map((category) => (
+                  <SelectItem key={category.value} value={category.value}>
+                    {category.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+          <div>
+            <Label htmlFor="total_players">Nombre de joueurs</Label>
+            <Input
+              name="total_players"
+              type="number"
+              value={data.total_players}
               onChange={(e) =>
                 setData({
                   ...data,
-                  score: [data.score[0], parseInt(e.target.value)],
+                  total_players: parseInt(e.target.value),
                 })
               }
             />
           </div>
         </div>
 
-        <Link
-          to={`/game/${game.id}`}
-          className={buttonVariants({ variant: "secondary" })}
-        >
-          Retour
-        </Link>
+        <div className="mt-8 grid grid-cols-2 gap-4">
+          <Link
+            to={`/game/${game.id}`}
+            className={buttonVariants({ variant: "secondary" })}
+          >
+            Retour
+          </Link>
 
-        <Button type="submit" disabled={loading}>
-          Enregistrer
-        </Button>
+          <Button type="submit" disabled={loading}>
+            Enregistrer
+          </Button>
+        </div>
       </form>
     </div>
   );

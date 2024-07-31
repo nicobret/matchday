@@ -1,24 +1,22 @@
+import { SessionContext } from "@/components/auth-provider";
+import { Breadcrumbs } from "@/components/Breadcrumbs";
+import { Button } from "@/components/ui/button";
+import supabase from "@/utils/supabase";
+import { Check, ClipboardSignature } from "lucide-react";
 import { useContext, useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import supabase from "@/utils/supabase";
-import { SessionContext } from "@/components/auth-provider";
-import { Game, Player, fetchGame, fetchPlayers } from "./games.service";
-import { Check, ClipboardSignature } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Breadcrumbs } from "@/components/Breadcrumbs";
 import Information from "./components/Information";
+import LineUp from "./components/LineUp";
 import Players from "./components/Players";
 import Result from "./components/Result";
-import LineUp from "./components/LineUp";
+import { Game, Player, fetchGame, fetchPlayers } from "./games.service";
 
 export default function View() {
   const { id } = useParams();
   const { session } = useContext(SessionContext);
   const [loading, setLoading] = useState(true);
   const [game, setGame] = useState<Game>();
-  console.log("🚀 ~ View ~ game:", game);
   const [players, setPlayers] = useState<Player[]>([]);
-  console.log("🚀 ~ View ~ players:", players);
 
   async function handleJoin(game_id: number, user_id: string) {
     setLoading(true);

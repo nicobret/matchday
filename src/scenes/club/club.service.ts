@@ -3,7 +3,7 @@ import { User } from "@supabase/supabase-js";
 import { Tables } from "types/supabase";
 
 export type Club = Tables<"clubs"> & {
-  members: Tables<"club_enrolments">[];
+  members?: Tables<"club_enrolments">[];
 };
 
 export type Game = Tables<"games"> & {
@@ -52,6 +52,8 @@ export async function updateClub(formData: any, id: string) {
       country: formData.country,
     })
     .eq("id", parseInt(id))
+    .select("*")
+    .single()
     .throwOnError();
   if (data) return data;
 }
