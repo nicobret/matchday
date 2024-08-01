@@ -31,7 +31,7 @@ function SessionProvider({ children }: { children: React.ReactNode }) {
         navigate("/");
       } else if (event === "SIGNED_IN") {
         setSession(session);
-        navigate("/");
+        // navigate("/");
       } else if (session) {
         setSession(session);
       }

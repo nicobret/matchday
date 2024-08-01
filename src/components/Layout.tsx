@@ -43,11 +43,11 @@ export default function Layout({ children }: { children: React.ReactNode }) {
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
-              <DropdownMenuItem>
+              <DropdownMenuItem className="p-4">
                 <Link to="/account">Mon compte</Link>
               </DropdownMenuItem>
 
-              <DropdownMenuItem onClick={logout}>
+              <DropdownMenuItem onClick={logout} className="p-4">
                 Se déconnecter
               </DropdownMenuItem>
             </DropdownMenuContent>

@@ -1,7 +1,7 @@
 import supabase from "@/utils/supabase";
-import { Player } from "../../games.service";
 import { DndContext, DragEndEvent } from "@dnd-kit/core";
 import { Shirt } from "lucide-react";
+import { Player } from "../../games.service";
 import Team from "./Team";
 
 const teams: { [key: string]: number | null } = {
@@ -44,13 +44,15 @@ export default function LineupEditor({
         />
         <Team
           label="Domicile"
-          icon={<Shirt className="ml-2 inline-block h-5 w-5 text-yellow-300" />}
+          icon={<Shirt className="ml-2 inline-block h-5 w-5 text-primary" />}
           id="home"
           players={players.filter((p) => p.team === 0)}
         />
         <Team
           label="Visiteurs"
-          icon={<Shirt className="ml-2 inline-block h-5 w-5 text-red-400" />}
+          icon={
+            <Shirt className="ml-2 inline-block h-5 w-5 text-secondary-foreground" />
+          }
           id="away"
           players={players.filter((p) => p.team === 1)}
         />
