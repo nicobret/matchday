@@ -1,6 +1,8 @@
 import { SessionContext } from "@/components/auth-provider";
 import supabase from "@/utils/supabase";
+import { Swords, TableProperties, Users } from "lucide-react";
 import { useContext, useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import { Club } from "../club/club.service";
 import ClubCard from "./components/ClubCard";
 import CreateDialog from "./components/CreateDialog";
@@ -49,7 +51,22 @@ export default function List() {
   }
   return (
     <div className="p-4">
-      {session?.user && (
+      <div className="mx-auto flex max-w-3xl flex-col justify-between gap-3 rounded-xl border px-6 py-3 md:flex-row md:items-center md:rounded-full">
+        <p>
+          <Users className="mr-2 inline-block h-5 w-5 align-text-bottom" />{" "}
+          Trouvez ou créez un club.
+        </p>
+        <p>
+          <Swords className="mr-2 inline-block h-5 w-5 align-text-bottom" />{" "}
+          Inscrivez-vous à un match.
+        </p>
+        <p>
+          <TableProperties className="mr-2 inline-block h-5 w-5 align-text-bottom" />{" "}
+          Enregistrez vos scores !
+        </p>
+      </div>
+
+      {session?.user ? (
         <>
           <h2 className="mt-8 scroll-m-20 border-b pb-2 text-3xl font-semibold tracking-tight first:mt-0">
             Mes clubs
@@ -67,6 +84,15 @@ export default function List() {
             )}
           </div>
         </>
+      ) : (
+        <div className="mt-4 text-center">
+          <Link
+            to="/auth"
+            className="text-primary underline underline-offset-2"
+          >
+            C'est parti !
+          </Link>
+        </div>
       )}
 
       <h2 className="mb-4 mt-8 scroll-m-20 text-3xl font-semibold tracking-tight first:mt-0">

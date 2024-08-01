@@ -1,17 +1,7 @@
-import { useEffect, useState } from "react";
-import { Link, useNavigate, useParams } from "react-router-dom";
-import supabase from "@/utils/supabase";
+import { Breadcrumbs } from "@/components/Breadcrumbs";
+import { Button, buttonVariants } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Button, buttonVariants } from "@/components/ui/button";
-import { Textarea } from "@/components/ui/textarea";
-import { Breadcrumbs } from "@/components/Breadcrumbs";
-import {
-  Game,
-  categories,
-  fetchGame,
-  getGameDurationInMinutes,
-} from "./games.service";
 import {
   Select,
   SelectContent,
@@ -19,6 +9,16 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Textarea } from "@/components/ui/textarea";
+import supabase from "@/utils/supabase";
+import { useEffect, useState } from "react";
+import { Link, useNavigate, useParams } from "react-router-dom";
+import {
+  Game,
+  categories,
+  fetchGame,
+  getGameDurationInMinutes,
+} from "./games.service";
 
 export default function EditGame() {
   const { id } = useParams();
@@ -110,7 +110,7 @@ function Editor({
       />
 
       <h1 className="mt-6 scroll-m-20 text-2xl font-semibold tracking-tight">
-        Edit Game
+        Modfifier un match
       </h1>
 
       <form

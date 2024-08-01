@@ -1,10 +1,11 @@
 import { SessionContext } from "@/components/auth-provider";
 import { Breadcrumbs } from "@/components/Breadcrumbs";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import supabase from "@/utils/supabase";
 import { Check, ClipboardSignature } from "lucide-react";
 import { useContext, useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import Information from "./components/Information";
 import LineUp from "./components/LineUp";
 import Players from "./components/Players";
@@ -129,7 +130,23 @@ export default function View() {
         )}
       </div>
 
-      <div className="mt-6 grid grid-cols-1 gap-4 py-2 md:grid-cols-3">
+      {session ? null : (
+        <Alert className="mt-4">
+          <AlertTitle>A savoir</AlertTitle>
+          <AlertDescription>
+            Pour vous inscrire à un match, veuillez{" "}
+            <Link
+              to="/auth"
+              className="decoration- underline underline-offset-4"
+            >
+              vous connecter
+            </Link>
+            .
+          </AlertDescription>
+        </Alert>
+      )}
+
+      <div className="mt-4 grid grid-cols-1 gap-4 py-2 md:grid-cols-3">
         <Information game={game} />
         <Players game={game} players={players} />
         <Result game={game} />

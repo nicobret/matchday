@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { buttonVariants } from "@/components/ui/button";
 import {
   Card,
   CardContent,
@@ -7,7 +7,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { ArrowRight, CheckCircle, Hourglass, Users } from "lucide-react";
-import { buttonVariants } from "@/components/ui/button";
+import { Link } from "react-router-dom";
 import { Game } from "../club.service";
 
 export default function GameCard({ game }: { game: Game }) {
@@ -21,7 +21,7 @@ export default function GameCard({ game }: { game: Game }) {
           <Link to={"/game/" + game.id.toString()}>
             {new Date(game.date).toLocaleDateString("fr-FR", {
               weekday: "long",
-              month: "long",
+              month: "short",
               day: "numeric",
             })}
           </Link>

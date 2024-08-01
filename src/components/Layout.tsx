@@ -59,7 +59,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
         )}
       </header>
 
-      <main className="mx-auto mb-20 mt-20 min-h-screen max-w-7xl">
+      <main className="mx-auto mb-20 mt-16 min-h-screen max-w-7xl">
         {children}
       </main>
 
