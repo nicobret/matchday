@@ -50,25 +50,25 @@ export default function List() {
     return <p className="text-center">Aucun club</p>;
   }
   return (
-    <div className="p-4">
-      <div className="mx-auto flex max-w-3xl flex-col justify-between gap-3 rounded-xl border px-6 py-3 md:flex-row md:items-center md:rounded-full">
+    <div className="px-4">
+      <div className="mx-auto flex max-w-3xl flex-col justify-between gap-3 rounded-xl border bg-muted p-4 md:flex-row md:items-center md:rounded-full md:px-6">
         <p>
-          <Users className="mr-2 inline-block h-5 w-5 align-text-bottom" />{" "}
+          <Users className="mr-2 inline-block h-5 w-5 align-text-bottom text-primary" />{" "}
           Trouvez ou créez un club.
         </p>
         <p>
-          <Swords className="mr-2 inline-block h-5 w-5 align-text-bottom" />{" "}
+          <Swords className="mr-2 inline-block h-5 w-5 align-text-bottom text-primary" />{" "}
           Inscrivez-vous à un match.
         </p>
         <p>
-          <TableProperties className="mr-2 inline-block h-5 w-5 align-text-bottom" />{" "}
+          <TableProperties className="mr-2 inline-block h-5 w-5 align-text-bottom text-primary" />{" "}
           Enregistrez vos scores !
         </p>
       </div>
 
       {session?.user ? (
         <>
-          <h2 className="mt-8 scroll-m-20 border-b pb-2 text-3xl font-semibold tracking-tight first:mt-0">
+          <h2 className="mt-8 scroll-m-20 text-3xl font-semibold tracking-tight first:mt-0">
             Mes clubs
           </h2>
 
