@@ -140,7 +140,7 @@ export default function View() {
             ) : (
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button variant="secondary" className="md:hidden">
+                  <Button variant="secondary">
                     <Menu className="mr-2 inline-block h-5 w-5" />
                     Menu
                   </Button>
