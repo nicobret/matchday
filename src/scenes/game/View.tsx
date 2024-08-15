@@ -2,10 +2,18 @@ import { SessionContext } from "@/components/auth-provider";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import supabase from "@/utils/supabase";
-import { ArrowLeftCircle, Ban, ClipboardSignature, Pencil } from "lucide-react";
+import { useCopyToClipboard } from "@uidotdev/usehooks";
+import {
+  ArrowLeft,
+  Ban,
+  ClipboardSignature,
+  Clock,
+  Copy,
+  MapPin,
+  Pencil,
+} from "lucide-react";
 import { useContext, useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
-import Information from "./components/Information";
 import LineUp from "./components/LineUp";
 import Players from "./components/Players";
 import Result from "./components/Result";
@@ -18,6 +26,7 @@ export default function View() {
   const [loading, setLoading] = useState(true);
   const [game, setGame] = useState<Game>();
   const [players, setPlayers] = useState<Player[]>([]);
+  const [copiedText, copyToClipboard] = useCopyToClipboard();
 
   useEffect(() => {
     if (!id) return;
@@ -123,16 +132,16 @@ export default function View() {
         to={`/club/${game.club?.id}`}
         className="text-sm text-muted-foreground"
       >
-        <ArrowLeftCircle className="mr-2 inline-block h-4 w-4 align-text-top" />
+        <ArrowLeft className="mr-2 inline-block h-4 w-4 align-text-top" />
         Retour au club
       </Link>
 
-      <header className="mt-8">
-        <p className="text-sm font-bold uppercase tracking-tight text-muted-foreground">
-          Match
+      <header className="mt-8 text-center">
+        <p className="text-xs font-bold uppercase tracking-tight text-muted-foreground">
+          {game.club?.name}
         </p>
 
-        <h1 className="line-clamp-1 text-3xl font-semibold uppercase tracking-tight">
+        <h1 className="line-clamp-1 text-4xl font-semibold uppercase tracking-tight">
           {new Date(game.date).toLocaleDateString("fr-FR", {
             weekday: "long",
             day: "numeric",
@@ -142,7 +151,7 @@ export default function View() {
 
         <p className="mt-1 line-clamp-1 text-sm">{userStatus}</p>
 
-        <div className="mt-3 flex gap-3">
+        <div className="mt-8 flex flex-wrap justify-center gap-3">
           {session && userIsMember && (
             <Link
               to={`/game/${game.id}/edit`}
@@ -153,40 +162,58 @@ export default function View() {
             </Link>
           )}
 
-          {session && userIsPlayer && (
-            <Button
-              onClick={() => leaveGame(game.id, session.user.id)}
-              variant="secondary"
-              className="flex gap-2"
-            >
-              <Ban className="h-5 w-5" />
-              <span>Désinscription</span>
-            </Button>
-          )}
-
           {!gameHasStarted && !userIsPlayer && (
             <Button onClick={handleJoin} className="flex gap-2">
               <ClipboardSignature className="h-5 w-5" />
               <span>Inscription</span>
             </Button>
           )}
+
+          <Button
+            onClick={() => copyToClipboard(window.location.href)}
+            variant="secondary"
+          >
+            <Copy className="mr-2 inline-block h-5 w-5" />
+            {copiedText ? "Copié !" : "Copier l'URL"}
+          </Button>
+
+          {session && userIsPlayer && (
+            <Button
+              onClick={() => leaveGame(game.id, session.user.id)}
+              variant="secondary"
+            >
+              <Ban className="mr-2 inline-block h-5 w-5" />
+              Désinscription
+            </Button>
+          )}
         </div>
       </header>
 
-      <Tabs defaultValue="info" className="mt-12">
+      <div className="mt-8 text-center">
+        <p>
+          <Clock className="mr-2 inline-block h-4 w-4 align-text-top" />
+          {new Date(game.date).toLocaleTimeString("fr-FR", {
+            timeStyle: "short",
+          })}
+        </p>
+
+        <p className="mt-2">
+          <MapPin className="mr-2 inline-block h-4 w-4 align-text-top" />
+          {game.location}
+        </p>
+      </div>
+
+      <Tabs defaultValue="lineup" className="mt-8">
         <TabsList className="w-full">
-          <TabsTrigger value="info">Infos</TabsTrigger>
+          <TabsTrigger value="lineup" disabled={!userIsMember}>
+            Compo
+          </TabsTrigger>
           <TabsTrigger value="result">Score</TabsTrigger>
           <TabsTrigger value="players" disabled={!userIsMember}>
             Joueurs
           </TabsTrigger>
-          <TabsTrigger value="lineup" disabled={!userIsMember}>
-            Compo
-          </TabsTrigger>
         </TabsList>
-        <TabsContent value="info">
-          <Information game={game} />
-        </TabsContent>
+
         <TabsContent value="result">
           <Result
             game={game}

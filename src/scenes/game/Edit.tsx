@@ -1,5 +1,4 @@
-import { Breadcrumbs } from "@/components/Breadcrumbs";
-import { Button, buttonVariants } from "@/components/ui/button";
+import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
@@ -11,6 +10,7 @@ import {
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import supabase from "@/utils/supabase";
+import { ArrowLeft } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import {
@@ -95,22 +95,14 @@ function Editor({
   }
 
   return (
-    <div className="p-4">
-      <Breadcrumbs
-        links={[
-          { label: game.club?.name || "", link: `/club/${game.club?.id}` },
-          {
-            label: `Match du ${new Date(game.date).toLocaleDateString("fr-FR", {
-              dateStyle: "long",
-            })}`,
-            link: `/game/${game.id}`,
-          },
-          { label: "Edition", link: `/game/${game.id}/edit` },
-        ]}
-      />
+    <div className="px-4">
+      <Link to={`/game/${game.id}`} className="text-sm text-muted-foreground">
+        <ArrowLeft className="mr-2 inline-block h-4 w-4 align-text-top" />
+        Retour au match
+      </Link>
 
-      <h1 className="mt-6 scroll-m-20 text-2xl font-semibold tracking-tight">
-        Modfifier un match
+      <h1 className="mt-6 scroll-m-20 text-2xl font-semibold uppercase tracking-tight">
+        Modifier un match
       </h1>
 
       <form
@@ -203,18 +195,13 @@ function Editor({
           </div>
         </div>
 
-        <div className="mt-8 grid grid-cols-2 gap-4">
-          <Link
-            to={`/game/${game.id}`}
-            className={buttonVariants({ variant: "secondary" })}
-          >
-            Retour
-          </Link>
-
-          <Button type="submit" disabled={loading}>
-            Enregistrer
-          </Button>
-        </div>
+        <Button
+          type="submit"
+          disabled={loading}
+          className="mt-8 w-full max-w-md"
+        >
+          Enregistrer
+        </Button>
       </form>
     </div>
   );
