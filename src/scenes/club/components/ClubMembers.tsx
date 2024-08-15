@@ -45,7 +45,7 @@ export default function ClubMembers({ clubId }: { clubId: number }) {
     return <p className="text-center">Chargement...</p>;
   }
   return (
-    <Card>
+    <Card id="members">
       <CardHeader>
         <CardTitle>
           <div className="flex items-center gap-3">

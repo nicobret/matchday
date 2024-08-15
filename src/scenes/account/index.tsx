@@ -1,4 +1,5 @@
 import { Breadcrumbs } from "@/components/Breadcrumbs";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -10,19 +11,21 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Tables } from "types/supabase";
 import { fetchProfile, updateProfile } from "./account.service";
 
 export default function Account() {
   const [loading, setLoading] = useState(true);
   const [profile, setProfile] = useState<Tables<"users">>();
+  const navigate = useNavigate();
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const formData = new FormData(event.currentTarget);
     const firstname = formData.get("firstName") as string;
     const lastname = formData.get("lastName") as string;
-    if (!firstname || !lastname) {
+    if (!firstname) {
       window.alert("Veuillez remplir tous les champs");
       return;
     }
@@ -30,6 +33,7 @@ export default function Account() {
       const data = await updateProfile(firstname, lastname);
       setProfile(data);
       window.alert("Profil mis à jour");
+      navigate("/");
     } catch (error) {
       console.error(error);
     }
@@ -53,33 +57,47 @@ export default function Account() {
     <div className="p-4">
       <Breadcrumbs links={[{ label: "Mon compte", link: "/account" }]} />
 
-      <h2 className="mt-6 scroll-m-20 border-b pb-2 text-3xl font-semibold tracking-tight">
+      <h2 className="mt-6 scroll-m-20 text-3xl font-semibold tracking-tight">
         Mon compte
       </h2>
+
+      {profile.firstname ? null : (
+        <Alert className="mt-4">
+          <AlertTitle>Dernière étape !</AlertTitle>
+          <AlertDescription>Veuillez renseigner votre nom</AlertDescription>
+        </Alert>
+      )}
 
       <Card className="mt-4">
         <CardHeader>
           <CardTitle>Informations personnelles</CardTitle>
         </CardHeader>
         <CardContent>
-          <form onSubmit={handleSubmit} id="profile-form">
-            <Label htmlFor="firstName">Prénom</Label>
-            <Input
-              type="text"
-              name="firstName"
-              className="input"
-              placeholder="Prénom"
-              defaultValue={profile.firstname || ""}
-            />
-
-            <Label htmlFor="lastName">Nom</Label>
-            <Input
-              type="text"
-              name="lastName"
-              className="input"
-              placeholder="Nom"
-              defaultValue={profile.lastname || ""}
-            />
+          <form
+            onSubmit={handleSubmit}
+            id="profile-form"
+            className="grid grid-cols-1 gap-4"
+          >
+            <div>
+              <Label htmlFor="firstName">Prénom</Label>
+              <Input
+                type="text"
+                name="firstName"
+                className="input"
+                placeholder="Prénom"
+                defaultValue={profile.firstname || ""}
+              />
+            </div>
+            <div>
+              <Label htmlFor="lastName">Nom (facultatif)</Label>
+              <Input
+                type="text"
+                name="lastName"
+                className="input"
+                placeholder="Nom"
+                defaultValue={profile.lastname || ""}
+              />
+            </div>
           </form>
         </CardContent>
 

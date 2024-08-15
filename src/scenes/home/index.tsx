@@ -1,20 +1,32 @@
 import { SessionContext } from "@/components/auth-provider";
 import supabase from "@/utils/supabase";
-import { Swords, TableProperties, Users } from "lucide-react";
+import {
+  ChevronDown,
+  LifeBuoy,
+  Search,
+  Shield,
+  Swords,
+  TableProperties,
+  Users,
+} from "lucide-react";
 import { useContext, useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { Tables } from "types/supabase";
+import { fetchProfile } from "../account/account.service";
 import { Club } from "../club/club.service";
 import ClubCard from "./components/ClubCard";
 import CreateDialog from "./components/CreateDialog";
 
-export default function List() {
+export default function Home() {
   const { session } = useContext(SessionContext);
   const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
+
+  const [profile, setProfile] = useState<Tables<"users">>();
   const [clubs, setClubs] = useState<Club[]>([]);
 
   async function getClubs() {
     try {
-      setLoading(true);
       const { data } = await supabase
         .from("clubs")
         .select("*, members: club_enrolments (*)")
@@ -24,14 +36,24 @@ export default function List() {
       if (data) setClubs(data);
     } catch (error) {
       console.error(error);
-    } finally {
-      setLoading(false);
+    }
+  }
+
+  async function getProfile() {
+    try {
+      const data = await fetchProfile();
+      if (data) setProfile(data);
+    } catch (error) {
+      console.error(error);
     }
   }
 
   useEffect(() => {
-    getClubs();
-  }, []);
+    setLoading(true);
+    if (!clubs.length) getClubs();
+    if (session) getProfile();
+    setLoading(false);
+  }, [session]);
 
   const myClubs = clubs.filter((c) =>
     c.members?.some((m) => m.user_id === session?.user?.id),
@@ -46,33 +68,74 @@ export default function List() {
       <p className="animate-pulse text-center">Chargement des données...</p>
     );
   }
-  if (!clubs) {
-    return <p className="text-center">Aucun club</p>;
+
+  if (profile && !profile?.firstname) {
+    navigate("/account");
   }
+
   return (
-    <div className="px-4">
-      <div className="mx-auto flex max-w-3xl flex-col justify-between gap-3 rounded-xl border bg-muted p-4 md:flex-row md:items-center md:rounded-full md:px-6">
-        <p>
-          <Users className="mr-2 inline-block h-5 w-5 align-text-bottom text-primary" />{" "}
+    <div className="px-4 md:mt-24">
+      <section id="guide" className="">
+        <h2 className="scroll-m-20 text-3xl font-semibold tracking-tight">
+          Comment ça marche ?
+        </h2>
+
+        <p className="mt-4">
+          <Users className="mr-2 inline-block h-5 w-5 align-text-bottom text-primary" />
           Trouvez ou créez un club.
         </p>
-        <p>
-          <Swords className="mr-2 inline-block h-5 w-5 align-text-bottom text-primary" />{" "}
+
+        <p className="mt-2">
+          <Swords className="mr-2 inline-block h-5 w-5 align-text-bottom text-primary" />
           Inscrivez-vous à un match.
         </p>
-        <p>
-          <TableProperties className="mr-2 inline-block h-5 w-5 align-text-bottom text-primary" />{" "}
+        <p className="mt-2">
+          <TableProperties className="mr-2 inline-block h-5 w-5 align-text-bottom text-primary" />
           Enregistrez vos scores !
         </p>
-      </div>
+
+        {session?.user && !profile?.firstname && (
+          <div className="mt-4 text-center">
+            <Link
+              to="/account"
+              className="text-primary underline underline-offset-2"
+            >
+              Compléter mon profil
+            </Link>
+          </div>
+        )}
+
+        {!session?.user ? (
+          <div className="mt-4 text-center">
+            <Link
+              to={`/auth?redirectTo=${window.location.pathname}`}
+              className="text-primary underline underline-offset-2"
+            >
+              C'est parti !
+            </Link>
+          </div>
+        ) : null}
+
+        <p className="mt-6 text-center">
+          <LifeBuoy className="inline-block h-5 w-5 align-text-bottom text-secondary" />
+        </p>
+      </section>
 
       {session?.user ? (
-        <>
-          <h2 className="mt-8 scroll-m-20 text-3xl font-semibold tracking-tight first:mt-0">
+        <section id="my-clubs" className="mt-4">
+          <h2 className="scroll-m-20 text-3xl font-semibold tracking-tight">
             Mes clubs
           </h2>
 
-          {session?.user && <CreateDialog />}
+          {session?.user && (
+            <div className="mt-4 flex items-center gap-5">
+              <CreateDialog />
+              <Link to="#browse-clubs" className="text-primary">
+                Trouver un club
+                <ChevronDown className="ml-1 inline-block" />
+              </Link>
+            </div>
+          )}
 
           <div className="mt-6 flex flex-wrap gap-6">
             {myClubs.length ? (
@@ -83,27 +146,28 @@ export default function List() {
               <p className="text-center">Vous n'êtes membre d'aucun club</p>
             )}
           </div>
-        </>
-      ) : (
-        <div className="mt-4 text-center">
-          <Link
-            to="/auth"
-            className="text-primary underline underline-offset-2"
-          >
-            C'est parti !
-          </Link>
+
+          <p className="mt-6 text-center">
+            <Shield className="inline-block h-5 w-5 align-text-bottom text-secondary" />
+          </p>
+        </section>
+      ) : null}
+
+      <section id="browse-clubs" className="mt-4">
+        <h2 className="scroll-m-20 text-3xl font-semibold tracking-tight">
+          Trouver un club
+        </h2>
+
+        <div className="mt-4 flex flex-wrap gap-6">
+          {notMyClubs.map((club) => (
+            <ClubCard key={club.id} club={club} />
+          ))}
         </div>
-      )}
 
-      <h2 className="mb-4 mt-8 scroll-m-20 text-3xl font-semibold tracking-tight first:mt-0">
-        Trouver un club
-      </h2>
-
-      <div className="mt-4 flex flex-wrap gap-6">
-        {notMyClubs.map((club) => (
-          <ClubCard key={club.id} club={club} />
-        ))}
-      </div>
+        <p className="mt-6 text-center">
+          <Search className="inline-block h-5 w-5 align-text-bottom text-secondary" />
+        </p>
+      </section>
     </div>
   );
 }

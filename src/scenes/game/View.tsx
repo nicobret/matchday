@@ -1,11 +1,10 @@
 import { SessionContext } from "@/components/auth-provider";
-import { Breadcrumbs } from "@/components/Breadcrumbs";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { Button } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import supabase from "@/utils/supabase";
-import { Check, ClipboardSignature } from "lucide-react";
+import { ArrowLeftCircle, Ban, ClipboardSignature, Pencil } from "lucide-react";
 import { useContext, useEffect, useState } from "react";
-import { Link, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import Information from "./components/Information";
 import LineUp from "./components/LineUp";
 import Players from "./components/Players";
@@ -14,40 +13,11 @@ import { Game, Player, fetchGame, fetchPlayers } from "./games.service";
 
 export default function View() {
   const { id } = useParams();
+  const navigate = useNavigate();
   const { session } = useContext(SessionContext);
   const [loading, setLoading] = useState(true);
   const [game, setGame] = useState<Game>();
   const [players, setPlayers] = useState<Player[]>([]);
-
-  async function handleJoin(game_id: number, user_id: string) {
-    setLoading(true);
-    try {
-      const { data } = await supabase
-        .from("game_registrations")
-        .insert({ game_id, user_id, status: "confirmed" })
-        .select("*, profile: users (*)")
-        .single()
-        .throwOnError();
-      if (!data) {
-        throw new Error("Player not found");
-      }
-      setPlayers([...players, data]);
-    } catch (error) {
-      console.error(error);
-    } finally {
-      setLoading(false);
-    }
-  }
-
-  async function leaveGame(game_id: number, user_id: string) {
-    await supabase
-      .from("game_registrations")
-      .delete()
-      .eq("game_id", game_id)
-      .eq("user_id", user_id)
-      .throwOnError();
-    setPlayers(players.filter((p) => p.user_id !== user_id));
-  }
 
   useEffect(() => {
     if (!id) return;
@@ -78,84 +48,162 @@ export default function View() {
     return <div />;
   }
 
-  const hasStarted = new Date(game.date) < new Date();
-  const isPlayer = players.map((p) => p.profile?.id).includes(session?.user.id);
-  const isMember = game.club?.members.some(
+  async function handleJoin() {
+    if (!session?.user) {
+      if (window.confirm("Pour vous inscrire, veuillez vous connecter.")) {
+        navigate("/auth?redirectTo=" + window.location.pathname);
+      }
+      return;
+    }
+
+    if (!userIsMember) {
+      if (
+        window.confirm(
+          "Pour vous inscrire à un match, veuillez rejoindre le club organisateur.",
+        )
+      ) {
+        navigate(`/club/${game?.club?.id}`);
+      }
+      return;
+    }
+
+    setLoading(true);
+    try {
+      const { data } = await supabase
+        .from("game_registrations")
+        .insert({
+          game_id: game?.id,
+          user_id: session?.user.id,
+          status: "confirmed",
+        })
+        .select("*, profile: users (*)")
+        .single()
+        .throwOnError();
+      if (!data) {
+        throw new Error("Player not found");
+      }
+      setPlayers([...players, data]);
+    } catch (error) {
+      console.error(error);
+    }
+    setLoading(false);
+  }
+
+  async function leaveGame(game_id: number, user_id: string) {
+    await supabase
+      .from("game_registrations")
+      .delete()
+      .eq("game_id", game_id)
+      .eq("user_id", user_id)
+      .throwOnError();
+    setPlayers(players.filter((p) => p.user_id !== user_id));
+  }
+
+  const gameHasStarted = new Date(game.date) < new Date();
+
+  const userIsPlayer = players
+    .map((p) => p.profile?.id)
+    .includes(session?.user.id);
+
+  const userIsMember = game.club?.members.some(
     (m) => m.user_id === session?.user.id,
   );
-  const canJoinGame = session?.user && isMember && !hasStarted && !isPlayer;
+
+  const userStatus = userIsPlayer
+    ? "Vous êtes inscrit(e)."
+    : userIsMember
+      ? "Vous n'êtes pas inscrit(e)."
+      : session
+        ? "Vous n'êtes pas membre du club."
+        : "Vous n'êtes pas connecté(e).";
 
   return (
-    <div className="p-4">
-      <Breadcrumbs
-        links={[
-          { label: game.club?.name || "Club", link: `/club/${game.club?.id}` },
-          {
-            label:
-              "Match du " +
-              new Date(game.date).toLocaleDateString("fr-FR", {
-                dateStyle: "long",
-              }),
-            link: "#",
-          },
-        ]}
-      />
+    <div className="px-4">
+      <Link
+        to={`/club/${game.club?.id}`}
+        className="text-sm text-muted-foreground"
+      >
+        <ArrowLeftCircle className="mr-2 inline-block h-4 w-4 align-text-top" />
+        Retour au club
+      </Link>
 
-      <div className="mb-2 mt-6 flex scroll-m-20 items-end gap-4">
-        <h1 className="text-3xl font-semibold tracking-tight">
+      <header className="mt-8">
+        <p className="text-sm font-bold uppercase tracking-tight text-muted-foreground">
+          Match
+        </p>
+
+        <h1 className="line-clamp-1 text-3xl font-semibold uppercase tracking-tight">
           {new Date(game.date).toLocaleDateString("fr-FR", {
-            dateStyle: "long",
+            weekday: "long",
+            day: "numeric",
+            month: "long",
           })}
         </h1>
 
-        {session && isPlayer && (
-          <Button
-            onClick={() => leaveGame(game.id, session.user.id)}
-            variant="secondary"
-            className="ml-auto flex gap-2"
-          >
-            <Check className="h-5 w-5" />
-            <span>Inscrit</span>
-          </Button>
-        )}
+        <p className="mt-1 line-clamp-1 text-sm">{userStatus}</p>
 
-        {session && canJoinGame && (
-          <Button
-            onClick={() => handleJoin(game.id, session.user.id)}
-            className="ml-auto flex gap-2"
-          >
-            <ClipboardSignature className="h-5 w-5" />
-            <span>S'inscrire</span>
-          </Button>
-        )}
-      </div>
-
-      {session ? null : (
-        <Alert className="mt-4">
-          <AlertTitle>A savoir</AlertTitle>
-          <AlertDescription>
-            Pour vous inscrire à un match, veuillez{" "}
+        <div className="mt-3 flex gap-3">
+          {session && userIsMember && (
             <Link
-              to="/auth"
-              className="decoration- underline underline-offset-4"
+              to={`/game/${game.id}/edit`}
+              className={buttonVariants({ variant: "secondary" })}
             >
-              vous connecter
+              <Pencil className="mr-2 h-4 w-4" />
+              Modifier
             </Link>
-            .
-          </AlertDescription>
-        </Alert>
-      )}
+          )}
 
-      <div className="mt-4 grid grid-cols-1 gap-4 py-2 md:grid-cols-3">
-        <Information game={game} />
-        <Players game={game} players={players} />
-        <Result game={game} />
-        <LineUp
-          players={players}
-          setPlayers={setPlayers}
-          disabled={!isPlayer || hasStarted}
-        />
-      </div>
+          {session && userIsPlayer && (
+            <Button
+              onClick={() => leaveGame(game.id, session.user.id)}
+              variant="secondary"
+              className="flex gap-2"
+            >
+              <Ban className="h-5 w-5" />
+              <span>Désinscription</span>
+            </Button>
+          )}
+
+          {!gameHasStarted && !userIsPlayer && (
+            <Button onClick={handleJoin} className="flex gap-2">
+              <ClipboardSignature className="h-5 w-5" />
+              <span>Inscription</span>
+            </Button>
+          )}
+        </div>
+      </header>
+
+      <Tabs defaultValue="info" className="mt-12">
+        <TabsList className="w-full">
+          <TabsTrigger value="info">Infos</TabsTrigger>
+          <TabsTrigger value="result">Score</TabsTrigger>
+          <TabsTrigger value="players" disabled={!userIsMember}>
+            Joueurs
+          </TabsTrigger>
+          <TabsTrigger value="lineup" disabled={!userIsMember}>
+            Compo
+          </TabsTrigger>
+        </TabsList>
+        <TabsContent value="info">
+          <Information game={game} />
+        </TabsContent>
+        <TabsContent value="result">
+          <Result
+            game={game}
+            setGame={(newGame) => setGame({ ...game, ...newGame })}
+          />
+        </TabsContent>
+        <TabsContent value="players">
+          <Players game={game} players={players} />
+        </TabsContent>
+        <TabsContent value="lineup">
+          <LineUp
+            players={players}
+            setPlayers={setPlayers}
+            disabled={!userIsPlayer || gameHasStarted}
+          />
+        </TabsContent>
+      </Tabs>
     </div>
   );
 }

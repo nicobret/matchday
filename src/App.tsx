@@ -1,3 +1,4 @@
+import ScrollToHashElement from "@cascadia-code/scroll-to-hash-element";
 import { Suspense, lazy } from "react";
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import { SessionProvider } from "./components/auth-provider.tsx";
@@ -18,6 +19,7 @@ export default function App() {
       <BrowserRouter>
         <SessionProvider>
           <Layout>
+            <ScrollToHashElement />
             <Suspense fallback={<Fallback />}>
               <Routes>
                 <Route path="/auth" element={<Auth />} />

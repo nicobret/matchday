@@ -12,9 +12,9 @@ export default function LineUp({
   disabled: boolean;
 }) {
   return (
-    <Card className="md:col-span-2">
+    <Card className="col-span-2">
       <CardHeader>
-        <CardTitle className="flex items-center gap-3">Compositions</CardTitle>
+        <CardTitle className="flex items-center gap-3">Equipes</CardTitle>
       </CardHeader>
       <CardContent>
         {disabled ? (

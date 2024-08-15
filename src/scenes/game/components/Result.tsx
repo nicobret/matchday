@@ -20,9 +20,15 @@ import supabase from "@/utils/supabase";
 import { useState } from "react";
 import { Tables } from "types/supabase";
 
-export default function Result({ game }: { game: Tables<"games"> }) {
+export default function Result({
+  game,
+  setGame,
+}: {
+  game: Tables<"games">;
+  setGame: React.Dispatch<React.SetStateAction<Tables<"games">>>;
+}) {
   return (
-    <Card>
+    <Card className="col-span-2 md:col-span-1">
       <CardHeader>
         <CardTitle className="flex items-center gap-3">Résultat</CardTitle>
       </CardHeader>
@@ -39,8 +45,9 @@ export default function Result({ game }: { game: Tables<"games"> }) {
         ) : (
           <div>
             {game.score ? (
-              <p className="text-center">
-                {game.score[0].toString()} - {game.score[1].toString()}
+              <p className="text-center text-lg">
+                Domicile <strong>{game.score[0].toString()}</strong> -{" "}
+                <strong>{game.score[1].toString()}</strong> Visiteurs
               </p>
             ) : (
               <p className="text-center">Aucun résultat.</p>
@@ -49,31 +56,48 @@ export default function Result({ game }: { game: Tables<"games"> }) {
         )}
       </CardContent>
       <CardFooter className="mt-auto flex justify-end">
-        {new Date() > new Date(game.date) ? <ScoreDialog game={game} /> : null}
+        {new Date() > new Date(game.date) ? (
+          <ScoreDialog game={game} setGame={setGame} />
+        ) : null}
       </CardFooter>
     </Card>
   );
 }
 
-function ScoreDialog({ game }: { game: Tables<"games"> }) {
-  const [score, setScore] = useState(game.score || [0, 0]);
+function ScoreDialog({
+  game,
+  setGame,
+}: {
+  game: Tables<"games">;
+  setGame: React.Dispatch<React.SetStateAction<Tables<"games">>>;
+}) {
+  const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [score, setScore] = useState(game.score || [0, 0]);
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setLoading(true);
     try {
-      await supabase.from("games").update({ score }).eq("id", game.id);
+      const { data } = await supabase
+        .from("games")
+        .update({ score })
+        .eq("id", game.id)
+        .select("*")
+        .single()
+        .throwOnError();
+      console.log("🚀 ~ handleSubmit ~ data:", data);
+      if (data) setGame(data);
+      setOpen(false);
     } catch (error) {
       window.alert("Une erreur s'est produite.");
       console.error(error);
     }
     setLoading(false);
-    // close Dialog
   }
 
   return (
-    <Dialog>
+    <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger>
         <Button variant="secondary">
           {game.score ? "Modifier" : "Saisir"}

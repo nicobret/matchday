@@ -1,6 +1,3 @@
-import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
-import { Tables } from "types/supabase";
 import { buttonVariants } from "@/components/ui/button";
 import {
   Card,
@@ -25,6 +22,9 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { ArrowRight, History as HistoryPicto } from "lucide-react";
+import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
+import { Tables } from "types/supabase";
 import { fetchPastGames } from "../club.service";
 
 export default function ClubHistory({ clubId }: { clubId: number }) {
@@ -44,7 +44,7 @@ export default function ClubHistory({ clubId }: { clubId: number }) {
     return <p className="text-center">Chargement...</p>;
   }
   return (
-    <Card className="md:col-span-2">
+    <Card className="md:col-span-2" id="history">
       <CardHeader>
         <CardTitle>
           <div className="flex items-center justify-between">

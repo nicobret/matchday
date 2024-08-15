@@ -1,3 +1,5 @@
+import { SessionContext } from "@/components/auth-provider";
+import { buttonVariants } from "@/components/ui/button";
 import {
   Card,
   CardContent,
@@ -6,17 +8,15 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Book, Clipboard, MapPin, Pencil, Shield } from "lucide-react";
+import { useContext } from "react";
 import { Link } from "react-router-dom";
 import { Club, isAdmin } from "../club.service";
-import { buttonVariants } from "@/components/ui/button";
-import { useContext } from "react";
-import { SessionContext } from "@/components/auth-provider";
 
 export default function ClubInfo({ club }: { club: Club }) {
   const { session } = useContext(SessionContext);
 
   return (
-    <Card className="flex flex-col">
+    <Card className="flex flex-col" id="info">
       <CardHeader>
         <CardTitle>
           <div className="flex items-center gap-3">

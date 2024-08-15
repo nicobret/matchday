@@ -1,13 +1,32 @@
 import { SessionContext } from "@/components/auth-provider";
 import { Breadcrumbs } from "@/components/Breadcrumbs";
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
-import { Check, ClipboardSignature } from "lucide-react";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import {
+  Ban,
+  Book,
+  ClipboardSignature,
+  MapPin,
+  Menu,
+  Shield,
+} from "lucide-react";
 import { useContext, useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
-import { Club, fetchClub, isMember, joinClub, leaveClub } from "./club.service";
+import {
+  Club,
+  fetchClub,
+  isAdmin,
+  isMember,
+  joinClub,
+  leaveClub,
+} from "./club.service";
 import ClubHistory from "./components/ClubHistory";
-import ClubInfo from "./components/ClubInfo";
 import ClubMembers from "./components/ClubMembers";
 import UpcomingGames from "./components/UpcomingGames";
 
@@ -18,6 +37,13 @@ export default function View() {
   const [loading, setLoading] = useState(false);
 
   async function handleJoin(club: Club) {
+    if (!session?.user) {
+      if (window.confirm("Pour vous inscrire, veuillez vous connecter.")) {
+        window.location.href = "/auth?redirectTo=" + window.location.pathname;
+      }
+      return;
+    }
+
     try {
       if (!session?.user) {
         throw new Error("User must be logged in.");
@@ -78,57 +104,120 @@ export default function View() {
   if (loading) {
     return <p className="animate_pulse text-center">Chargement...</p>;
   }
+
   if (!club) {
     return <p className="text-center">Club non trouvé</p>;
   }
+
+  const userStatus =
+    session && isAdmin(session?.user, club)
+      ? "Vous êtes administrateur."
+      : session && isMember(session?.user, club)
+        ? "Vous êtes membre."
+        : session
+          ? "Vous n'êtes pas membre."
+          : "Vous n'êtes pas connecté.";
+
   return (
-    <div className="p-4">
+    <div className="px-4">
       <Breadcrumbs links={[{ label: club.name || "Club", link: "#" }]} />
-      <div className="mb-4 mt-8 flex scroll-m-20 items-end gap-4 first:mt-0">
-        <h1 className="text-3xl font-semibold tracking-tight">{club.name}</h1>
 
-        {session?.user &&
-          (isMember(session.user, club) ? (
-            <Button
-              onClick={() => handleLeave(club)}
-              variant="secondary"
-              className="ml-auto flex gap-2"
-            >
-              <Check className="h-5 w-5" />
-              <span className="hidden md:block">Rejoint</span>
-            </Button>
-          ) : (
-            <Button
-              onClick={() => handleJoin(club)}
-              className="ml-auto flex gap-2"
-            >
-              <ClipboardSignature className="h-5 w-5" />
-              Rejoindre
-            </Button>
-          ))}
-      </div>
+      <header className="my-8 flex gap-3">
+        {/* <div className="h-32 w-32 flex-none rounded-xl border-2 border-dashed"></div> */}
+        <div className="">
+          <h1 className="line-clamp-1 text-3xl font-semibold tracking-tight">
+            {club.name}
+          </h1>
 
-      {session ? null : (
-        <Alert className="mb-2">
-          <AlertTitle>A savoir</AlertTitle>
-          <AlertDescription>
-            Pour rejoindre un club, veuillez{" "}
-            <Link
-              to="/auth"
-              className="decoration- underline underline-offset-4"
-            >
-              vous connecter
-            </Link>
-            .
-          </AlertDescription>
-        </Alert>
+          <p className="mt-2 text-sm text-muted-foreground">{userStatus}</p>
+
+          <div className="mt-2 flex gap-3">
+            {!session || !isMember(session.user, club) ? (
+              <Button onClick={() => handleJoin(club)} className="flex gap-2">
+                <ClipboardSignature className="h-5 w-5" />
+                Rejoindre
+              </Button>
+            ) : (
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="secondary" className="md:hidden">
+                    <Menu className="mr-2 inline-block h-5 w-5" />
+                    Menu
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="start">
+                  {session && isAdmin(session?.user, club) ? (
+                    <DropdownMenuItem className="p-4">
+                      <Link to={`/club/${club.id}/edit`} className="flex gap-2">
+                        <ClipboardSignature className="inline-block h-5 w-5" />
+                        Modifier
+                      </Link>
+                    </DropdownMenuItem>
+                  ) : null}
+
+                  <DropdownMenuItem className="p-4">
+                    <Button
+                      onClick={() => handleLeave(club)}
+                      variant="destructive"
+                      className="flex gap-2"
+                    >
+                      <Ban className="inline-block h-5 w-5" />
+                      Quitter
+                    </Button>
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            )}
+          </div>
+        </div>
+      </header>
+
+      <p>
+        <Shield className="mr-2 inline-block h-5 w-5" />
+        Créé le{" "}
+        {new Date(club.created_at).toLocaleDateString("fr-FR", {
+          dateStyle: "long",
+        })}
+      </p>
+
+      {club.description && (
+        <p className="mt-2 leading-relaxed">
+          <Book className="mr-2 inline-block h-5 w-5" />
+          {club.description}
+        </p>
       )}
-      <div className="grid grid-cols-1 gap-4 py-2 md:grid-cols-3">
-        <ClubInfo club={club} />
-        <UpcomingGames club={club} />
-        <ClubMembers clubId={club.id} />
-        <ClubHistory clubId={club.id} />
+
+      <div className="mt-2 flex gap-2">
+        <MapPin className="h-5 w-5" />
+        {club.address && club.postcode && club.city ? (
+          <div>
+            <p className="leading-relaxed">{club.address}</p>
+            <p>
+              {club.postcode} {club.city}
+            </p>
+          </div>
+        ) : (
+          <p className="leading-relaxed">Adresse non renseignée.</p>
+        )}
       </div>
+
+      <Tabs defaultValue="schedule" className="mt-8">
+        <TabsList className="w-full">
+          <TabsTrigger value="schedule">Calendrier</TabsTrigger>
+          <TabsTrigger value="members">Membres</TabsTrigger>
+          <TabsTrigger value="history">Historique</TabsTrigger>
+        </TabsList>
+
+        <TabsContent value="schedule">
+          <UpcomingGames club={club} />
+        </TabsContent>
+        <TabsContent value="members">
+          <ClubMembers clubId={club.id} />
+        </TabsContent>
+        <TabsContent value="history">
+          <ClubHistory clubId={club.id} />
+        </TabsContent>
+      </Tabs>
     </div>
   );
 }

@@ -5,54 +5,52 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import {
-  Calendar,
-  ClipboardSignature,
-  Clock,
-  Hourglass,
-  MapPin,
-  Pencil,
-} from "lucide-react";
-import { Link } from "react-router-dom";
-import { buttonVariants } from "@/components/ui/button";
 import { AddToCalendarButton } from "add-to-calendar-button-react";
+import { Calendar, Clock, Hourglass, List, MapPin, Shield } from "lucide-react";
 import { Game, getGameDurationInMinutes } from "../games.service";
 
 export default function Information({ game }: { game: Game }) {
   const endTimestamp = new Date(game.date).getTime() + 2 * 60 * 60 * 1000;
   return (
-    <Card>
+    <Card className="col-span-2 md:col-span-1">
       <CardHeader>
         <CardTitle className="flex items-center gap-3">Informations</CardTitle>
       </CardHeader>
 
-      <CardContent className="space-y-2">
-        <div className="flex items-center gap-3">
-          <ClipboardSignature className="h-4 w-4" />
-          {game.club?.name}
-        </div>
-
-        <div className="flex items-center gap-3">
-          <Calendar className="h-4 w-4" />
+      <CardContent className="grid grid-cols-2 gap-1">
+        <p>
+          <Calendar className="mr-2 inline-block h-4 w-4 align-text-top" />
           {new Date(game.date).toLocaleDateString("fr-FR", {
             dateStyle: "long",
           })}
-          <Clock className="h-4 w-4" />
+        </p>
+
+        <p>
+          <Clock className="mr-2 inline-block h-4 w-4 align-text-top" />
           {new Date(game.date).toLocaleTimeString("fr-FR", {
             timeStyle: "short",
           })}
-        </div>
+        </p>
 
-        <div className="flex items-center gap-3">
-          <Hourglass className="h-4 w-4" />
-          {getGameDurationInMinutes(game.duration as string)} minutes -{" "}
+        <p>
+          <Hourglass className="mr-2 inline-block h-4 w-4 align-text-top" />
+          {getGameDurationInMinutes(game.duration as string)} minutes
+        </p>
+
+        <p className="capitalize">
+          <List className="mr-2 inline-block h-4 w-4 align-text-top" />
           {game.category}
-        </div>
+        </p>
 
-        <div className="flex items-center gap-3">
-          <MapPin className="h-4 w-4 flex-none" />
+        <p className="col-span-2">
+          <Shield className="mr-2 inline-block h-4 w-4 align-text-top" />
+          {game.club?.name}
+        </p>
+
+        <p className="col-span-2">
+          <MapPin className="mr-2 inline-block h-4 w-4 align-text-top" />
           {game.location}
-        </div>
+        </p>
       </CardContent>
 
       <CardFooter className="flex justify-end gap-2">
@@ -76,14 +74,9 @@ export default function Information({ game }: { game: Game }) {
             timeStyle: "short",
           })}
           timeZone="Europe/Paris"
+          label="Ajouter au calendrier"
+          lightMode="bodyScheme"
         />
-        <Link
-          to={`/game/${game.id}/edit`}
-          className={buttonVariants({ variant: "secondary" })}
-        >
-          <Pencil className="mr-2 h-4 w-4" />
-          Modifier
-        </Link>
       </CardFooter>
     </Card>
   );

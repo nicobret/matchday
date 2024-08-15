@@ -2,6 +2,8 @@ import { useContext, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { Club, Game, fetchUpcomingGames, isMember } from "../club.service";
 
+import { SessionContext } from "@/components/auth-provider";
+import { buttonVariants } from "@/components/ui/button";
 import {
   Card,
   CardContent,
@@ -16,10 +18,8 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "@/components/ui/carousel";
-import GameCard from "./GameCard";
 import { Plus, Trophy } from "lucide-react";
-import { buttonVariants } from "@/components/ui/button";
-import { SessionContext } from "@/components/auth-provider";
+import GameCard from "./GameCard";
 
 export default function UpcomingGames({ club }: { club: Club }) {
   const { session } = useContext(SessionContext);
@@ -39,7 +39,7 @@ export default function UpcomingGames({ club }: { club: Club }) {
   }
 
   return (
-    <Card className="flex flex-col md:col-span-2">
+    <Card className="flex flex-col md:col-span-2" id="upcoming">
       <CardHeader>
         <CardTitle>
           <div className="flex items-center gap-3">

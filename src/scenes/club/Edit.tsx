@@ -23,7 +23,6 @@ export default function EditClub() {
   const { session } = useContext(SessionContext);
   const navigate = useNavigate();
   const [club, setClub] = useState<Club>();
-  console.log("🚀 ~ EditClub ~ club:", club);
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
     id: "",
@@ -91,9 +90,9 @@ export default function EditClub() {
         throw new Error("Club non trouvé.");
       }
       const data = await updateClub(formData, id);
-      console.log("🚀 ~ handleSubmit ~ data:", data);
       setClub(data);
       window.alert("Club modifié avec succès !");
+      navigate(`/club/${id}`);
     } catch (error) {
       window.alert(error);
       console.error(error);
