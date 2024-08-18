@@ -3,6 +3,7 @@ import { Button, buttonVariants } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import supabase from "@/utils/supabase";
 import { useCopyToClipboard } from "@uidotdev/usehooks";
+import { CalendarEvent } from "calendar-link";
 import {
   ArrowLeft,
   Ban,
@@ -14,8 +15,8 @@ import {
 } from "lucide-react";
 import { useContext, useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
+import AddToCalendar from "./components/AddToCalendar";
 import LineUp from "./components/LineUp";
-import Players from "./components/Players";
 import Result from "./components/Result";
 import { Game, Player, fetchGame, fetchPlayers } from "./games.service";
 
@@ -119,12 +120,26 @@ export default function View() {
   );
 
   const userStatus = userIsPlayer
-    ? "Vous êtes inscrit(e)."
+    ? "✓ Vous êtes inscrit(e)"
     : userIsMember
-      ? "Vous n'êtes pas inscrit(e)."
+      ? "Vous n'êtes pas inscrit(e)"
       : session
-        ? "Vous n'êtes pas membre du club."
-        : "Vous n'êtes pas connecté(e).";
+        ? "Vous n'êtes pas membre du club"
+        : "Vous n'êtes pas connecté(e)";
+
+  const event: CalendarEvent = {
+    title: `${game.club?.name} - Match du ${new Date(
+      game.date,
+    ).toLocaleDateString("fr-FR", {
+      dateStyle: "long",
+    })}`,
+    description: `Match de ${game.category} organisé par ${game.club?.name}`,
+    start: new Date(game.date),
+    duration: [2, "hours"],
+    location:
+      game.location ||
+      `${game.club?.address}, ${game.club?.city} ${game.club?.postcode}`,
+  };
 
   return (
     <div className="px-4">
@@ -149,9 +164,27 @@ export default function View() {
           })}
         </h1>
 
-        <p className="mt-1 line-clamp-1 text-sm">{userStatus}</p>
+        <p
+          className={`mt-1 line-clamp-1 text-sm ${userIsPlayer ? "text-primary" : ""}`}
+        >
+          {userStatus}
+        </p>
 
-        <div className="mt-8 flex flex-wrap justify-center gap-3">
+        <div className="mx-auto mt-8 max-w-lg rounded-full border px-6 py-2 text-left text-sm">
+          <p>
+            <Clock className="mr-2 inline-block h-4 w-4 align-text-top" />
+            {new Date(game.date).toLocaleTimeString("fr-FR", {
+              timeStyle: "short",
+            })}
+          </p>
+
+          <p className="mt-1">
+            <MapPin className="mr-2 inline-block h-4 w-4 align-text-top" />
+            {game.location}
+          </p>
+        </div>
+
+        <div className="mx-auto mt-10 grid max-w-lg grid-cols-2 gap-2">
           {session && userIsMember && (
             <Link
               to={`/game/${game.id}/edit`}
@@ -178,56 +211,46 @@ export default function View() {
           </Button>
 
           {session && userIsPlayer && (
-            <Button
-              onClick={() => leaveGame(game.id, session.user.id)}
-              variant="secondary"
-            >
-              <Ban className="mr-2 inline-block h-5 w-5" />
-              Désinscription
-            </Button>
+            <>
+              <Button
+                onClick={() => leaveGame(game.id, session.user.id)}
+                variant="secondary"
+              >
+                <Ban className="mr-2 inline-block h-5 w-5" />
+                Désinscription
+              </Button>
+
+              <AddToCalendar event={event} />
+            </>
           )}
         </div>
       </header>
 
-      <div className="mt-8 text-center">
-        <p>
-          <Clock className="mr-2 inline-block h-4 w-4 align-text-top" />
-          {new Date(game.date).toLocaleTimeString("fr-FR", {
-            timeStyle: "short",
-          })}
-        </p>
-
-        <p className="mt-2">
-          <MapPin className="mr-2 inline-block h-4 w-4 align-text-top" />
-          {game.location}
-        </p>
-      </div>
-
-      <Tabs defaultValue="lineup" className="mt-8">
+      <Tabs defaultValue={userIsMember ? "lineup" : "result"} className="mt-12">
         <TabsList className="w-full">
-          <TabsTrigger value="lineup" disabled={!userIsMember}>
+          <TabsTrigger
+            value="lineup"
+            disabled={!userIsMember}
+            className="w-1/2"
+          >
             Compo
           </TabsTrigger>
-          <TabsTrigger value="result">Score</TabsTrigger>
-          <TabsTrigger value="players" disabled={!userIsMember}>
-            Joueurs
+          <TabsTrigger value="result" className="w-1/2">
+            Score
           </TabsTrigger>
         </TabsList>
 
-        <TabsContent value="result">
-          <Result
-            game={game}
-            setGame={(newGame) => setGame({ ...game, ...newGame })}
-          />
-        </TabsContent>
-        <TabsContent value="players">
-          <Players game={game} players={players} />
-        </TabsContent>
         <TabsContent value="lineup">
           <LineUp
             players={players}
             setPlayers={setPlayers}
             disabled={!userIsPlayer || gameHasStarted}
+          />
+        </TabsContent>
+        <TabsContent value="result">
+          <Result
+            game={game}
+            setGame={(newGame) => setGame({ ...game, ...newGame })}
           />
         </TabsContent>
       </Tabs>
