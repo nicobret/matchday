@@ -6,7 +6,9 @@ import { useCopyToClipboard } from "@uidotdev/usehooks";
 import {
   Ban,
   Book,
+  BookOpen,
   Calendar,
+  ClipboardList,
   ClipboardSignature,
   Copy,
   History,
@@ -172,7 +174,11 @@ export default function View() {
         )}
       </div>
 
-      <div className="mt-10 max-w-lg rounded-lg border p-4">
+      <p className="mt-4 text-center">
+        <BookOpen className="inline-block h-5 w-5 align-text-bottom text-secondary" />
+      </p>
+
+      <div className="mt-4 max-w-lg rounded-lg border p-4">
         <p>
           <Shield className="mr-2 inline-block h-5 w-5" />
           Créé le{" "}
@@ -203,7 +209,11 @@ export default function View() {
         </div>
       </div>
 
-      <Tabs defaultValue="schedule" className="mt-10">
+      <p className="mt-4 text-center">
+        <ClipboardList className="inline-block h-5 w-5 align-text-bottom text-secondary" />
+      </p>
+
+      <Tabs defaultValue="schedule" className="mt-4">
         <TabsList className="w-full">
           <TabsTrigger value="schedule" className="w-1/3">
             <Calendar className="mr-2 inline-block h-4 w-4" />
