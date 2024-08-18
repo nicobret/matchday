@@ -2,11 +2,13 @@ import { SessionContext } from "@/components/auth-provider";
 import { Breadcrumbs } from "@/components/Breadcrumbs";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useCopyToClipboard } from "@uidotdev/usehooks";
 import {
   Ban,
   Book,
   Calendar,
   ClipboardSignature,
+  Copy,
   History,
   MapPin,
   Shield,
@@ -31,6 +33,7 @@ export default function View() {
   const { id } = useParams();
   const [club, setClub] = useState<Club>();
   const [loading, setLoading] = useState(false);
+  const [copiedText, copyToClipboard] = useCopyToClipboard();
 
   async function handleJoin(club: Club) {
     if (!session?.user) {
@@ -62,23 +65,25 @@ export default function View() {
   }
 
   async function handleLeave(club: Club) {
+    if (!window.confirm("Voulez-vous vraiment quitter ce club ?")) {
+      return;
+    }
+
     try {
       if (!session?.user) {
         throw new Error("Vous n'êtes pas connecté.");
       }
-      if (window.confirm("Voulez-vous vraiment quitter ce club ?")) {
-        setLoading(true);
-        await leaveClub(club.id, session.user.id);
-        setClub((prev) => {
-          if (!prev) return prev;
-          return {
-            ...prev,
-            members: (prev.members || []).filter(
-              (m) => m.user_id !== session?.user.id,
-            ),
-          };
-        });
-      }
+      setLoading(true);
+      await leaveClub(club.id, session.user.id);
+      setClub((prev) => {
+        if (!prev) return prev;
+        return {
+          ...prev,
+          members: (prev.members || []).filter(
+            (m) => m.user_id !== session?.user.id,
+          ),
+        };
+      });
     } catch (error) {
       window.alert(error);
       console.error(error);
@@ -118,9 +123,9 @@ export default function View() {
     <div className="px-4">
       <Breadcrumbs links={[{ label: club.name || "Club", link: "#" }]} />
 
-      <header className="my-8 flex gap-4">
+      <header className="mt-8 flex gap-4">
         <div className="h-28 w-28 flex-none rounded-xl border-2 border-dashed"></div>
-        <div className="flex flex-col justify-between">
+        <div>
           <h1 className="text-3xl font-semibold tracking-tight">{club.name}</h1>
 
           <p
@@ -131,7 +136,7 @@ export default function View() {
         </div>
       </header>
 
-      <div className="mx-auto mt-2 grid max-w-lg grid-cols-2 gap-2">
+      <div className="mt-4 grid max-w-lg grid-cols-2 gap-2">
         {!session || !isMember(session.user, club) ? (
           <Button onClick={() => handleJoin(club)} className="flex gap-2">
             <ClipboardSignature className="h-5 w-5" />
@@ -148,6 +153,14 @@ export default function View() {
           </Button>
         )}
 
+        <Button
+          variant="secondary"
+          onClick={() => copyToClipboard(window.location.href)}
+        >
+          <Copy className="mr-2 inline-block h-5 w-5" />
+          {copiedText ? "Copié !" : "Copier"}
+        </Button>
+
         {session && isAdmin(session?.user, club) && (
           <Link
             to={`/club/${club.id}/edit`}
@@ -159,7 +172,7 @@ export default function View() {
         )}
       </div>
 
-      <div className="mx-auto mt-8 max-w-lg rounded-lg border p-4">
+      <div className="mt-10 max-w-lg rounded-lg border p-4">
         <p>
           <Shield className="mr-2 inline-block h-5 w-5" />
           Créé le{" "}

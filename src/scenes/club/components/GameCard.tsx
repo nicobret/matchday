@@ -17,14 +17,12 @@ export default function GameCard({ game }: { game: Game }) {
   return (
     <Card className="bg-accent">
       <CardHeader>
-        <CardTitle className="capitalize text-primary decoration-2 underline-offset-4 hover:underline">
-          <Link to={"/game/" + game.id.toString()}>
-            {new Date(game.date).toLocaleDateString("fr-FR", {
-              weekday: "long",
-              month: "short",
-              day: "numeric",
-            })}
-          </Link>
+        <CardTitle className="capitalize">
+          {new Date(game.date).toLocaleDateString("fr-FR", {
+            weekday: "long",
+            month: "short",
+            day: "numeric",
+          })}
         </CardTitle>
       </CardHeader>
 

@@ -1,6 +1,6 @@
 import ScrollToHashElement from "@cascadia-code/scroll-to-hash-element";
-import { Suspense, lazy } from "react";
-import { BrowserRouter, Route, Routes } from "react-router-dom";
+import { Suspense, lazy, useEffect } from "react";
+import { BrowserRouter, Route, Routes, useLocation } from "react-router-dom";
 import { SessionProvider } from "./components/auth-provider.tsx";
 import Layout from "./components/Layout.tsx";
 import { ThemeProvider } from "./components/theme-provider.tsx";
@@ -19,6 +19,7 @@ export default function App() {
       <BrowserRouter>
         <SessionProvider>
           <Layout>
+            <ScrollToTop />
             <ScrollToHashElement />
             <Suspense fallback={<Fallback />}>
               <Routes>
@@ -48,4 +49,12 @@ function Fallback() {
       Chargement de l'application...
     </div>
   );
+}
+
+function ScrollToTop() {
+  const { pathname } = useLocation();
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [pathname]);
+  return null;
 }

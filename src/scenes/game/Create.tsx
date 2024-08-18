@@ -1,14 +1,7 @@
-import { useContext, useEffect, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import supabase from "@/utils/supabase";
-import { Club, isMember } from "../club/club.service";
-import { User } from "@supabase/supabase-js";
 import { SessionContext } from "@/components/auth-provider";
 import { Button } from "@/components/ui/button";
-import { Breadcrumbs } from "@/components/Breadcrumbs";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
 import {
   Select,
   SelectContent,
@@ -16,6 +9,13 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Textarea } from "@/components/ui/textarea";
+import supabase from "@/utils/supabase";
+import { User } from "@supabase/supabase-js";
+import { ArrowLeft } from "lucide-react";
+import { useContext, useEffect, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { Club, isMember } from "../club/club.service";
 import { categories } from "./games.service";
 
 export default function CreateGame() {
@@ -124,22 +124,19 @@ function GameForm({ user, club }: { user: User; club: Club }) {
   }
 
   return (
-    <div className="p-4">
-      <Breadcrumbs
-        links={[
-          { label: "Accueil", link: "/" },
-          { label: club.name || "Club", link: `/club/${club.id}` },
-          { label: "Créer un match", link: "#" },
-        ]}
-      />
+    <div className="px-4">
+      <Link to={`/club/${club.id}`} className="text-sm text-muted-foreground">
+        <ArrowLeft className="mr-2 inline-block h-4 w-4 align-text-top" />
+        Retour au match
+      </Link>
 
-      <h2 className="mb-2 mt-6 scroll-m-20 text-3xl font-semibold tracking-tight">
+      <h2 className="mb-2 mt-6 scroll-m-20 text-center text-2xl font-semibold uppercase tracking-tight">
         Créer un match
       </h2>
 
-      <form onSubmit={handleSubmit}>
-        <div className="my-6 grid w-full max-w-sm grid-cols-2 gap-3">
-          <div className="grid w-full max-w-sm items-center gap-2">
+      <form onSubmit={handleSubmit} className="mx-auto max-w-lg">
+        <div className="mt-10 grid w-full grid-cols-2 gap-3">
+          <div className="grid w-full items-center gap-2">
             <Label htmlFor="category">Sport</Label>
             <Select
               name="category"
@@ -159,7 +156,7 @@ function GameForm({ user, club }: { user: User; club: Club }) {
             </Select>
           </div>
 
-          <div className="grid w-full max-w-sm items-center gap-2">
+          <div className="grid w-full items-center gap-2">
             <Label htmlFor="playerCount">Nombre de joueurs</Label>
             <Input
               type="number"
@@ -171,8 +168,8 @@ function GameForm({ user, club }: { user: User; club: Club }) {
           </div>
         </div>
 
-        <div className="my-6 grid w-full max-w-sm grid-cols-2 gap-3">
-          <div className="grid w-full max-w-sm items-center gap-2">
+        <div className="my-6 grid w-full grid-cols-2 gap-3">
+          <div className="grid w-full items-center gap-2">
             <Label htmlFor="date">Date du match</Label>
             <Input
               type="date"
@@ -182,7 +179,7 @@ function GameForm({ user, club }: { user: User; club: Club }) {
             />
           </div>
 
-          <div className="grid w-full max-w-sm items-center gap-2">
+          <div className="grid w-full items-center gap-2">
             <Label htmlFor="time">Heure du match</Label>
             <Input
               type="time"
@@ -193,7 +190,7 @@ function GameForm({ user, club }: { user: User; club: Club }) {
           </div>
         </div>
 
-        <div className="grid w-full max-w-sm items-center gap-2">
+        <div className="grid w-full items-center gap-2">
           <Label htmlFor="duration">Durée en minutes</Label>
           <Input
             type="number"
@@ -203,7 +200,7 @@ function GameForm({ user, club }: { user: User; club: Club }) {
           />
         </div>
 
-        <div className="my-6 grid w-full max-w-sm items-center gap-2">
+        <div className="my-6 grid w-full items-center gap-2">
           <Label htmlFor="location">Lieu</Label>
           <Textarea
             id="location"
@@ -214,7 +211,7 @@ function GameForm({ user, club }: { user: User; club: Club }) {
           />
         </div>
 
-        <div className="flex max-w-sm items-center justify-end gap-3">
+        <div className="grid grid-cols-2 gap-2">
           <Button type="button" asChild variant="secondary">
             <Link to={`/club/${club.id}`}>Annuler</Link>
           </Button>

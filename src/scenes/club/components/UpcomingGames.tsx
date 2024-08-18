@@ -53,7 +53,7 @@ export default function UpcomingGames({ club }: { club: Club }) {
           <Carousel className="mx-10">
             <CarouselContent>
               {games.map((game) => (
-                <CarouselItem key={game.id} className="md:basis-1/3">
+                <CarouselItem key={game.id} className="md:basis-1/4">
                   <GameCard game={game} />
                 </CarouselItem>
               ))}
