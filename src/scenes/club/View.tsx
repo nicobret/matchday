@@ -1,20 +1,16 @@
 import { SessionContext } from "@/components/auth-provider";
 import { Breadcrumbs } from "@/components/Breadcrumbs";
-import { Button } from "@/components/ui/button";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+import { Button, buttonVariants } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   Ban,
   Book,
+  Calendar,
   ClipboardSignature,
+  History,
   MapPin,
-  Menu,
   Shield,
+  Users,
 } from "lucide-react";
 import { useContext, useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
@@ -111,101 +107,103 @@ export default function View() {
 
   const userStatus =
     session && isAdmin(session?.user, club)
-      ? "Vous êtes administrateur."
+      ? "✓ Vous êtes administrateur"
       : session && isMember(session?.user, club)
-        ? "Vous êtes membre."
+        ? "✓ Vous êtes membre."
         : session
           ? "Vous n'êtes pas membre."
-          : "Vous n'êtes pas connecté.";
+          : "Vous n'êtes pas connecté(e)";
 
   return (
     <div className="px-4">
       <Breadcrumbs links={[{ label: club.name || "Club", link: "#" }]} />
 
-      <header className="my-8 flex gap-3">
-        {/* <div className="h-32 w-32 flex-none rounded-xl border-2 border-dashed"></div> */}
-        <div className="">
-          <h1 className="line-clamp-1 text-3xl font-semibold tracking-tight">
-            {club.name}
-          </h1>
+      <header className="my-8 flex gap-4">
+        <div className="h-28 w-28 flex-none rounded-xl border-2 border-dashed"></div>
+        <div className="flex flex-col justify-between">
+          <h1 className="text-3xl font-semibold tracking-tight">{club.name}</h1>
 
-          <p className="mt-2 text-sm text-muted-foreground">{userStatus}</p>
-
-          <div className="mt-2 flex gap-3">
-            {!session || !isMember(session.user, club) ? (
-              <Button onClick={() => handleJoin(club)} className="flex gap-2">
-                <ClipboardSignature className="h-5 w-5" />
-                Rejoindre
-              </Button>
-            ) : (
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button variant="secondary">
-                    <Menu className="mr-2 inline-block h-5 w-5" />
-                    Menu
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="start">
-                  {session && isAdmin(session?.user, club) ? (
-                    <DropdownMenuItem className="p-4">
-                      <Link to={`/club/${club.id}/edit`} className="flex gap-2">
-                        <ClipboardSignature className="inline-block h-5 w-5" />
-                        Modifier
-                      </Link>
-                    </DropdownMenuItem>
-                  ) : null}
-
-                  <DropdownMenuItem className="p-4">
-                    <Button
-                      onClick={() => handleLeave(club)}
-                      variant="destructive"
-                      className="flex gap-2"
-                    >
-                      <Ban className="inline-block h-5 w-5" />
-                      Quitter
-                    </Button>
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
-            )}
-          </div>
+          <p
+            className={`mt-2 text-sm text-muted-foreground ${session && isMember(session.user, club) ? "text-primary" : ""}`}
+          >
+            {userStatus}
+          </p>
         </div>
       </header>
 
-      <p>
-        <Shield className="mr-2 inline-block h-5 w-5" />
-        Créé le{" "}
-        {new Date(club.created_at).toLocaleDateString("fr-FR", {
-          dateStyle: "long",
-        })}
-      </p>
-
-      {club.description && (
-        <p className="mt-2 leading-relaxed">
-          <Book className="mr-2 inline-block h-5 w-5" />
-          {club.description}
-        </p>
-      )}
-
-      <div className="mt-2 flex gap-2">
-        <MapPin className="h-5 w-5" />
-        {club.address && club.postcode && club.city ? (
-          <div>
-            <p className="leading-relaxed">{club.address}</p>
-            <p>
-              {club.postcode} {club.city}
-            </p>
-          </div>
+      <div className="mx-auto mt-2 grid max-w-lg grid-cols-2 gap-2">
+        {!session || !isMember(session.user, club) ? (
+          <Button onClick={() => handleJoin(club)} className="flex gap-2">
+            <ClipboardSignature className="h-5 w-5" />
+            Rejoindre
+          </Button>
         ) : (
-          <p className="leading-relaxed">Adresse non renseignée.</p>
+          <Button
+            onClick={() => handleLeave(club)}
+            variant="secondary"
+            className="flex gap-2"
+          >
+            <Ban className="inline-block h-5 w-5" />
+            Quitter
+          </Button>
+        )}
+
+        {session && isAdmin(session?.user, club) && (
+          <Link
+            to={`/club/${club.id}/edit`}
+            className={buttonVariants({ variant: "secondary" })}
+          >
+            <ClipboardSignature className="mr-2 inline-block h-5 w-5" />
+            Modifier
+          </Link>
         )}
       </div>
 
-      <Tabs defaultValue="schedule" className="mt-8">
+      <div className="mx-auto mt-8 max-w-lg rounded-lg border p-4">
+        <p>
+          <Shield className="mr-2 inline-block h-5 w-5" />
+          Créé le{" "}
+          {new Date(club.created_at).toLocaleDateString("fr-FR", {
+            dateStyle: "long",
+          })}
+        </p>
+
+        {club.description && (
+          <p className="mt-2 leading-relaxed">
+            <Book className="mr-2 inline-block h-5 w-5" />
+            {club.description}
+          </p>
+        )}
+
+        <div className="mt-2 flex gap-2">
+          <MapPin className="h-5 w-5" />
+          {club.address && club.postcode && club.city ? (
+            <div>
+              <p className="leading-relaxed">{club.address}</p>
+              <p>
+                {club.postcode} {club.city}
+              </p>
+            </div>
+          ) : (
+            <p className="leading-relaxed">Adresse non renseignée.</p>
+          )}
+        </div>
+      </div>
+
+      <Tabs defaultValue="schedule" className="mt-10">
         <TabsList className="w-full">
-          <TabsTrigger value="schedule">Calendrier</TabsTrigger>
-          <TabsTrigger value="members">Membres</TabsTrigger>
-          <TabsTrigger value="history">Historique</TabsTrigger>
+          <TabsTrigger value="schedule" className="w-1/3">
+            <Calendar className="mr-2 inline-block h-4 w-4" />
+            Calendrier
+          </TabsTrigger>
+          <TabsTrigger value="members" className="w-1/3">
+            <Users className="mr-2 inline-block h-4 w-4" />
+            Membres
+          </TabsTrigger>
+          <TabsTrigger value="history" className="w-1/3">
+            <History className="mr-2 inline-block h-4 w-4" />
+            Historique
+          </TabsTrigger>
         </TabsList>
 
         <TabsContent value="schedule">

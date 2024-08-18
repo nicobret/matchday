@@ -14,7 +14,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { ArrowRight, Users } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { Member, fetchMembers } from "../club.service";
@@ -48,10 +48,7 @@ export default function ClubMembers({ clubId }: { clubId: number }) {
     <Card id="members">
       <CardHeader>
         <CardTitle>
-          <div className="flex items-center gap-3">
-            <Users className="h-5 w-5" />
-            Membres
-          </div>
+          <p>Membres</p>
         </CardTitle>
       </CardHeader>
 

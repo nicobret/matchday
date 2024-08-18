@@ -18,7 +18,7 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "@/components/ui/carousel";
-import { Plus, Trophy } from "lucide-react";
+import { Plus } from "lucide-react";
 import GameCard from "./GameCard";
 
 export default function UpcomingGames({ club }: { club: Club }) {
@@ -42,10 +42,7 @@ export default function UpcomingGames({ club }: { club: Club }) {
     <Card className="flex flex-col md:col-span-2" id="upcoming">
       <CardHeader>
         <CardTitle>
-          <div className="flex items-center gap-3">
-            <Trophy className="h-5 w-5" />
-            Matches à venir
-          </div>
+          <p>Matches à venir</p>
         </CardTitle>
       </CardHeader>
 

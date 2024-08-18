@@ -21,7 +21,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { ArrowRight, History as HistoryPicto } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { Tables } from "types/supabase";
@@ -46,34 +46,25 @@ export default function ClubHistory({ clubId }: { clubId: number }) {
   return (
     <Card className="md:col-span-2" id="history">
       <CardHeader>
-        <CardTitle>
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <HistoryPicto className="h-5 w-5" />
-              Historique
-            </div>
-
-            <div>
-              <Select onValueChange={setYear} defaultValue={year}>
-                <SelectTrigger className="w-[180px">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="2024">2024</SelectItem>
-                  <SelectItem value="2023">2023</SelectItem>
-                  <SelectItem value="2022">2022</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-          </div>
-        </CardTitle>
+        <CardTitle>Historique</CardTitle>
       </CardHeader>
 
       <CardContent className="max-h-96 overflow-auto">
+        <Select onValueChange={setYear} defaultValue={year}>
+          <SelectTrigger className="w-fit">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="2024">2024</SelectItem>
+            <SelectItem value="2023">2023</SelectItem>
+            <SelectItem value="2022">2022</SelectItem>
+          </SelectContent>
+        </Select>
+
         {loading ? (
           <p className="text-center">Chargement...</p>
         ) : games?.length ? (
-          <Table className="border">
+          <Table className="mt-4 border">
             <TableHeader>
               <TableRow>
                 <TableHead>Date</TableHead>
