@@ -19,7 +19,7 @@ export default function ClubCard({
   isMember?: boolean;
 }) {
   return (
-    <Card className="flex w-full flex-col sm:w-72">
+    <Card className="flex w-full flex-col sm:w-80">
       <CardHeader>
         <CardTitle className="truncate">
           <Link to={"/club/" + club.id.toString()}>{club.name}</Link>
@@ -44,7 +44,7 @@ export default function ClubCard({
         ) : (
           <Link
             to={"/club/" + club.id.toString()}
-            className={`${buttonVariants({ variant: "secondary" })} w-full`}
+            className={`${buttonVariants()} w-full`}
           >
             Voir
             <Eye className="ml-2 h-5 w-5" />

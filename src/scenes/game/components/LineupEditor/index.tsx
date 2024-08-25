@@ -37,7 +37,7 @@ export default function LineupEditor({
     <DndContext onDragEnd={handleDrop}>
       <div className="grid gap-4 md:grid-cols-3">
         <Team
-          label="Disponible"
+          label="Sans équipe"
           icon={<Shirt className="ml-2 inline-block h-5 w-5 text-muted" />}
           id="none"
           players={players.filter((p) => p.team === null)}

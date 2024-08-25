@@ -21,7 +21,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
   }
   return (
     <div className="relative">
-      <nav className="fixed top-0 z-10 mx-auto flex w-full items-center gap-2 border-b-[1px] border-b-border pr-2 backdrop-blur">
+      <nav className="fixed top-0 z-10 mx-auto flex w-full items-center gap-2 pr-2 backdrop-blur">
         <Link to="/">
           <div className="flex items-center gap-2 p-2">
             <svg
@@ -75,7 +75,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
         )}
       </nav>
 
-      <div className="mx-auto mb-20 mt-20 min-h-screen max-w-5xl">
+      <div className="mx-auto mb-20 mt-16 min-h-screen max-w-5xl">
         {children}
       </div>
 

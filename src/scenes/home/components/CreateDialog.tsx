@@ -85,82 +85,78 @@ export default function CreateDialog() {
   }
 
   return (
-    <>
-      <Dialog>
-        <DialogTrigger asChild>
-          <Button variant="secondary">
-            <Plus className="mr-2 h-5 w-5" />
-            <p>Créer</p>
-          </Button>
-        </DialogTrigger>
+    <Dialog>
+      <DialogTrigger asChild>
+        <Button variant="secondary" className="mt-4">
+          <Plus className="mr-2 h-5 w-5" />
+          Créer un club
+        </Button>
+      </DialogTrigger>
 
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Créer un club</DialogTitle>
-            <DialogDescription></DialogDescription>
-          </DialogHeader>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>Créer un club</DialogTitle>
+          <DialogDescription></DialogDescription>
+        </DialogHeader>
 
-          <form onSubmit={handleSubmit} id="create-club-form">
-            <Label htmlFor="clubname">Nom du club</Label>
-            <Input
-              type="text"
-              id="clubname"
-              placeholder="Le club des champions"
-              value={formData.name}
-              onChange={(e) =>
-                setFormData({ ...formData, name: e.target.value })
-              }
-            />
+        <form onSubmit={handleSubmit} id="create-club-form">
+          <Label htmlFor="clubname">Nom du club</Label>
+          <Input
+            type="text"
+            id="clubname"
+            placeholder="Le club des champions"
+            value={formData.name}
+            onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+          />
 
-            <Label htmlFor="clubdescription">Description</Label>
-            <Textarea
-              id="clubdescription"
-              placeholder="Le meilleur club de tous les temps."
-              value={formData.description}
-              onChange={(e) =>
-                setFormData({
-                  ...formData,
-                  description: e.target.value,
-                })
-              }
-              rows={5}
-            />
+          <Label htmlFor="clubdescription">Description</Label>
+          <Textarea
+            id="clubdescription"
+            placeholder="Le meilleur club de tous les temps."
+            value={formData.description}
+            onChange={(e) =>
+              setFormData({
+                ...formData,
+                description: e.target.value,
+              })
+            }
+            rows={5}
+          />
 
-            {/* <Label htmlFor="clubdescription">Logo</Label>
+          {/* <Label htmlFor="clubdescription">Logo</Label>
             <Input type="file" id="clublogo" /> */}
 
-            <Label htmlFor="country">Pays</Label>
-            <Select
-              onValueChange={(value) =>
-                setFormData({ ...formData, country: value })
-              }
-              value={formData.country}
-              defaultValue="France"
-            >
-              <SelectTrigger>
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                {countryList.map((country) => (
-                  <SelectItem key={country} value={country}>
-                    {country}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </form>
-          <DialogFooter>
-            <Button
-              type="submit"
-              form="create-club-form"
-              disabled={loading || !formData.name}
-              className="w-full"
-            >
-              Créer
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
-    </>
+          <Label htmlFor="country">Pays</Label>
+          <Select
+            onValueChange={(value) =>
+              setFormData({ ...formData, country: value })
+            }
+            value={formData.country}
+            defaultValue="France"
+          >
+            <SelectTrigger>
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              {countryList.map((country) => (
+                <SelectItem key={country} value={country}>
+                  {country}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </form>
+        <DialogFooter>
+          <Button
+            type="submit"
+            form="create-club-form"
+            disabled={loading || !formData.name}
+            className="w-full"
+          >
+            Créer
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
   );
 }

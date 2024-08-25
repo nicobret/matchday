@@ -1,14 +1,12 @@
 import { SessionContext } from "@/components/auth-provider";
-import { Breadcrumbs } from "@/components/Breadcrumbs";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useCopyToClipboard } from "@uidotdev/usehooks";
 import {
+  ArrowLeft,
   Ban,
   Book,
-  BookOpen,
   Calendar,
-  ClipboardList,
   ClipboardSignature,
   Copy,
   History,
@@ -122,8 +120,11 @@ export default function View() {
           : "Vous n'êtes pas connecté(e)";
 
   return (
-    <div className="px-4">
-      <Breadcrumbs links={[{ label: club.name || "Club", link: "#" }]} />
+    <div className="p-4">
+      <Link to="/" className="text-sm text-muted-foreground">
+        <ArrowLeft className="mr-2 inline-block h-4 w-4 align-text-top" />
+        Retour à l'accueil
+      </Link>
 
       <header className="mt-8 flex gap-4">
         <div className="h-28 w-28 flex-none rounded-xl border-2 border-dashed"></div>
@@ -160,7 +161,7 @@ export default function View() {
           onClick={() => copyToClipboard(window.location.href)}
         >
           <Copy className="mr-2 inline-block h-5 w-5" />
-          {copiedText ? "Copié !" : "Copier"}
+          {copiedText ? "Copié !" : "Copier le lien"}
         </Button>
 
         {session && isAdmin(session?.user, club) && (
@@ -174,11 +175,7 @@ export default function View() {
         )}
       </div>
 
-      <p className="mt-4 text-center">
-        <BookOpen className="inline-block h-5 w-5 align-text-bottom text-secondary" />
-      </p>
-
-      <div className="mt-4 max-w-lg rounded-lg border p-4">
+      <div className="mt-10 max-w-lg rounded-lg border p-4">
         <p>
           <Shield className="mr-2 inline-block h-5 w-5" />
           Créé le{" "}
@@ -209,11 +206,7 @@ export default function View() {
         </div>
       </div>
 
-      <p className="mt-4 text-center">
-        <ClipboardList className="inline-block h-5 w-5 align-text-bottom text-secondary" />
-      </p>
-
-      <Tabs defaultValue="schedule" className="mt-4">
+      <Tabs defaultValue="schedule" className="mt-10">
         <TabsList className="w-full">
           <TabsTrigger value="schedule" className="w-1/3">
             <Calendar className="mr-2 inline-block h-4 w-4" />
