@@ -63,11 +63,6 @@ export default function Home() {
     (c) => !c.members?.some((m) => m.user_id === session?.user?.id),
   );
 
-  const [guideClosed, setGuideClosed] = useState(
-    localStorage.getItem("guide-closed") === "true",
-  );
-  console.log("🚀 ~ Home ~ guideClosed:", guideClosed);
-
   if (loading) {
     return (
       <p className="animate-pulse text-center">Chargement des données...</p>
@@ -80,70 +75,7 @@ export default function Home() {
 
   return (
     <div className="p-4">
-      <section id="guide" className="rounded-lg border p-4">
-        <div className="flex items-center justify-between">
-          <h2
-            className={`scroll-m-20 font-semibold tracking-tight transition-all ${guideClosed ? "text-base text-muted-foreground" : "text-2xl"}`}
-          >
-            Comment ça marche ?
-          </h2>
-
-          <button
-            onClick={() => {
-              if (guideClosed) {
-                localStorage.removeItem("guide-closed");
-                setGuideClosed(false);
-              } else {
-                localStorage.setItem("guide-closed", "true");
-                setGuideClosed(true);
-              }
-            }}
-            className={`transition-all ${guideClosed ? "rotate-180" : ""}`}
-          >
-            <ChevronUp className="h-5 w-5" />
-          </button>
-        </div>
-
-        {!guideClosed && (
-          <>
-            <p className="mt-4 text-lg">
-              <Users className="mr-4 inline-block h-5 w-5 align-text-bottom text-primary" />
-              Trouvez ou créez un club.
-            </p>
-
-            <p className="mt-2 text-lg">
-              <Swords className="mr-4 inline-block h-5 w-5 align-text-bottom text-primary" />
-              Inscrivez-vous à un match.
-            </p>
-            <p className="mt-2 text-lg">
-              <TableProperties className="mr-4 inline-block h-5 w-5 align-text-bottom text-primary" />
-              Enregistrez vos scores !
-            </p>
-
-            {session?.user && !profile?.firstname && (
-              <div className="mt-4 text-center">
-                <Link
-                  to="/account"
-                  className="text-primary underline underline-offset-2"
-                >
-                  Compléter mon profil
-                </Link>
-              </div>
-            )}
-
-            {!session?.user ? (
-              <div className="mt-4 text-center">
-                <Link
-                  to={`/auth?redirectTo=${window.location.pathname}`}
-                  className="text-primary underline underline-offset-2"
-                >
-                  C'est parti !
-                </Link>
-              </div>
-            ) : null}
-          </>
-        )}
-      </section>
+      <Guide profile={profile} />
 
       <section id="clubs" className="mt-8">
         <h2 className="scroll-m-20 text-3xl font-semibold tracking-tight">
@@ -193,5 +125,82 @@ export default function Home() {
         </Tabs>
       </section>
     </div>
+  );
+}
+
+function Guide({ profile }: { profile?: Tables<"users"> }) {
+  const { session } = useContext(SessionContext);
+
+  const [open, setOpen] = useState(
+    localStorage.getItem("close-guide") === "true" ||
+      (session?.user && !profile?.firstname),
+  );
+
+  function handleClick() {
+    if (open) {
+      localStorage.removeItem("close-guide");
+      setOpen(false);
+    } else {
+      localStorage.setItem("close-guide", "true");
+      setOpen(true);
+    }
+  }
+
+  return (
+    <section id="guide" className="rounded-lg border p-4">
+      <div className="flex items-center justify-between">
+        <h2
+          className={`scroll-m-20 font-semibold tracking-tight transition-all ${open ? "text-base text-muted-foreground" : "text-2xl"}`}
+        >
+          Comment ça marche ?
+        </h2>
+
+        <button onClick={handleClick}>
+          <ChevronUp
+            className={`h-5 w-5 transition-all ${open ? "rotate-180" : ""}`}
+          />
+        </button>
+      </div>
+
+      {!open && (
+        <>
+          <p className="mt-4 text-lg">
+            <Users className="mr-4 inline-block h-5 w-5 align-text-bottom text-primary" />
+            Trouvez ou créez un club.
+          </p>
+
+          <p className="mt-2 text-lg">
+            <Swords className="mr-4 inline-block h-5 w-5 align-text-bottom text-primary" />
+            Inscrivez-vous à un match.
+          </p>
+          <p className="mt-2 text-lg">
+            <TableProperties className="mr-4 inline-block h-5 w-5 align-text-bottom text-primary" />
+            Enregistrez vos scores !
+          </p>
+
+          {session?.user && !profile?.firstname && (
+            <div className="mt-4 text-center">
+              <Link
+                to="/account"
+                className="text-primary underline underline-offset-2"
+              >
+                Compléter mon profil
+              </Link>
+            </div>
+          )}
+
+          {session?.user ? null : (
+            <div className="mt-4 text-center">
+              <Link
+                to={`/auth?redirectTo=${window.location.pathname}`}
+                className="text-primary underline underline-offset-2"
+              >
+                C'est parti !
+              </Link>
+            </div>
+          )}
+        </>
+      )}
+    </section>
   );
 }
