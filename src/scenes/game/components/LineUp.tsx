@@ -22,7 +22,7 @@ export default function LineUp({
         <p className="mb-6">
           {players.length} / {game.total_players} joueurs inscrits.
         </p>
-        <LineupEditor players={players} setPlayers={setPlayers} />
+        <LineupEditor players={players} setPlayers={setPlayers} disabled={disabled} />
       </CardContent>
     </Card>
   );

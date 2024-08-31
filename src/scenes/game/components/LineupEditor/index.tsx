@@ -13,16 +13,25 @@ const teams: { [key: string]: number | null } = {
 export default function LineupEditor({
   players,
   setPlayers,
+  disabled,
 }: {
   players: Player[];
   setPlayers: React.Dispatch<React.SetStateAction<Player[]>>;
+  disabled: boolean;
 }) {
   async function handleDrop(event: DragEndEvent) {
+    if (disabled) {
+      window.alert("Vous n'avez pas la permission de modifier l'équipe.");
+      return;
+    }
+
     if (!event.over) return;
+
     const team = teams[event.over.id];
     setPlayers(
       players.map((p) => (p.id === event.active.id ? { ...p, team } : p)),
     );
+
     const { error } = await supabase
       .from("game_registrations")
       .update({ team })
