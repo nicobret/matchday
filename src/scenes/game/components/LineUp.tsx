@@ -14,15 +14,19 @@ export default function LineUp({
   disabled: boolean;
 }) {
   return (
-    <Card className="col-span-2">
+    <Card className="md:col-span-2">
       <CardHeader>
-        <CardTitle className="flex items-center gap-3">Joueurs</CardTitle>
+        <CardTitle>Composition</CardTitle>
       </CardHeader>
       <CardContent>
         <p className="mb-6">
           {players.length} / {game.total_players} joueurs inscrits.
         </p>
-        <LineupEditor players={players} setPlayers={setPlayers} disabled={disabled} />
+        <LineupEditor
+          players={players}
+          setPlayers={setPlayers}
+          disabled={disabled}
+        />
       </CardContent>
     </Card>
   );
