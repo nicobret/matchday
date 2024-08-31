@@ -1,13 +1,15 @@
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import { Tables } from "types/supabase";
 import { fetchPlayer } from "./player.service";
-import { Breadcrumbs } from "@/components/Breadcrumbs";
+import { ArrowLeft } from "lucide-react";
 
 export default function Player() {
   const { id } = useParams();
   const [player, setPlayer] = useState<Tables<"users"> | null>(null);
   const [loading, setLoading] = useState(false);
+  const params = new URLSearchParams(window.location.search);
+  const fromClub = params.get("fromClub");
 
   useEffect(() => {
     if (!id) return;
@@ -26,7 +28,21 @@ export default function Player() {
   }
   return (
     <div className="p-4">
-      <Breadcrumbs links={[{ label: "Player", link: `/player/${id}` }]} />
+      {fromClub ? (
+        <Link
+          to={`/club/${fromClub}`}
+          className="text-sm text-muted-foreground"
+        >
+          <ArrowLeft className="mr-2 inline-block h-4 w-4 align-text-top" />
+          Retour au club
+        </Link>
+      ) : (
+        <Link to="/" className="text-sm text-muted-foreground">
+          <ArrowLeft className="mr-2 inline-block h-4 w-4 align-text-top" />
+          Retour à l'accueil
+        </Link>
+      )}
+
       <h1 className="mt-6 scroll-m-20 text-2xl font-bold tracking-tight lg:text-5xl">
         {player.firstname} {player.lastname}
       </h1>

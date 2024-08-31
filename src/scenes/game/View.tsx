@@ -111,6 +111,13 @@ export default function View() {
 
   const gameHasStarted = new Date(game.date) < new Date();
 
+  const durationParts = String(game.duration).split(":");
+  const durationInMinutes =
+    parseInt(durationParts[0]) * 60 + parseInt(durationParts[1]);
+  const endDate = new Date(game.date);
+  endDate.setMinutes(endDate.getMinutes() + durationInMinutes);
+  const gameHasEnded = endDate < new Date();
+
   const userIsPlayer = players
     .map((p) => p.profile?.id)
     .includes(session?.user.id);
@@ -142,7 +149,7 @@ export default function View() {
   };
 
   return (
-    <div className="px-4">
+    <div className="p-4">
       <Link
         to={`/club/${game.club?.id}`}
         className="text-sm text-muted-foreground"
@@ -156,7 +163,7 @@ export default function View() {
           {game.club?.name}
         </p>
 
-        <h1 className="line-clamp-1 text-4xl font-semibold uppercase tracking-tight">
+        <h1 className="text-4xl font-semibold uppercase tracking-tight">
           {new Date(game.date).toLocaleDateString("fr-FR", {
             weekday: "long",
             day: "numeric",
@@ -167,7 +174,7 @@ export default function View() {
         <p
           className={`mt-1 line-clamp-1 text-sm ${userIsPlayer ? "text-primary" : ""}`}
         >
-          {userStatus}
+          {gameHasEnded ? "Match terminé" : userStatus}
         </p>
 
         <div className="mx-auto mt-8 max-w-lg rounded-full border px-6 py-2 text-left text-sm">
@@ -207,7 +214,7 @@ export default function View() {
             variant="secondary"
           >
             <Copy className="mr-2 inline-block h-5 w-5" />
-            {copiedText ? "Copié !" : "Copier l'URL"}
+            {copiedText ? "Copié !" : "Copier le lien"}
           </Button>
 
           {session && userIsPlayer && (
@@ -226,25 +233,29 @@ export default function View() {
         </div>
       </header>
 
-      <Tabs defaultValue={userIsMember ? "lineup" : "result"} className="mt-12">
+      <Tabs
+        defaultValue={userIsMember ? "players" : "result"}
+        className="mt-12"
+      >
         <TabsList className="w-full">
           <TabsTrigger
-            value="lineup"
+            value="players"
             disabled={!userIsMember}
             className="w-1/2"
           >
-            Compo
+            Joueurs
           </TabsTrigger>
           <TabsTrigger value="result" className="w-1/2">
             Score
           </TabsTrigger>
         </TabsList>
 
-        <TabsContent value="lineup">
+        <TabsContent value="players">
           <LineUp
+            game={game}
             players={players}
             setPlayers={setPlayers}
-            disabled={!userIsPlayer || gameHasStarted}
+            disabled={!userIsPlayer}
           />
         </TabsContent>
         <TabsContent value="result">

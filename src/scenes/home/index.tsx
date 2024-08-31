@@ -1,8 +1,7 @@
 import { SessionContext } from "@/components/auth-provider";
 import supabase from "@/utils/supabase";
 import {
-  ChevronDown,
-  LifeBuoy,
+  ChevronUp,
   Search,
   Shield,
   Swords,
@@ -16,6 +15,7 @@ import { fetchProfile } from "../account/account.service";
 import { Club } from "../club/club.service";
 import ClubCard from "./components/ClubCard";
 import CreateDialog from "./components/CreateDialog";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 export default function Home() {
   const { session } = useContext(SessionContext);
@@ -74,100 +74,133 @@ export default function Home() {
   }
 
   return (
-    <div className="px-4 md:mt-24">
-      <section id="guide" className="">
+    <div className="p-4">
+      <Guide profile={profile} />
+
+      <section id="clubs" className="mt-8">
         <h2 className="scroll-m-20 text-3xl font-semibold tracking-tight">
+          Clubs
+        </h2>
+
+        {session?.user ? <CreateDialog /> : null}
+
+        <Tabs
+          defaultValue={session?.user ? "club-list" : "search"}
+          className="mt-6"
+        >
+          <TabsList className="w-full">
+            <TabsTrigger
+              value="club-list"
+              disabled={!session?.user}
+              className="w-1/2"
+            >
+              <Shield className="mr-2 inline-block h-4 w-4" />
+              Mes clubs
+            </TabsTrigger>
+            <TabsTrigger value="search" className="w-1/2">
+              <Search className="mr-2 inline-block h-4 w-4" />
+              Trouver un club
+            </TabsTrigger>
+          </TabsList>
+
+          <TabsContent value="club-list">
+            <div className="mt-4 flex flex-wrap gap-4">
+              {myClubs.length ? (
+                myClubs.map((club) => (
+                  <ClubCard key={club.id} club={club} isMember />
+                ))
+              ) : (
+                <p className="text-center">Vous n'êtes membre d'aucun club</p>
+              )}
+            </div>
+          </TabsContent>
+
+          <TabsContent value="search">
+            <div className="mt-4 flex flex-wrap gap-4">
+              {notMyClubs.map((club) => (
+                <ClubCard key={club.id} club={club} />
+              ))}
+            </div>
+          </TabsContent>
+        </Tabs>
+      </section>
+    </div>
+  );
+}
+
+function Guide({ profile }: { profile?: Tables<"users"> }) {
+  const { session } = useContext(SessionContext);
+
+  const [open, setOpen] = useState(
+    localStorage.getItem("close-guide") === "true" ||
+      (session?.user && !profile?.firstname),
+  );
+
+  function handleClick() {
+    if (open) {
+      localStorage.removeItem("close-guide");
+      setOpen(false);
+    } else {
+      localStorage.setItem("close-guide", "true");
+      setOpen(true);
+    }
+  }
+
+  return (
+    <section id="guide" className="rounded-lg border p-4">
+      <div className="flex items-center justify-between">
+        <h2
+          className={`scroll-m-20 font-semibold tracking-tight transition-all ${open ? "text-base text-muted-foreground" : "text-2xl"}`}
+        >
           Comment ça marche ?
         </h2>
 
-        <p className="mt-4">
-          <Users className="mr-2 inline-block h-5 w-5 align-text-bottom text-primary" />
-          Trouvez ou créez un club.
-        </p>
+        <button onClick={handleClick}>
+          <ChevronUp
+            className={`h-5 w-5 transition-all ${open ? "rotate-180" : ""}`}
+          />
+        </button>
+      </div>
 
-        <p className="mt-2">
-          <Swords className="mr-2 inline-block h-5 w-5 align-text-bottom text-primary" />
-          Inscrivez-vous à un match.
-        </p>
-        <p className="mt-2">
-          <TableProperties className="mr-2 inline-block h-5 w-5 align-text-bottom text-primary" />
-          Enregistrez vos scores !
-        </p>
+      {!open && (
+        <>
+          <p className="mt-4 text-lg">
+            <Users className="mr-4 inline-block h-5 w-5 align-text-bottom text-primary" />
+            Trouvez ou créez un club.
+          </p>
 
-        {session?.user && !profile?.firstname && (
-          <div className="mt-4 text-center">
-            <Link
-              to="/account"
-              className="text-primary underline underline-offset-2"
-            >
-              Compléter mon profil
-            </Link>
-          </div>
-        )}
+          <p className="mt-2 text-lg">
+            <Swords className="mr-4 inline-block h-5 w-5 align-text-bottom text-primary" />
+            Inscrivez-vous à un match.
+          </p>
+          <p className="mt-2 text-lg">
+            <TableProperties className="mr-4 inline-block h-5 w-5 align-text-bottom text-primary" />
+            Enregistrez vos scores !
+          </p>
 
-        {!session?.user ? (
-          <div className="mt-4 text-center">
-            <Link
-              to={`/auth?redirectTo=${window.location.pathname}`}
-              className="text-primary underline underline-offset-2"
-            >
-              C'est parti !
-            </Link>
-          </div>
-        ) : null}
-
-        <p className="mt-6 text-center">
-          <LifeBuoy className="inline-block h-5 w-5 align-text-bottom text-secondary" />
-        </p>
-      </section>
-
-      {session?.user ? (
-        <section id="my-clubs" className="mt-4">
-          <h2 className="scroll-m-20 text-3xl font-semibold tracking-tight">
-            Mes clubs
-          </h2>
-
-          {session?.user && (
-            <div className="mt-4 flex items-center gap-5">
-              <CreateDialog />
-              <Link to="#browse-clubs" className="text-primary">
-                Trouver un club
-                <ChevronDown className="ml-1 inline-block" />
+          {session?.user && !profile?.firstname && (
+            <div className="mt-4 text-center">
+              <Link
+                to="/account"
+                className="text-primary underline underline-offset-2"
+              >
+                Compléter mon profil
               </Link>
             </div>
           )}
 
-          <div className="mt-6 flex flex-wrap gap-6">
-            {myClubs.length ? (
-              myClubs.map((club) => (
-                <ClubCard key={club.id} club={club} isMember />
-              ))
-            ) : (
-              <p className="text-center">Vous n'êtes membre d'aucun club</p>
-            )}
-          </div>
-
-          <p className="mt-6 text-center">
-            <Shield className="inline-block h-5 w-5 align-text-bottom text-secondary" />
-          </p>
-        </section>
-      ) : null}
-
-      <section id="browse-clubs" className="mt-4">
-        <h2 className="scroll-m-20 text-3xl font-semibold tracking-tight">
-          Trouver un club
-        </h2>
-
-        <div className="mt-4 flex flex-wrap gap-6">
-          {notMyClubs.map((club) => (
-            <ClubCard key={club.id} club={club} />
-          ))}
-        </div>
-
-        <p className="mt-6 text-center">
-          <Search className="inline-block h-5 w-5 align-text-bottom text-secondary" />
-        </p>
-      </section>
-    </div>
+          {session?.user ? null : (
+            <div className="mt-4 text-center">
+              <Link
+                to={`/auth?redirectTo=${window.location.pathname}`}
+                className="text-primary underline underline-offset-2"
+              >
+                C'est parti !
+              </Link>
+            </div>
+          )}
+        </>
+      )}
+    </section>
   );
 }
