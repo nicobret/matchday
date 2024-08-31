@@ -77,16 +77,16 @@ export default function Home() {
     <div className="p-4">
       <Guide profile={profile} />
 
-      <section id="clubs" className="mt-8">
+      <section id="clubs" className="mt-12">
         <h2 className="scroll-m-20 text-3xl font-semibold tracking-tight">
           Clubs
         </h2>
 
-        {session?.user ? <CreateDialog /> : null}
+        <div className="mt-6">{session?.user ? <CreateDialog /> : null}</div>
 
         <Tabs
           defaultValue={session?.user ? "club-list" : "search"}
-          className="mt-6"
+          className="mt-8"
         >
           <TabsList className="w-full">
             <TabsTrigger
@@ -166,16 +166,16 @@ function Guide({ profile }: { profile?: Tables<"users"> }) {
         <>
           <p className="mt-4 text-lg">
             <Users className="mr-4 inline-block h-5 w-5 align-text-bottom text-primary" />
-            Trouvez ou créez un club.
+            Trouve un club ou créé le tien.
           </p>
 
           <p className="mt-2 text-lg">
             <Swords className="mr-4 inline-block h-5 w-5 align-text-bottom text-primary" />
-            Inscrivez-vous à un match.
+            Inscris-toi à un match.
           </p>
           <p className="mt-2 text-lg">
             <TableProperties className="mr-4 inline-block h-5 w-5 align-text-bottom text-primary" />
-            Enregistrez vos scores !
+            Enregistre tes scores et tes perfs !
           </p>
 
           {session?.user && !profile?.firstname && (

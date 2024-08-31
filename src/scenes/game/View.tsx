@@ -7,18 +7,26 @@ import { CalendarEvent } from "calendar-link";
 import {
   ArrowLeft,
   Ban,
+  BarChart,
   ClipboardSignature,
   Clock,
   Copy,
   MapPin,
   Pencil,
+  Users,
 } from "lucide-react";
 import { useContext, useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import AddToCalendar from "./components/AddToCalendar";
 import LineUp from "./components/LineUp";
 import Result from "./components/Result";
-import { Game, Player, fetchGame, fetchPlayers } from "./games.service";
+import {
+  Game,
+  Player,
+  fetchGame,
+  fetchPlayers,
+  getGameDurationInMinutes,
+} from "./games.service";
 
 export default function View() {
   const { id } = useParams();
@@ -111,9 +119,7 @@ export default function View() {
 
   const gameHasStarted = new Date(game.date) < new Date();
 
-  const durationParts = String(game.duration).split(":");
-  const durationInMinutes =
-    parseInt(durationParts[0]) * 60 + parseInt(durationParts[1]);
+  const durationInMinutes = getGameDurationInMinutes(String(game.duration));
   const endDate = new Date(game.date);
   endDate.setMinutes(endDate.getMinutes() + durationInMinutes);
   const gameHasEnded = endDate < new Date();
@@ -142,7 +148,7 @@ export default function View() {
     })}`,
     description: `Match de ${game.category} organisé par ${game.club?.name}`,
     start: new Date(game.date),
-    duration: [2, "hours"],
+    duration: [durationInMinutes, "minutes"],
     location:
       game.location ||
       `${game.club?.address}, ${game.club?.city} ${game.club?.postcode}`,
@@ -177,7 +183,7 @@ export default function View() {
           {gameHasEnded ? "Match terminé" : userStatus}
         </p>
 
-        <div className="mx-auto mt-8 max-w-lg rounded-full border px-6 py-2 text-left text-sm">
+        <div className="mx-auto mt-8 max-w-lg rounded-xl border p-4 text-left text-sm">
           <p>
             <Clock className="mr-2 inline-block h-4 w-4 align-text-top" />
             {new Date(game.date).toLocaleTimeString("fr-FR", {
@@ -188,6 +194,15 @@ export default function View() {
           <p className="mt-1">
             <MapPin className="mr-2 inline-block h-4 w-4 align-text-top" />
             {game.location}
+          </p>
+
+          {/* <p className="mt-1">
+            Durée : {durationInMinutes} minute{durationInMinutes > 1 ? "s" : ""}
+          </p> */}
+
+          <p className="mt-1">
+            <Users className="mr-2 inline-block h-4 w-4 align-text-top" />
+            {players.length} / {game.total_players} joueurs inscrits.
           </p>
         </div>
 
@@ -243,14 +258,16 @@ export default function View() {
             disabled={!userIsMember}
             className="w-1/2"
           >
+            <Users className="mr-2 inline-block h-4 w-4" />
             Joueurs
           </TabsTrigger>
           <TabsTrigger value="result" className="w-1/2">
-            Score
+            <BarChart className="mr-2 inline-block h-4 w-4" />
+            Stats
           </TabsTrigger>
         </TabsList>
 
-        <TabsContent value="players">
+        <TabsContent value="players" className="mt-4">
           <LineUp
             game={game}
             players={players}
@@ -258,7 +275,8 @@ export default function View() {
             disabled={!userIsPlayer}
           />
         </TabsContent>
-        <TabsContent value="result">
+
+        <TabsContent value="result" className="mt-4">
           <Result
             game={game}
             setGame={(newGame) => setGame({ ...game, ...newGame })}
