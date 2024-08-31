@@ -148,28 +148,28 @@ export type Database = {
       };
       game_event: {
         Row: {
+          count: number | null;
           created_at: string;
           game_id: number | null;
           id: string;
           type: string | null;
           user_id: string | null;
-          value: number | null;
         };
         Insert: {
+          count?: number | null;
           created_at?: string;
           game_id?: number | null;
           id?: string;
           type?: string | null;
           user_id?: string | null;
-          value?: number | null;
         };
         Update: {
+          count?: number | null;
           created_at?: string;
           game_id?: number | null;
           id?: string;
           type?: string | null;
           user_id?: string | null;
-          value?: number | null;
         };
         Relationships: [
           {

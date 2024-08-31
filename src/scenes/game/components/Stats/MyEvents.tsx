@@ -1,28 +1,16 @@
 import { Button } from "@/components/ui/button";
 import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
+  Card,
+  CardContent,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { Textarea } from "@/components/ui/textarea";
-import { countryList } from "@/lib/utils";
 import supabase from "@/utils/supabase";
-import { Plus } from "lucide-react";
 import { useState } from "react";
-import { Game } from "../../games.service";
+import { Game, GameEvent } from "../../games.service";
 
 const eventTypes = [
   { label: "But de gueudin", value: "goal" },
@@ -30,18 +18,21 @@ const eventTypes = [
   { label: "Arrêt de star", value: "save" },
 ];
 
-export default function MyEvents({ game }: { game: Game }) {
-  const [formData, setFormData] = useState({
-    type: "",
-    value: undefined,
-  });
-
+export default function MyEvents({
+  gameEvents,
+  game,
+}: {
+  gameEvents: GameEvent[];
+  game: Game;
+}) {
   const [loading, setLoading] = useState(false);
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     try {
       e.preventDefault();
+
       setLoading(true);
+
       const {
         data: { user },
       } = await supabase.auth.getUser();
@@ -49,17 +40,25 @@ export default function MyEvents({ game }: { game: Game }) {
         throw new Error("Vous n'êtes pas connecté");
       }
 
-      const { data } = await supabase
-        .from("game_event")
-        .insert({
-          game_id: game?.id,
-          user_id: user.id,
-          type: formData.type,
-          value: formData.value,
-        })
-        .select()
-        .single()
-        .throwOnError();
+      console.log("🚀 ~ handleSubmit ~ e.target:", e.target);
+      const form = new FormData(e.target);
+
+      const goals = parseInt(form.get("goals") as string) || 0;
+      const assists = form.get("assists") || 0;
+      const saves = form.get("saves") || 0;
+
+      // upsert goals
+      const { data, error } = await supabase.from("game_event").upsert({
+        type: "goal",
+        count: goals,
+        game_id: game.id,
+        user_id: user.id,
+      });
+      if (error) {
+        throw error;
+      }
+
+      console.log("🚀 ~ handleSubmit ~ data", data);
     } catch (error) {
       console.error(error);
     } finally {
@@ -68,78 +67,58 @@ export default function MyEvents({ game }: { game: Game }) {
   }
 
   return (
-    <Dialog>
-      <DialogTrigger asChild>
-        <Button variant="secondary">
-          <Plus className="mr-2 h-5 w-5" />
-          Ajouter un événement
-        </Button>
-      </DialogTrigger>
+    <Card>
+      <CardHeader>
+        <CardTitle>Mes actions de fou</CardTitle>
+      </CardHeader>
 
-      <DialogContent>
-        <DialogHeader>
-          <DialogTitle>Créer un club</DialogTitle>
-          <DialogDescription></DialogDescription>
-        </DialogHeader>
-
-        <form onSubmit={handleSubmit} id="create-club-form">
-          <Label htmlFor="clubname">Nom du club</Label>
-          <Input
-            type="text"
-            id="clubname"
-            placeholder="Le club des champions"
-            value={formData.name}
-            onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-          />
-
-          <Label htmlFor="clubdescription">Description</Label>
-          <Textarea
-            id="clubdescription"
-            placeholder="Le meilleur club de tous les temps."
-            value={formData.description}
-            onChange={(e) =>
-              setFormData({
-                ...formData,
-                description: e.target.value,
-              })
-            }
-            rows={5}
-          />
-
-          {/* <Label htmlFor="clubdescription">Logo</Label>
-            <Input type="file" id="clublogo" /> */}
-
-          <Label htmlFor="country">Pays</Label>
-          <Select
-            onValueChange={(value) =>
-              setFormData({ ...formData, country: value })
-            }
-            value={formData.country}
-            defaultValue="France"
-          >
-            <SelectTrigger>
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              {countryList.map((country) => (
-                <SelectItem key={country} value={country}>
-                  {country}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+      <CardContent>
+        <form
+          onSubmit={handleSubmit}
+          id="my-events"
+          className="grid grid-cols-1 gap-4 md:grid-cols-3"
+        >
+          <div>
+            <Label htmlFor="goals">Buts de gueudin</Label>
+            <Input
+              id="goals"
+              name="goals"
+              type="number"
+              defaultValue={
+                gameEvents.find((e) => e.type === "goal")?.count || 0
+              }
+            />
+          </div>
+          <div>
+            <Label htmlFor="assists">Passes dé de l'espace</Label>
+            <Input
+              id="assists"
+              name="assists"
+              type="number"
+              defaultValue={
+                gameEvents.find((e) => e.type === "assist")?.count || 0
+              }
+            />
+          </div>
+          <div>
+            <Label htmlFor="saves">Arrêts de star</Label>
+            <Input
+              id="saves"
+              name="saves"
+              type="number"
+              defaultValue={
+                gameEvents.find((e) => e.type === "save")?.count || 0
+              }
+            />
+          </div>
         </form>
-        <DialogFooter>
-          <Button
-            type="submit"
-            form="create-club-form"
-            disabled={loading || !formData.name}
-            className="w-full"
-          >
-            Créer
-          </Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
+      </CardContent>
+
+      <CardFooter>
+        <Button type="submit" disabled={loading} form="my-events">
+          {loading ? "En cours..." : "Enregistrer"}
+        </Button>
+      </CardFooter>
+    </Card>
   );
 }

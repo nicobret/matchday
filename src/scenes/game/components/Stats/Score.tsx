@@ -28,7 +28,7 @@ export default function Result({
   setGame: React.Dispatch<React.SetStateAction<Tables<"games">>>;
 }) {
   return (
-    <Card className="col-span-2 md:col-span-1">
+    <Card>
       <CardHeader>
         <CardTitle className="flex items-center gap-3">Résultat</CardTitle>
       </CardHeader>
@@ -98,7 +98,7 @@ function ScoreDialog({
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger>
+      <DialogTrigger asChild>
         <Button variant="secondary">
           {game.score ? "Modifier" : "Saisir"}
         </Button>

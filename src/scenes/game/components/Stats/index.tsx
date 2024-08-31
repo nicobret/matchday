@@ -36,7 +36,7 @@ export default function Stats({
         game={game}
         setGame={(newGame) => setGame({ ...game, ...newGame })}
       />
-      <MyEvents game={game} />
+      <MyEvents gameEvents={gameEvents} game={game} />
       <AllEvents gameEvents={gameEvents} />
     </div>
   );
