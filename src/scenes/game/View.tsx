@@ -19,7 +19,7 @@ import { useContext, useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import AddToCalendar from "./components/AddToCalendar";
 import LineUp from "./components/LineUp";
-import Result from "./components/Result";
+import Stats from "./components/Stats";
 import {
   Game,
   Player,
@@ -248,10 +248,7 @@ export default function View() {
         </div>
       </header>
 
-      <Tabs
-        defaultValue={userIsMember ? "players" : "result"}
-        className="mt-12"
-      >
+      <Tabs defaultValue={userIsMember ? "players" : "stats"} className="mt-12">
         <TabsList className="w-full">
           <TabsTrigger
             value="players"
@@ -261,7 +258,7 @@ export default function View() {
             <Users className="mr-2 inline-block h-4 w-4" />
             Joueurs
           </TabsTrigger>
-          <TabsTrigger value="result" className="w-1/2">
+          <TabsTrigger value="stats" className="w-1/2">
             <BarChart className="mr-2 inline-block h-4 w-4" />
             Stats
           </TabsTrigger>
@@ -276,11 +273,8 @@ export default function View() {
           />
         </TabsContent>
 
-        <TabsContent value="result" className="mt-4">
-          <Result
-            game={game}
-            setGame={(newGame) => setGame({ ...game, ...newGame })}
-          />
+        <TabsContent value="stats" className="mt-4">
+          <Stats game={game} setGame={setGame} />
         </TabsContent>
       </Tabs>
     </div>

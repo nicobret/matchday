@@ -14,6 +14,11 @@ export type Game = Tables<"games"> & {
   players?: Tables<"game_registrations">[];
 };
 
+export type GameEvent = Tables<"game_event"> & {
+  game?: Tables<"games">;
+  user?: Tables<"users">;
+};
+
 export async function fetchGame(id: number) {
   const { data } = await supabase
     .from("games")

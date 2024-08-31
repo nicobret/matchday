@@ -62,9 +62,11 @@ export type Database = {
           description: string | null;
           edited_at: string | null;
           id: number;
+          logo_url: string | null;
           name: string | null;
           postcode: string | null;
           status: string;
+          url: string | null;
         };
         Insert: {
           address?: string | null;
@@ -76,9 +78,11 @@ export type Database = {
           description?: string | null;
           edited_at?: string | null;
           id?: number;
+          logo_url?: string | null;
           name?: string | null;
           postcode?: string | null;
           status?: string;
+          url?: string | null;
         };
         Update: {
           address?: string | null;
@@ -90,9 +94,11 @@ export type Database = {
           description?: string | null;
           edited_at?: string | null;
           id?: number;
+          logo_url?: string | null;
           name?: string | null;
           postcode?: string | null;
           status?: string;
+          url?: string | null;
         };
         Relationships: [
           {
@@ -133,6 +139,48 @@ export type Database = {
           },
           {
             foreignKeyName: "follows_user_id_fkey";
+            columns: ["user_id"];
+            isOneToOne: false;
+            referencedRelation: "users";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      game_event: {
+        Row: {
+          created_at: string;
+          game_id: number | null;
+          id: string;
+          type: string | null;
+          user_id: string | null;
+          value: number | null;
+        };
+        Insert: {
+          created_at?: string;
+          game_id?: number | null;
+          id?: string;
+          type?: string | null;
+          user_id?: string | null;
+          value?: number | null;
+        };
+        Update: {
+          created_at?: string;
+          game_id?: number | null;
+          id?: string;
+          type?: string | null;
+          user_id?: string | null;
+          value?: number | null;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "game_event_game_id_fkey";
+            columns: ["game_id"];
+            isOneToOne: false;
+            referencedRelation: "games";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "game_event_user_id_fkey";
             columns: ["user_id"];
             isOneToOne: false;
             referencedRelation: "users";
@@ -254,7 +302,7 @@ export type Database = {
       };
       users: {
         Row: {
-          avatar: string | null;
+          avatar_url: string | null;
           created_at: string;
           edited_at: string | null;
           email_notifications: boolean | null;
@@ -264,7 +312,7 @@ export type Database = {
           status: string | null;
         };
         Insert: {
-          avatar?: string | null;
+          avatar_url?: string | null;
           created_at?: string;
           edited_at?: string | null;
           email_notifications?: boolean | null;
@@ -274,7 +322,7 @@ export type Database = {
           status?: string | null;
         };
         Update: {
-          avatar?: string | null;
+          avatar_url?: string | null;
           created_at?: string;
           edited_at?: string | null;
           email_notifications?: boolean | null;
