@@ -11,6 +11,7 @@ import {
   ClipboardSignature,
   Clock,
   Copy,
+  List,
   MapPin,
   Pencil,
   Users,
@@ -18,8 +19,9 @@ import {
 import { useContext, useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import AddToCalendar from "./components/AddToCalendar";
+import GameEvents from "./components/GameEvents";
 import LineUp from "./components/LineUp";
-import Stats from "./components/Stats";
+import Statistics from "./components/Statistics";
 import {
   Game,
   Player,
@@ -180,7 +182,9 @@ export default function View() {
         <p
           className={`mt-1 line-clamp-1 text-sm ${userIsPlayer ? "text-primary" : ""}`}
         >
-          {gameHasEnded ? "Match terminé" : userStatus}
+          {gameHasEnded
+            ? `Match terminé${game.score ? ` • ${game.score[0]} - ${game.score[1]}` : ""}`
+            : userStatus}
         </p>
 
         <div className="mx-auto mt-8 max-w-lg rounded-xl border p-4 text-left text-sm">
@@ -258,6 +262,12 @@ export default function View() {
             <Users className="mr-2 inline-block h-4 w-4" />
             Joueurs
           </TabsTrigger>
+
+          <TabsTrigger value="game_events" className="w-1/2">
+            <List className="mr-2 inline-block h-4 w-4" />
+            Score
+          </TabsTrigger>
+
           <TabsTrigger value="stats" className="w-1/2">
             <BarChart className="mr-2 inline-block h-4 w-4" />
             Stats
@@ -273,8 +283,17 @@ export default function View() {
           />
         </TabsContent>
 
+        <TabsContent value="game_events" className="mt-4">
+          <GameEvents
+            game={game}
+            setGame={setGame}
+            players={players}
+            setPlayers={setPlayers}
+          />
+        </TabsContent>
+
         <TabsContent value="stats" className="mt-4">
-          <Stats game={game} setGame={setGame} />
+          <Statistics game={game} />
         </TabsContent>
       </Tabs>
     </div>

@@ -1,19 +1,34 @@
+import { SessionContext } from "@/components/auth-provider";
 import supabase from "@/utils/supabase";
-import { useEffect, useState } from "react";
-import { Game, GameEvent } from "../../games.service";
-import AllEvents from "./AllEvents";
+import { useContext, useEffect, useState } from "react";
+import { Game, GameEvent, Player } from "../../games.service";
 import MyEvents from "./MyEvents";
 import Score from "./Score";
 
-export default function Stats({
+export default function GameEvents({
   game,
   setGame,
+  players,
+  setPlayers,
 }: {
   game: Game;
   setGame: (game: Game) => void;
+  players: Player[];
+  setPlayers: (players: Player[]) => void;
 }) {
+  const { session } = useContext(SessionContext);
   const [gameEvents, setGameEvents] = useState<GameEvent[]>([]);
   console.log("🚀 ~ Events ~ events:", gameEvents);
+
+  const player = players.find((p) => p.user_id === session?.user.id);
+
+  async function setPlayer(newPlayer: Partial<Player>) {
+    setPlayers(
+      players.map((p) =>
+        p.user_id === session?.user.id ? { ...p, ...newPlayer } : p,
+      ),
+    );
+  }
 
   async function fetchEvents(game_id: number) {
     const { data, error } = await supabase
@@ -37,7 +52,6 @@ export default function Stats({
         setGame={(newGame) => setGame({ ...game, ...newGame })}
       />
       <MyEvents gameEvents={gameEvents} game={game} />
-      <AllEvents gameEvents={gameEvents} />
     </div>
   );
 }
