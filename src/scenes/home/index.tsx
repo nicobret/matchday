@@ -1,4 +1,5 @@
 import { SessionContext } from "@/components/auth-provider";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import supabase from "@/utils/supabase";
 import {
   ChevronUp,
@@ -15,7 +16,6 @@ import { fetchProfile } from "../account/account.service";
 import { Club } from "../club/club.service";
 import ClubCard from "./components/ClubCard";
 import CreateDialog from "./components/CreateDialog";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 export default function Home() {
   const { session } = useContext(SessionContext);
@@ -132,7 +132,7 @@ function Guide({ profile }: { profile?: Tables<"users"> }) {
   const { session } = useContext(SessionContext);
 
   const [open, setOpen] = useState(
-    localStorage.getItem("close-guide") === "true" ||
+    !(localStorage.getItem("close-guide") === "true") ||
       (session?.user && !profile?.firstname),
   );
 
