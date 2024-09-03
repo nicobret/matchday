@@ -132,7 +132,7 @@ function Guide({ profile }: { profile?: Tables<"users"> }) {
   const { session } = useContext(SessionContext);
 
   const [open, setOpen] = useState(
-    localStorage.getItem("close-guide") === "true" ||
+    !(localStorage.getItem("close-guide") === "true") ||
       (session?.user && !profile?.firstname),
   );
 
