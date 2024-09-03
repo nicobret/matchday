@@ -90,7 +90,7 @@ export default function View() {
     setLoading(true);
     try {
       const { data } = await supabase
-        .from("game_registrations")
+        .from("game_player")
         .insert({
           game_id: game?.id,
           user_id: session?.user.id,
@@ -111,7 +111,7 @@ export default function View() {
 
   async function leaveGame(game_id: number, user_id: string) {
     await supabase
-      .from("game_registrations")
+      .from("game_player")
       .delete()
       .eq("game_id", game_id)
       .eq("user_id", user_id)
@@ -168,7 +168,7 @@ export default function View() {
 
       <header className="mt-8 text-center">
         <p className="text-xs font-bold uppercase tracking-tight text-muted-foreground">
-          {game.club?.name}
+          {game.club?.name} • Saison {game.season?.name}
         </p>
 
         <h1 className="text-4xl font-semibold uppercase tracking-tight">

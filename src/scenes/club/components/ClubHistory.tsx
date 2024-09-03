@@ -6,6 +6,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { Label } from "@/components/ui/label";
 import {
   Select,
   SelectContent,
@@ -25,20 +26,31 @@ import { ArrowRight } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { Tables } from "types/supabase";
-import { fetchPastGames } from "../club.service";
+import { Club, fetchPastGames } from "../club.service";
 
-export default function ClubHistory({ clubId }: { clubId: number }) {
+export default function ClubHistory({ club }: { club: Club }) {
   const [loading, setLoading] = useState(false);
   const [games, setGames] = useState<Tables<"games">[]>();
-  const [year, setYear] = useState("2024");
+  const seasons = club.seasons || [];
+
+  const seasonOptions = [
+    ...seasons
+      .sort((a, b) => b.name.localeCompare(a.name))
+      .map((season) => ({ label: season.name, value: season.id })),
+    { label: "Hors saison", value: "none" },
+  ];
+
+  const [selectedSeason, setSelectedSeason] = useState<string>(
+    seasonOptions[0].value,
+  );
 
   useEffect(() => {
     setLoading(true);
-    fetchPastGames(clubId, year)
+    fetchPastGames(club.id, selectedSeason)
       .then((data) => setGames(data))
       .catch(console.error)
       .finally(() => setLoading(false));
-  }, [clubId, year]);
+  }, [club.id, selectedSeason]);
 
   if (loading) {
     return <p className="text-center">Chargement...</p>;
@@ -49,15 +61,21 @@ export default function ClubHistory({ clubId }: { clubId: number }) {
         <CardTitle>Historique</CardTitle>
       </CardHeader>
 
-      <CardContent className="max-h-96 overflow-auto">
-        <Select onValueChange={setYear} defaultValue={year}>
+      <CardContent>
+        <Label>Saison</Label>
+        <Select
+          onValueChange={(value) => setSelectedSeason(value as string)}
+          defaultValue={selectedSeason}
+        >
           <SelectTrigger className="w-fit">
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="2024">2024</SelectItem>
-            <SelectItem value="2023">2023</SelectItem>
-            <SelectItem value="2022">2022</SelectItem>
+            {seasonOptions.map((option) => (
+              <SelectItem key={option.value} value={option.value}>
+                {option.label}
+              </SelectItem>
+            ))}
           </SelectContent>
         </Select>
 

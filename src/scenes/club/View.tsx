@@ -229,7 +229,7 @@ export default function View() {
           <ClubMembers clubId={club.id} />
         </TabsContent>
         <TabsContent value="history">
-          <ClubHistory clubId={club.id} />
+          <ClubHistory club={club} />
         </TabsContent>
       </Tabs>
     </div>

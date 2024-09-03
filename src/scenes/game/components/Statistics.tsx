@@ -10,6 +10,7 @@ import { useEffect, useState } from "react";
 import { Game } from "../games.service";
 
 export default function Statistics({ game }: { game: Game }) {
+  console.log("🚀 ~ Statistics ~ game:", game);
   const [stats, setStats] = useState<any[]>([]);
   console.log("🚀 ~ Statistics ~ stats:", stats);
 
