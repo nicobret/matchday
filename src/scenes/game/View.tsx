@@ -168,7 +168,8 @@ export default function View() {
 
       <header className="mt-8 text-center">
         <p className="text-xs font-bold uppercase tracking-tight text-muted-foreground">
-          {game.club?.name} • Saison {game.season?.name}
+          {game.club?.name}
+          {game.season?.name ? ` • Saison ${game.season?.name}` : ""}
         </p>
 
         <h1 className="text-4xl font-semibold uppercase tracking-tight">
