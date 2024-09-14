@@ -74,7 +74,7 @@ export async function deleteClub(club: Club) {
 export async function fetchUpcomingGames(clubId: number) {
   const { data } = await supabase
     .from("games")
-    .select("*, players:game_player(*)")
+    .select("*, players:game_player(*), season:season(*)")
     .eq("club_id", clubId)
     .gte("date", new Date().toISOString())
     .order("date")

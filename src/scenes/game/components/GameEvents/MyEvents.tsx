@@ -10,66 +10,49 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import supabase from "@/utils/supabase";
 import { useState } from "react";
-import { Game, GameEvent } from "../../games.service";
-
-const eventTypes = [
-  { label: "But de gueudin", value: "goal" },
-  { label: "Passe dé de l'espace", value: "assist" },
-  { label: "Arrêt de star", value: "save" },
-];
+import { Player } from "../../games.service";
 
 export default function MyEvents({
-  gameEvents,
-  game,
+  player,
+  setPlayer,
 }: {
-  gameEvents: GameEvent[];
-  game: Game;
+  player: Player;
+  setPlayer: (player: Player) => void;
 }) {
   const [loading, setLoading] = useState(false);
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+
+    const form = new FormData(e.target as HTMLFormElement);
+    const goals = parseInt(form.get("goals") as string) || 0;
+    const assists = parseInt(form.get("assists") as string) || 0;
+    const saves = parseInt(form.get("saves") as string) || 0;
+
+    setLoading(true);
     try {
-      e.preventDefault();
+      const { data } = await supabase
+        .from("game_player")
+        .update({
+          goals,
+          assists,
+          saves,
+        })
+        .eq("id", player.id)
+        .single()
+        .throwOnError();
 
-      setLoading(true);
-
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
-      if (!user) {
-        throw new Error("Vous n'êtes pas connecté");
-      }
-
-      console.log("🚀 ~ handleSubmit ~ e.target:", e.target);
-      const form = new FormData(e.target);
-
-      const goals = parseInt(form.get("goals") as string) || 0;
-      const assists = form.get("assists") || 0;
-      const saves = form.get("saves") || 0;
-
-      // upsert goals
-      const { data, error } = await supabase.from("game_event").upsert({
-        type: "goal",
-        count: goals,
-        game_id: game.id,
-        user_id: user.id,
-      });
-      if (error) {
-        throw error;
-      }
-
-      console.log("🚀 ~ handleSubmit ~ data", data);
+      if (data) setPlayer(data);
     } catch (error) {
       console.error(error);
-    } finally {
-      setLoading(false);
     }
+    setLoading(false);
   }
 
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Mes actions de fou</CardTitle>
+        <CardTitle>Mes actions</CardTitle>
       </CardHeader>
 
       <CardContent>
@@ -84,9 +67,7 @@ export default function MyEvents({
               id="goals"
               name="goals"
               type="number"
-              defaultValue={
-                gameEvents.find((e) => e.type === "goal")?.count || 0
-              }
+              defaultValue={player.goals || 0}
             />
           </div>
           <div>
@@ -95,9 +76,7 @@ export default function MyEvents({
               id="assists"
               name="assists"
               type="number"
-              defaultValue={
-                gameEvents.find((e) => e.type === "assist")?.count || 0
-              }
+              defaultValue={player.assists || 0}
             />
           </div>
           <div>
@@ -106,9 +85,7 @@ export default function MyEvents({
               id="saves"
               name="saves"
               type="number"
-              defaultValue={
-                gameEvents.find((e) => e.type === "save")?.count || 0
-              }
+              defaultValue={player.saves || 0}
             />
           </div>
         </form>
