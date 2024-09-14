@@ -261,12 +261,12 @@ export default function View() {
             className="w-1/2"
           >
             <Users className="mr-2 inline-block h-4 w-4" />
-            Joueurs
+            Compos
           </TabsTrigger>
 
           <TabsTrigger value="game_events" className="w-1/2">
             <List className="mr-2 inline-block h-4 w-4" />
-            Score
+            Résultats
           </TabsTrigger>
 
           <TabsTrigger value="stats" className="w-1/2">

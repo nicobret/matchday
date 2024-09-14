@@ -21,29 +21,31 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import supabase from "@/utils/supabase";
-import { useEffect, useState } from "react";
+import { fetchGameStats } from "@/stats.service";
+import { useState } from "react";
+import { useQuery } from "react-query";
 import { Game } from "../games.service";
 
 export default function Statistics({ game }: { game: Game }) {
-  const [stats, setStats] = useState<any[]>([]);
-  const [sortby, setSortby] = useState("goals");
-  const sortedStats = stats.sort((a, b) => b[sortby] - a[sortby]);
+  const [sortby, setSortby] = useState<"goals" | "assists" | "saves">("goals");
+  const {
+    data: stats,
+    isError,
+    isLoading,
+    isIdle,
+  } = useQuery({
+    queryKey: ["game_stats", [game.id, sortby]],
+    queryFn: () => fetchGameStats(game.id, sortby),
+    enabled: !!game.id,
+  });
 
-  async function fetchStats(game_id: number) {
-    const { data, error } = await supabase
-      .from("game_report")
-      .select()
-      .eq("game_id", game_id);
-    if (error) {
-      console.error("Error fetching stats:", error.message);
-    }
-    if (data) setStats(data);
+  if (isLoading || isIdle) {
+    return <div>Chargement...</div>;
   }
 
-  useEffect(() => {
-    fetchStats(game.id);
-  }, [game.id]);
+  if (isError) {
+    return <div>Erreur</div>;
+  }
 
   return (
     <Card>
@@ -52,21 +54,27 @@ export default function Statistics({ game }: { game: Game }) {
       </CardHeader>
 
       <CardContent>
-        <Label>Trier par</Label>
-        <Select
-          name="sortby"
-          value={sortby}
-          onValueChange={(value) => setSortby(value)}
-        >
-          <SelectTrigger className="w-auto">
-            <SelectValue placeholder="Trier par" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="goals">Buts</SelectItem>
-            <SelectItem value="assists">Passes décisives</SelectItem>
-            <SelectItem value="saves">Arrêts</SelectItem>
-          </SelectContent>
-        </Select>
+        <div className="mb-2 flex">
+          <div className="grid w-full max-w-36 items-center gap-1.5">
+            <Label>Trier par</Label>
+            <Select
+              name="sortby"
+              value={sortby}
+              onValueChange={(value: "goals" | "assists" | "saves") =>
+                setSortby(value)
+              }
+            >
+              <SelectTrigger>
+                <SelectValue placeholder="Trier par" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="goals">Buts</SelectItem>
+                <SelectItem value="assists">Passes décisives</SelectItem>
+                <SelectItem value="saves">Arrêts</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+        </div>
 
         <Table>
           <TableHeader>
@@ -79,13 +87,11 @@ export default function Statistics({ game }: { game: Game }) {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {sortedStats.map((row) => {
+            {stats.map((row) => {
               return (
-                <TableRow key={row.id}>
+                <TableRow key={row.user_id}>
                   <TableCell>{row.firstname}</TableCell>
-                  <TableCell>
-                    {row.team === 0 ? "Domicile" : "Extérieur"}
-                  </TableCell>
+                  <TableCell>{row.user_team}</TableCell>
                   <TableCell>{row.goals}</TableCell>
                   <TableCell>{row.assists}</TableCell>
                   <TableCell>{row.saves}</TableCell>
