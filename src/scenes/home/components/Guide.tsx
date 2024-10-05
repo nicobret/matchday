@@ -14,10 +14,10 @@ export default function Guide({ profile }: { profile?: Tables<"users"> }) {
 
   function handleClick() {
     if (open) {
-      localStorage.removeItem("close-guide");
+      localStorage.setItem("close-guide", "true");
       setOpen(false);
     } else {
-      localStorage.setItem("close-guide", "true");
+      localStorage.removeItem("close-guide");
       setOpen(true);
     }
   }
