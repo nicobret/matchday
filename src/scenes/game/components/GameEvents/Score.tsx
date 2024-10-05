@@ -19,16 +19,19 @@ import { Label } from "@/components/ui/label";
 import supabase from "@/utils/supabase";
 import { useState } from "react";
 import { Tables } from "types/supabase";
+import { Player } from "../../games.service";
 
 export default function Result({
   game,
   setGame,
+  players,
 }: {
   game: Tables<"games">;
   setGame: React.Dispatch<React.SetStateAction<Tables<"games">>>;
+  players: Player[];
 }) {
   return (
-    <Card className="col-span-2 md:col-span-1">
+    <Card>
       <CardHeader>
         <CardTitle className="flex items-center gap-3">Résultat</CardTitle>
       </CardHeader>
@@ -45,10 +48,39 @@ export default function Result({
         ) : (
           <div>
             {game.score ? (
-              <p className="text-center text-lg">
-                Domicile <strong>{game.score[0].toString()}</strong> -{" "}
-                <strong>{game.score[1].toString()}</strong> Visiteurs
-              </p>
+              <div className="grid grid-cols-3 gap-4">
+                <div className="text-right">
+                  <p>
+                    <strong>Domicile</strong>
+                  </p>
+                  {players
+                    .filter((p) => p.team === 0)
+                    .map((p) => (
+                      <p key={p.id}>
+                        {p.profile?.firstname} {p.profile?.lastname}
+                      </p>
+                    ))}
+                </div>
+
+                <div>
+                  <p className="text-center text-lg">
+                    {game.score[0].toString()} - {game.score[1].toString()}
+                  </p>
+                </div>
+
+                <div>
+                  <p>
+                    <strong>Visiteurs</strong>
+                  </p>
+                  {players
+                    .filter((p) => p.team === 1)
+                    .map((p) => (
+                      <p key={p.id}>
+                        {p.profile?.firstname} {p.profile?.lastname}
+                      </p>
+                    ))}
+                </div>
+              </div>
             ) : (
               <p className="text-center">Aucun résultat.</p>
             )}
@@ -98,7 +130,7 @@ function ScoreDialog({
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger>
+      <DialogTrigger asChild>
         <Button variant="secondary">
           {game.score ? "Modifier" : "Saisir"}
         </Button>

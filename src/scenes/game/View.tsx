@@ -11,6 +11,7 @@ import {
   ClipboardSignature,
   Clock,
   Copy,
+  List,
   MapPin,
   Pencil,
   Users,
@@ -18,8 +19,9 @@ import {
 import { useContext, useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import AddToCalendar from "./components/AddToCalendar";
+import GameEvents from "./components/GameEvents";
+import GameStats from "./components/GameStats";
 import LineUp from "./components/LineUp";
-import Result from "./components/Result";
 import {
   Game,
   Player,
@@ -88,7 +90,7 @@ export default function View() {
     setLoading(true);
     try {
       const { data } = await supabase
-        .from("game_registrations")
+        .from("game_player")
         .insert({
           game_id: game?.id,
           user_id: session?.user.id,
@@ -109,7 +111,7 @@ export default function View() {
 
   async function leaveGame(game_id: number, user_id: string) {
     await supabase
-      .from("game_registrations")
+      .from("game_player")
       .delete()
       .eq("game_id", game_id)
       .eq("user_id", user_id)
@@ -167,6 +169,7 @@ export default function View() {
       <header className="mt-8 text-center">
         <p className="text-xs font-bold uppercase tracking-tight text-muted-foreground">
           {game.club?.name}
+          {game.season?.name ? ` • Saison ${game.season?.name}` : ""}
         </p>
 
         <h1 className="text-4xl font-semibold uppercase tracking-tight">
@@ -180,7 +183,9 @@ export default function View() {
         <p
           className={`mt-1 line-clamp-1 text-sm ${userIsPlayer ? "text-primary" : ""}`}
         >
-          {gameHasEnded ? "Match terminé" : userStatus}
+          {gameHasEnded
+            ? `Match terminé${game.score ? ` • ${game.score[0]} - ${game.score[1]}` : ""}`
+            : userStatus}
         </p>
 
         <div className="mx-auto mt-8 max-w-lg rounded-xl border p-4 text-left text-sm">
@@ -248,10 +253,7 @@ export default function View() {
         </div>
       </header>
 
-      <Tabs
-        defaultValue={userIsMember ? "players" : "result"}
-        className="mt-12"
-      >
+      <Tabs defaultValue={userIsMember ? "players" : "stats"} className="mt-12">
         <TabsList className="w-full">
           <TabsTrigger
             value="players"
@@ -259,9 +261,15 @@ export default function View() {
             className="w-1/2"
           >
             <Users className="mr-2 inline-block h-4 w-4" />
-            Joueurs
+            Compos
           </TabsTrigger>
-          <TabsTrigger value="result" className="w-1/2">
+
+          <TabsTrigger value="game_events" className="w-1/2">
+            <List className="mr-2 inline-block h-4 w-4" />
+            Résultats
+          </TabsTrigger>
+
+          <TabsTrigger value="stats" className="w-1/2">
             <BarChart className="mr-2 inline-block h-4 w-4" />
             Stats
           </TabsTrigger>
@@ -276,11 +284,17 @@ export default function View() {
           />
         </TabsContent>
 
-        <TabsContent value="result" className="mt-4">
-          <Result
+        <TabsContent value="game_events" className="mt-4">
+          <GameEvents
             game={game}
-            setGame={(newGame) => setGame({ ...game, ...newGame })}
+            setGame={setGame}
+            players={players}
+            setPlayers={setPlayers}
           />
+        </TabsContent>
+
+        <TabsContent value="stats" className="mt-4">
+          <GameStats gameId={game.id} />
         </TabsContent>
       </Tabs>
     </div>

@@ -33,7 +33,7 @@ export default function LineupEditor({
     );
 
     const { error } = await supabase
-      .from("game_registrations")
+      .from("game_player")
       .update({ team })
       .eq("id", event.active.id);
     if (error) {

@@ -3,14 +3,16 @@ import { User } from "@supabase/supabase-js";
 import { Tables } from "types/supabase";
 
 export type Club = Tables<"clubs"> & {
-  members?: Tables<"club_enrolments">[];
+  members?: Tables<"club_member">[];
+  seasons?: Tables<"season">[];
 };
 
 export type Game = Tables<"games"> & {
-  players: Tables<"game_registrations">[];
+  players: Tables<"game_player">[];
+  season: Tables<"season"> | null;
 };
 
-export type Member = Tables<"club_enrolments"> & {
+export type Member = Tables<"club_member"> & {
   profile: Tables<"users"> | null;
 };
 
@@ -30,7 +32,7 @@ export function isAdmin(user: User, club: Club) {
 export async function fetchClub(id: number) {
   const { data } = await supabase
     .from("clubs")
-    .select("*, members: club_enrolments (*)")
+    .select("*, members: club_member (*), seasons: season (*)")
     .eq("id", id)
     .single()
     .throwOnError();
@@ -72,7 +74,7 @@ export async function deleteClub(club: Club) {
 export async function fetchUpcomingGames(clubId: number) {
   const { data } = await supabase
     .from("games")
-    .select("*, players:game_registrations(*)")
+    .select("*, players:game_player(*), season:season(*)")
     .eq("club_id", clubId)
     .gte("date", new Date().toISOString())
     .order("date")
@@ -81,23 +83,28 @@ export async function fetchUpcomingGames(clubId: number) {
   return data;
 }
 
-export async function fetchPastGames(clubId: number, year: string) {
-  const { data } = await supabase
+export async function fetchPastGames(clubId: number, season_id: string) {
+  let query = supabase
     .from("games")
     .select()
     .eq("club_id", clubId)
-    .gte("date", new Date(parseInt(year), 0, 1).toISOString())
-    .lte("date", new Date(parseInt(year), 11, 31).toISOString())
     .lte("date", new Date().toISOString())
-    .order("date", { ascending: false })
-    .throwOnError();
+    .order("date", { ascending: false });
+
+  if (season_id === "none") {
+    query = query.is("season_id", null);
+  } else {
+    query = query.eq("season_id", season_id);
+  }
+
+  const { data } = await query.throwOnError();
   if (!data) return [];
   return data;
 }
 
 async function fetchMember(clubId: number, userId: string) {
   const { data } = await supabase
-    .from("club_enrolments")
+    .from("club_member")
     .select()
     .eq("club_id", clubId)
     .eq("user_id", userId)
@@ -108,7 +115,7 @@ async function fetchMember(clubId: number, userId: string) {
 
 export async function fetchMembers(clubId: number) {
   const { data } = await supabase
-    .from("club_enrolments")
+    .from("club_member")
     .select("*, profile: users(*)")
     .eq("club_id", clubId)
     .throwOnError();
@@ -118,7 +125,7 @@ export async function fetchMembers(clubId: number) {
 
 export async function joinClub(clubId: number, userId: string) {
   const { data } = await supabase
-    .from("club_enrolments")
+    .from("club_member")
     .insert({ club_id: clubId, user_id: userId })
     .select()
     .single()
@@ -135,7 +142,7 @@ export async function leaveClub(clubId: number, userId: string) {
     throw new Error("Vous n'êtes pas membre de ce club.");
   }
   const { data } = await supabase
-    .from("club_enrolments")
+    .from("club_member")
     .delete()
     .eq("club_id", clubId)
     .eq("user_id", userId)

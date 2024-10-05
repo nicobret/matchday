@@ -9,7 +9,7 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
-      club_enrolments: {
+      club_member: {
         Row: {
           club_id: number;
           created_at: string;
@@ -43,7 +43,7 @@ export type Database = {
             referencedColumns: ["id"];
           },
           {
-            foreignKeyName: "club_enrolments_user_id_fkey";
+            foreignKeyName: "club_member_user_id_fkey";
             columns: ["user_id"];
             isOneToOne: false;
             referencedRelation: "users";
@@ -62,9 +62,11 @@ export type Database = {
           description: string | null;
           edited_at: string | null;
           id: number;
+          logo_url: string | null;
           name: string | null;
           postcode: string | null;
           status: string;
+          url: string | null;
         };
         Insert: {
           address?: string | null;
@@ -76,9 +78,11 @@ export type Database = {
           description?: string | null;
           edited_at?: string | null;
           id?: number;
+          logo_url?: string | null;
           name?: string | null;
           postcode?: string | null;
           status?: string;
+          url?: string | null;
         };
         Update: {
           address?: string | null;
@@ -90,9 +94,11 @@ export type Database = {
           description?: string | null;
           edited_at?: string | null;
           id?: number;
+          logo_url?: string | null;
           name?: string | null;
           postcode?: string | null;
           status?: string;
+          url?: string | null;
         };
         Relationships: [
           {
@@ -104,77 +110,50 @@ export type Database = {
           },
         ];
       };
-      follows: {
+      game_player: {
         Row: {
-          created_at: string;
-          followed_user_id: string | null;
-          id: number;
-          user_id: string | null;
-        };
-        Insert: {
-          created_at?: string;
-          followed_user_id?: string | null;
-          id?: number;
-          user_id?: string | null;
-        };
-        Update: {
-          created_at?: string;
-          followed_user_id?: string | null;
-          id?: number;
-          user_id?: string | null;
-        };
-        Relationships: [
-          {
-            foreignKeyName: "follows_followed_user_id_fkey";
-            columns: ["followed_user_id"];
-            isOneToOne: false;
-            referencedRelation: "users";
-            referencedColumns: ["id"];
-          },
-          {
-            foreignKeyName: "follows_user_id_fkey";
-            columns: ["user_id"];
-            isOneToOne: false;
-            referencedRelation: "users";
-            referencedColumns: ["id"];
-          },
-        ];
-      };
-      game_registrations: {
-        Row: {
+          assists: number | null;
           created_at: string;
           game_id: number | null;
+          goals: number | null;
           id: string;
+          saves: number | null;
           status: string | null;
           team: number | null;
           user_id: string | null;
         };
         Insert: {
+          assists?: number | null;
           created_at?: string;
           game_id?: number | null;
+          goals?: number | null;
           id?: string;
+          saves?: number | null;
           status?: string | null;
           team?: number | null;
           user_id?: string | null;
         };
         Update: {
+          assists?: number | null;
           created_at?: string;
           game_id?: number | null;
+          goals?: number | null;
           id?: string;
+          saves?: number | null;
           status?: string | null;
           team?: number | null;
           user_id?: string | null;
         };
         Relationships: [
           {
-            foreignKeyName: "game_registrations_game_id_fkey";
+            foreignKeyName: "game_player_game_id_fkey";
             columns: ["game_id"];
             isOneToOne: false;
             referencedRelation: "games";
             referencedColumns: ["id"];
           },
           {
-            foreignKeyName: "game_registrations_user_id_fkey";
+            foreignKeyName: "game_player_user_id_fkey";
             columns: ["user_id"];
             isOneToOne: false;
             referencedRelation: "users";
@@ -192,9 +171,10 @@ export type Database = {
           duration: unknown | null;
           id: number;
           location: string | null;
-          name: string | null;
+          name: string;
           opponent_id: number | null;
           score: number[] | null;
+          season_id: string | null;
           status: string;
           total_players: number | null;
         };
@@ -207,9 +187,10 @@ export type Database = {
           duration?: unknown | null;
           id?: number;
           location?: string | null;
-          name?: string | null;
+          name?: string;
           opponent_id?: number | null;
           score?: number[] | null;
+          season_id?: string | null;
           status?: string;
           total_players?: number | null;
         };
@@ -222,9 +203,10 @@ export type Database = {
           duration?: unknown | null;
           id?: number;
           location?: string | null;
-          name?: string | null;
+          name?: string;
           opponent_id?: number | null;
           score?: number[] | null;
+          season_id?: string | null;
           status?: string;
           total_players?: number | null;
         };
@@ -250,11 +232,47 @@ export type Database = {
             referencedRelation: "clubs";
             referencedColumns: ["id"];
           },
+          {
+            foreignKeyName: "games_season_id_fkey";
+            columns: ["season_id"];
+            isOneToOne: false;
+            referencedRelation: "season";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
+      season: {
+        Row: {
+          club_id: number | null;
+          created_at: string;
+          id: string;
+          name: string;
+        };
+        Insert: {
+          club_id?: number | null;
+          created_at?: string;
+          id?: string;
+          name?: string;
+        };
+        Update: {
+          club_id?: number | null;
+          created_at?: string;
+          id?: string;
+          name?: string;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "season_club_id_fkey";
+            columns: ["club_id"];
+            isOneToOne: false;
+            referencedRelation: "clubs";
+            referencedColumns: ["id"];
+          },
         ];
       };
       users: {
         Row: {
-          avatar: string | null;
+          avatar_url: string | null;
           created_at: string;
           edited_at: string | null;
           email_notifications: boolean | null;
@@ -264,7 +282,7 @@ export type Database = {
           status: string | null;
         };
         Insert: {
-          avatar?: string | null;
+          avatar_url?: string | null;
           created_at?: string;
           edited_at?: string | null;
           email_notifications?: boolean | null;
@@ -274,7 +292,7 @@ export type Database = {
           status?: string | null;
         };
         Update: {
-          avatar?: string | null;
+          avatar_url?: string | null;
           created_at?: string;
           edited_at?: string | null;
           email_notifications?: boolean | null;
@@ -295,7 +313,56 @@ export type Database = {
       };
     };
     Views: {
-      [_ in never]: never;
+      game_report: {
+        Row: {
+          assists: number | null;
+          away_score: number | null;
+          club_id: number | null;
+          club_name: string | null;
+          firstname: string | null;
+          game_date: string | null;
+          game_id: number | null;
+          goals: number | null;
+          home_score: number | null;
+          lastname: string | null;
+          result: string | null;
+          saves: number | null;
+          season_id: string | null;
+          season_name: string | null;
+          user_id: string | null;
+          user_team: string | null;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "game_player_game_id_fkey";
+            columns: ["game_id"];
+            isOneToOne: false;
+            referencedRelation: "games";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "game_player_user_id_fkey";
+            columns: ["user_id"];
+            isOneToOne: false;
+            referencedRelation: "users";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "games_club_id_fkey";
+            columns: ["club_id"];
+            isOneToOne: false;
+            referencedRelation: "clubs";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "games_season_id_fkey";
+            columns: ["season_id"];
+            isOneToOne: false;
+            referencedRelation: "season";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
     };
     Functions: {
       [_ in never]: never;

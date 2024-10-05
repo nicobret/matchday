@@ -1,17 +1,18 @@
 import supabase from "@/utils/supabase";
 import { Tables } from "types/supabase";
 
-export type Player = Tables<"game_registrations"> & {
+export type Player = Tables<"game_player"> & {
   profile: Tables<"users"> | null;
 };
 
 export type Game = Tables<"games"> & {
   club:
     | (Tables<"clubs"> & {
-        members: Tables<"club_enrolments">[];
+        members: Tables<"club_member">[];
       })
     | null;
-  players?: Tables<"game_registrations">[];
+  players?: Tables<"game_player">[];
+  season?: Tables<"season"> | null;
 };
 
 export async function fetchGame(id: number) {
@@ -20,8 +21,9 @@ export async function fetchGame(id: number) {
     .select(
       `
         *,
-        club: clubs!games_club_id_fkey (*, members: club_enrolments (*)),
-        players: game_registrations (*)
+        club: clubs!games_club_id_fkey (*, members: club_member (*)),
+        players: game_player (*),
+        season: season (*)
       `,
     )
     .eq("id", id)
@@ -38,7 +40,7 @@ export async function fetchGame(id: number) {
 
 export async function fetchPlayers(game_id: number) {
   const { data } = await supabase
-    .from("game_registrations")
+    .from("game_player")
     .select("*, profile: users (*)")
     .eq("game_id", game_id)
     .throwOnError();

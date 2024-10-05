@@ -13,6 +13,7 @@ import supabase from "@/utils/supabase";
 import { ArrowLeft } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
+import { Tables } from "types/supabase";
 import {
   Game,
   categories,
@@ -58,6 +59,7 @@ function Editor({
   loading: boolean;
   setLoading: (loading: boolean) => void;
 }) {
+  console.log("🚀 ~ game:", game);
   const [data, setData] = useState({
     date: game.date.split("T")[0] || "",
     time: new Date(game.date).toLocaleTimeString("fr-FR", {
@@ -69,7 +71,13 @@ function Editor({
     location: game.location || "",
     total_players: game.total_players || 10,
     category: game.category || "futsal",
+    season_id: game.season_id || undefined,
   });
+  console.log("🚀 ~ data:", data);
+
+  const [seasons, setSeasons] = useState<Tables<"season">[]>([]);
+  console.log("🚀 ~ seasons:", seasons);
+
   const navigate = useNavigate();
 
   async function updateGame() {
@@ -82,6 +90,8 @@ function Editor({
           duration: data.durationInMinutes * 60,
           location: data.location,
           total_players: data.total_players,
+          category: data.category,
+          season_id: data.season_id,
         })
         .eq("id", game.id)
         .select("*")
@@ -93,6 +103,19 @@ function Editor({
     }
     setLoading(false);
   }
+
+  async function fetchSeasons() {
+    const { data } = await supabase
+      .from("season")
+      .select("*")
+      .eq("club_id", game.club_id)
+      .throwOnError();
+    if (data) setSeasons(data);
+  }
+
+  useEffect(() => {
+    fetchSeasons();
+  }, []);
 
   return (
     <div className="px-4">
@@ -131,6 +154,27 @@ function Editor({
               onChange={(e) => setData({ ...data, time: e.target.value })}
             />
           </div>
+        </div>
+
+        <div className="mt-4">
+          <Label htmlFor="season">Saison</Label>
+          <Select
+            name="season"
+            value={data.season_id}
+            onValueChange={(season_id) => setData({ ...data, season_id })}
+            defaultValue={data.season_id}
+          >
+            <SelectTrigger>
+              <SelectValue placeholder="Choisir une saison" />
+            </SelectTrigger>
+            <SelectContent>
+              {seasons.map((season) => (
+                <SelectItem key={season.id} value={season.id}>
+                  {season.name}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
         </div>
 
         <div className="mt-4">
@@ -179,6 +223,7 @@ function Editor({
               </SelectContent>
             </Select>
           </div>
+
           <div>
             <Label htmlFor="total_players">Nombre de joueurs</Label>
             <Input

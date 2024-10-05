@@ -65,7 +65,7 @@ export default function CreateDialog() {
       }
 
       const { data: club_members, error: club_members_error } = await supabase
-        .from("club_enrolments")
+        .from("club_member")
         .insert({ club_id: club[0].id, user_id: user.id, role: "admin" })
         .select("user_id");
 

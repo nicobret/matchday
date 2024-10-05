@@ -29,7 +29,7 @@ export default function CreateGame() {
       setLoading(true);
       const { data } = await supabase
         .from("clubs")
-        .select("*, members: club_enrolments (*)")
+        .select("*, members: club_member (*), seasons: season (*)")
         .eq("id", id)
         .single()
         .throwOnError();
@@ -81,6 +81,15 @@ function GameForm({ user, club }: { user: User; club: Club }) {
   const [location, setLocation] = useState(
     `${club?.address}, ${club?.postcode} ${club?.city}`,
   );
+
+  const seasons = club.seasons || [];
+  const seasonOptions = [
+    ...seasons
+      .sort((a, b) => b.name.localeCompare(a.name))
+      .map((season) => ({ label: season.name, value: season.id })),
+    { label: "Hors saison", value: "none" },
+  ];
+  const [season, setSeason] = useState(seasonOptions[0].value);
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -135,6 +144,26 @@ function GameForm({ user, club }: { user: User; club: Club }) {
       </h2>
 
       <form onSubmit={handleSubmit} className="mx-auto max-w-lg">
+        <div className="grid w-full items-center gap-2">
+          <Label htmlFor="season">Saison</Label>
+          <Select
+            name="season"
+            value={season}
+            onValueChange={(value) => setSeason(value)}
+          >
+            <SelectTrigger>
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              {seasonOptions.map((option) => (
+                <SelectItem key={option.value} value={option.value}>
+                  {option.label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+
         <div className="mt-10 grid w-full grid-cols-2 gap-3">
           <div className="grid w-full items-center gap-2">
             <Label htmlFor="category">Sport</Label>
