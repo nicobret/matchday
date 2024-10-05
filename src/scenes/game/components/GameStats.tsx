@@ -21,32 +21,23 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { fetchGameStats } from "@/stats.service";
 import { useState } from "react";
-import { useQuery } from "react-query";
-import { Game } from "../games.service";
+import useGameStats from "../useGameStats";
 
-export default function Statistics({ game }: { game: Game }) {
+export default function Statistics({ gameId }: { gameId: number }) {
+  const [team, setTeam] = useState("all");
   const [sortby, setSortby] = useState<"goals" | "assists" | "saves">("goals");
-  const {
-    data: stats,
-    isError,
-    isLoading,
-    isIdle,
-  } = useQuery({
-    queryKey: ["game_stats", [game.id, sortby]],
-    queryFn: () => fetchGameStats(game.id, sortby),
-    enabled: !!game.id,
-  });
+  const { data, isError, isLoading, isIdle } = useGameStats({ gameId, sortby });
 
-  if (isLoading || isIdle) {
+  if (isIdle) {
+    return <div>Selectionnez un match</div>;
+  }
+  if (isLoading) {
     return <div>Chargement...</div>;
   }
-
   if (isError) {
     return <div>Erreur</div>;
   }
-
   return (
     <Card>
       <CardHeader>
@@ -54,7 +45,7 @@ export default function Statistics({ game }: { game: Game }) {
       </CardHeader>
 
       <CardContent>
-        <div className="mb-2 flex">
+        <div className="mb-2 flex gap-2">
           <div className="grid w-full max-w-36 items-center gap-1.5">
             <Label>Trier par</Label>
             <Select
@@ -74,6 +65,24 @@ export default function Statistics({ game }: { game: Game }) {
               </SelectContent>
             </Select>
           </div>
+
+          <div className="grid w-full max-w-36 items-center gap-1.5">
+            <Label>Equipe</Label>
+            <Select
+              name="team"
+              value={team}
+              onValueChange={(value: "home" | "away" | "all") => setTeam(value)}
+            >
+              <SelectTrigger>
+                <SelectValue placeholder="Trier par" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">Toutes</SelectItem>
+                <SelectItem value="home">Domicile</SelectItem>
+                <SelectItem value="away">Extérieur</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
         </div>
 
         <Table>
@@ -87,17 +96,19 @@ export default function Statistics({ game }: { game: Game }) {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {stats.map((row) => {
-              return (
-                <TableRow key={row.user_id}>
-                  <TableCell>{row.firstname}</TableCell>
-                  <TableCell>{row.user_team}</TableCell>
-                  <TableCell>{row.goals}</TableCell>
-                  <TableCell>{row.assists}</TableCell>
-                  <TableCell>{row.saves}</TableCell>
-                </TableRow>
-              );
-            })}
+            {data
+              .filter((row) => (team === "all" ? true : row.user_team === team))
+              .map((row) => {
+                return (
+                  <TableRow key={row.user_id}>
+                    <TableCell>{row.firstname}</TableCell>
+                    <TableCell>{row.user_team}</TableCell>
+                    <TableCell>{row.goals}</TableCell>
+                    <TableCell>{row.assists}</TableCell>
+                    <TableCell>{row.saves}</TableCell>
+                  </TableRow>
+                );
+              })}
           </TableBody>
         </Table>
       </CardContent>

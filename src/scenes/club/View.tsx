@@ -26,6 +26,7 @@ import {
 } from "./club.service";
 import ClubHistory from "./components/ClubHistory";
 import ClubMembers from "./components/ClubMembers";
+import ClubStats from "./components/ClubStats";
 import UpcomingGames from "./components/UpcomingGames";
 
 export default function View() {
@@ -225,8 +226,9 @@ export default function View() {
         <TabsContent value="schedule">
           <UpcomingGames club={club} />
         </TabsContent>
-        <TabsContent value="members">
+        <TabsContent value="members" className="grid grid-cols-1 gap-4">
           <ClubMembers clubId={club.id} />
+          <ClubStats clubId={club.id} />
         </TabsContent>
         <TabsContent value="history">
           <ClubHistory club={club} />

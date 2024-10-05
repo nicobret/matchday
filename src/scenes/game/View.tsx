@@ -20,8 +20,8 @@ import { useContext, useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import AddToCalendar from "./components/AddToCalendar";
 import GameEvents from "./components/GameEvents";
+import GameStats from "./components/GameStats";
 import LineUp from "./components/LineUp";
-import Statistics from "./components/Statistics";
 import {
   Game,
   Player,
@@ -294,7 +294,7 @@ export default function View() {
         </TabsContent>
 
         <TabsContent value="stats" className="mt-4">
-          <Statistics game={game} />
+          <GameStats gameId={game.id} />
         </TabsContent>
       </Tabs>
     </div>
