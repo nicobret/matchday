@@ -127,7 +127,7 @@ export default function View() {
         Retour à l'accueil
       </Link>
 
-      <header className="mt-8 flex gap-4">
+      <header className="mx-auto mt-8 flex max-w-lg gap-4">
         <div className="h-28 w-28 flex-none rounded-xl border-2 border-dashed"></div>
         <div>
           <h1 className="text-3xl font-semibold tracking-tight">{club.name}</h1>
@@ -140,7 +140,7 @@ export default function View() {
         </div>
       </header>
 
-      <div className="mt-4 grid max-w-lg grid-cols-2 gap-2">
+      <div className="mx-auto mt-4 grid max-w-lg grid-cols-2 gap-2">
         {!session || !isMember(session.user, club) ? (
           <Button onClick={() => handleJoin(club)} className="flex gap-2">
             <ClipboardSignature className="h-5 w-5" />
@@ -176,7 +176,7 @@ export default function View() {
         )}
       </div>
 
-      <div className="mt-10 max-w-lg rounded-lg border p-4">
+      <div className="mx-auto mt-10 max-w-lg rounded-lg border p-4">
         <p>
           <Shield className="mr-2 inline-block h-5 w-5" />
           Créé le{" "}

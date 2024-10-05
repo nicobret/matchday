@@ -1,77 +1,43 @@
 import { SessionContext } from "@/components/auth-provider";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import supabase from "@/utils/supabase";
-import {
-  ChevronUp,
-  Search,
-  Shield,
-  Swords,
-  TableProperties,
-  Users,
-} from "lucide-react";
-import { useContext, useEffect, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import { Tables } from "types/supabase";
-import { fetchProfile } from "../account/account.service";
-import { Club } from "../club/club.service";
+import { Search, Shield } from "lucide-react";
+import { useContext } from "react";
+import { useNavigate } from "react-router-dom";
 import ClubCard from "./components/ClubCard";
 import CreateDialog from "./components/CreateDialog";
+import Guide from "./components/Guide";
+import useClubs from "./useClubs";
+import useProfile from "./useProfile";
 
 export default function Home() {
   const { session } = useContext(SessionContext);
-  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+  const { data: profile, isLoading: loadingProfile } = useProfile({ session });
+  const { data: clubs, isError, isIdle, isLoading } = useClubs();
 
-  const [profile, setProfile] = useState<Tables<"users">>();
-  const [clubs, setClubs] = useState<Club[]>([]);
-
-  async function getClubs() {
-    try {
-      const { data } = await supabase
-        .from("clubs")
-        .select("*, members: club_member (*)")
-        .is("deleted_at", null)
-        .order("created_at")
-        .throwOnError();
-      if (data) setClubs(data);
-    } catch (error) {
-      console.error(error);
-    }
-  }
-
-  async function getProfile() {
-    try {
-      const data = await fetchProfile();
-      if (data) setProfile(data);
-    } catch (error) {
-      console.error(error);
-    }
-  }
-
-  useEffect(() => {
-    setLoading(true);
-    if (!clubs.length) getClubs();
-    if (session) getProfile();
-    setLoading(false);
-  }, [session]);
-
-  const myClubs = clubs.filter((c) =>
-    c.members?.some((m) => m.user_id === session?.user?.id),
-  );
-
-  const notMyClubs = clubs.filter(
-    (c) => !c.members?.some((m) => m.user_id === session?.user?.id),
-  );
-
-  if (loading) {
+  if (loadingProfile) {
     return (
       <p className="animate-pulse text-center">Chargement des données...</p>
     );
   }
-
+  // Redirect to account page if profile is not complete
   if (profile && !profile?.firstname) {
     navigate("/account");
   }
+
+  if (isLoading || isIdle) {
+    return <p className="animate-pulse text-center">Chargement des clubs...</p>;
+  }
+  if (isError) {
+    return <p className="text-center">Une erreur est survenue.</p>;
+  }
+
+  const myClubs = clubs.filter((c) =>
+    c.members?.some((m) => m.user_id === session?.user?.id),
+  );
+  const notMyClubs = clubs.filter(
+    (c) => !c.members?.some((m) => m.user_id === session?.user?.id),
+  );
 
   return (
     <div className="p-4">
@@ -89,6 +55,10 @@ export default function Home() {
           className="mt-8"
         >
           <TabsList className="w-full">
+            <TabsTrigger value="search" className="w-1/2">
+              <Search className="mr-2 inline-block h-4 w-4" />
+              Trouver un club
+            </TabsTrigger>
             <TabsTrigger
               value="club-list"
               disabled={!session?.user}
@@ -96,10 +66,6 @@ export default function Home() {
             >
               <Shield className="mr-2 inline-block h-4 w-4" />
               Mes clubs
-            </TabsTrigger>
-            <TabsTrigger value="search" className="w-1/2">
-              <Search className="mr-2 inline-block h-4 w-4" />
-              Trouver un club
             </TabsTrigger>
           </TabsList>
 
@@ -125,82 +91,5 @@ export default function Home() {
         </Tabs>
       </section>
     </div>
-  );
-}
-
-function Guide({ profile }: { profile?: Tables<"users"> }) {
-  const { session } = useContext(SessionContext);
-
-  const [open, setOpen] = useState(
-    !(localStorage.getItem("close-guide") === "true") ||
-      (session?.user && !profile?.firstname),
-  );
-
-  function handleClick() {
-    if (open) {
-      localStorage.removeItem("close-guide");
-      setOpen(false);
-    } else {
-      localStorage.setItem("close-guide", "true");
-      setOpen(true);
-    }
-  }
-
-  return (
-    <section id="guide" className="rounded-lg border p-4">
-      <div className="flex items-center justify-between">
-        <h2
-          className={`scroll-m-20 font-semibold tracking-tight transition-all ${open ? "text-base text-muted-foreground" : "text-2xl"}`}
-        >
-          Comment ça marche ?
-        </h2>
-
-        <button onClick={handleClick}>
-          <ChevronUp
-            className={`h-5 w-5 transition-all ${open ? "rotate-180" : ""}`}
-          />
-        </button>
-      </div>
-
-      {!open && (
-        <>
-          <p className="mt-4 text-lg">
-            <Users className="mr-4 inline-block h-5 w-5 align-text-bottom text-primary" />
-            Trouve un club ou créé le tien.
-          </p>
-
-          <p className="mt-2 text-lg">
-            <Swords className="mr-4 inline-block h-5 w-5 align-text-bottom text-primary" />
-            Inscris-toi à un match.
-          </p>
-          <p className="mt-2 text-lg">
-            <TableProperties className="mr-4 inline-block h-5 w-5 align-text-bottom text-primary" />
-            Enregistre tes scores et tes perfs !
-          </p>
-
-          {session?.user && !profile?.firstname && (
-            <div className="mt-4 text-center">
-              <Link
-                to="/account"
-                className="text-primary underline underline-offset-2"
-              >
-                Compléter mon profil
-              </Link>
-            </div>
-          )}
-
-          {session?.user ? null : (
-            <div className="mt-4 text-center">
-              <Link
-                to={`/auth?redirectTo=${window.location.pathname}`}
-                className="text-primary underline underline-offset-2"
-              >
-                C'est parti !
-              </Link>
-            </div>
-          )}
-        </>
-      )}
-    </section>
   );
 }
