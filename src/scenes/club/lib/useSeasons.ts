@@ -1,7 +1,7 @@
 import supabase from "@/utils/supabase";
 import { useQuery } from "react-query";
 
-export default function useSeason(clubId: number) {
+export default function useSeasons(clubId: number) {
   return useQuery({
     queryKey: ["seasons", clubId],
     queryFn: () => fetchSeasons(clubId),
@@ -14,6 +14,7 @@ async function fetchSeasons(clubId: number) {
     .from("season")
     .select("*")
     .eq("club_id", clubId)
+    .order("created_at", { ascending: false })
     .throwOnError();
   if (data) {
     return data;

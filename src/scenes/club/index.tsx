@@ -1,6 +1,6 @@
 import { Route, Routes } from "react-router-dom";
-import View from "./View";
 import Edit from "./Edit";
+import View from "./View";
 
 export default function Club() {
   return (

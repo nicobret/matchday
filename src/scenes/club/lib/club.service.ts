@@ -1,3 +1,4 @@
+import { queryClient } from "@/lib/react-query";
 import supabase from "@/utils/supabase";
 import { User } from "@supabase/supabase-js";
 import { Tables } from "types/supabase";
@@ -42,7 +43,7 @@ export async function fetchClub(id: number) {
   return data;
 }
 
-export async function updateClub(formData: any, id: string) {
+export async function updateClub(formData: any, id: number) {
   const { data } = await supabase
     .from("clubs")
     .update({
@@ -53,11 +54,13 @@ export async function updateClub(formData: any, id: string) {
       city: formData.city,
       country: formData.country,
     })
-    .eq("id", parseInt(id))
+    .eq("id", id)
     .select("*")
     .single()
     .throwOnError();
-  if (data) return data;
+  if (data) {
+    queryClient.setQueryData(["clubs", id], data);
+  }
 }
 
 export async function deleteClub(club: Club) {

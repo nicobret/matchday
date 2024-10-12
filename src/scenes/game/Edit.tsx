@@ -13,9 +13,9 @@ import supabase from "@/utils/supabase";
 import { ArrowLeft } from "lucide-react";
 import { useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
+import useSeason from "../club/lib/useSeasons";
 import { Game, categories, getGameDurationInMinutes } from "./lib/game.service";
 import useGame from "./lib/useGame";
-import useSeason from "./lib/useSeason";
 
 export default function EditGame() {
   const { id } = useParams();

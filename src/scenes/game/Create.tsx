@@ -121,7 +121,7 @@ function GameForm({ user, club }: { user: User; club: Club }) {
       </h2>
 
       <form onSubmit={handleSubmit} className="mx-auto max-w-lg">
-        <div className="grid w-full items-center gap-2">
+        <div className="mb-1 grid w-full items-center gap-2">
           <Label htmlFor="season">Saison</Label>
           <Select
             name="season"
@@ -140,6 +140,12 @@ function GameForm({ user, club }: { user: User; club: Club }) {
             </SelectContent>
           </Select>
         </div>
+        <Link
+          to={`/club/${club.id}/edit#seasons`}
+          className="text-sm text-primary"
+        >
+          Ajouter une saison
+        </Link>
 
         <div className="mt-10 grid w-full grid-cols-2 gap-3">
           <div className="grid w-full items-center gap-2">
