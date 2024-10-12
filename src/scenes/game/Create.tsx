@@ -13,44 +13,25 @@ import { Textarea } from "@/components/ui/textarea";
 import supabase from "@/utils/supabase";
 import { User } from "@supabase/supabase-js";
 import { ArrowLeft } from "lucide-react";
-import { useContext, useEffect, useState } from "react";
+import { useContext, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { Club, isMember } from "../club/club.service";
-import { categories } from "./games.service";
+import { Club, isMember } from "../club/lib/club.service";
+import useClub from "../club/lib/useClub";
+import { categories } from "./lib/game.service";
 
 export default function CreateGame() {
   const clubId = new URLSearchParams(window.location.search).get("clubId");
   const { session } = useContext(SessionContext);
-  const [club, setClub] = useState<Club | null>(null);
-  const [loading, setLoading] = useState(true);
+  const { data: club, isIdle, isLoading, isError } = useClub(Number(clubId));
 
-  async function fetchClub(id: number) {
-    try {
-      setLoading(true);
-      const { data } = await supabase
-        .from("clubs")
-        .select("*, members: club_member (*), seasons: season (*)")
-        .eq("id", id)
-        .single()
-        .throwOnError();
-      if (!data) {
-        throw new Error("Club not found");
-      }
-      setClub(data);
-    } catch (error) {
-      console.error(error);
-    } finally {
-      setLoading(false);
-    }
+  if (isIdle) {
+    return <p className="text-center">Sélectionnez un club</p>;
   }
-
-  useEffect(() => {
-    if (!clubId) return;
-    fetchClub(parseInt(clubId));
-  }, [clubId]);
-
-  if (loading) {
+  if (isLoading) {
     return <p className="text-center">Chargement des données...</p>;
+  }
+  if (isError) {
+    return <p className="text-center">Une erreur s'est produite</p>;
   }
   if (!session?.user) {
     return (
@@ -58,9 +39,6 @@ export default function CreateGame() {
         Vous devez être connecté pour créer un match
       </p>
     );
-  }
-  if (!club) {
-    return <p className="text-center">Aucun club trouvé</p>;
   }
   if (!isMember(session.user, club)) {
     return (
@@ -120,11 +98,10 @@ function GameForm({ user, club }: { user: User; club: Club }) {
         .select()
         .single()
         .throwOnError();
-      if (!data) {
-        throw new Error("Impossible de créer le match");
+      if (data) {
+        window.alert("Match créé avec succès");
+        navigate(`/game/${data.id}`);
       }
-      window.alert("Match créé avec succès");
-      navigate(`/game/${data.id}`);
     } catch (error) {
       console.error(error);
     } finally {

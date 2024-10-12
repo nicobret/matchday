@@ -24,7 +24,6 @@ export default function Home() {
   if (profile && !profile?.firstname) {
     navigate("/account");
   }
-
   if (isLoading || isIdle) {
     return <p className="animate-pulse text-center">Chargement des clubs...</p>;
   }

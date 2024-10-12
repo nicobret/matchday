@@ -1,4 +1,4 @@
-import { fetchClubStats } from "@/stats.service";
+import { fetchClubStats } from "@/lib/stats.service";
 import { useQuery } from "react-query";
 
 export default function useClubStats({ clubId }: { clubId: number }) {

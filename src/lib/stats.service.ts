@@ -1,4 +1,4 @@
-import supabase from "./utils/supabase";
+import supabase from "../utils/supabase";
 
 export async function fetchGameStats(game_id: number, sortby: string) {
   const { data } = await supabase

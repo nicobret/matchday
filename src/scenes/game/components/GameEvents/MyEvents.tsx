@@ -8,17 +8,10 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import supabase from "@/utils/supabase";
 import { useState } from "react";
-import { Player } from "../../games.service";
+import { Player, updatePlayerEvents } from "../../lib/player.service";
 
-export default function MyEvents({
-  player,
-  setPlayer,
-}: {
-  player: Player;
-  setPlayer: (player: Player) => void;
-}) {
+export default function MyEvents({ player }: { player: Player }) {
   const [loading, setLoading] = useState(false);
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
@@ -30,22 +23,7 @@ export default function MyEvents({
     const saves = parseInt(form.get("saves") as string) || 0;
 
     setLoading(true);
-    try {
-      const { data } = await supabase
-        .from("game_player")
-        .update({
-          goals,
-          assists,
-          saves,
-        })
-        .eq("id", player.id)
-        .single()
-        .throwOnError();
-
-      if (data) setPlayer(data);
-    } catch (error) {
-      console.error(error);
-    }
+    await updatePlayerEvents(player, { goals, assists, saves });
     setLoading(false);
   }
 

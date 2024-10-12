@@ -1,11 +1,11 @@
-import ScrollToHashElement from "@cascadia-code/scroll-to-hash-element";
 import { Suspense, lazy, useEffect } from "react";
-import { QueryClient, QueryClientProvider } from "react-query";
+import { QueryClientProvider } from "react-query";
 import { BrowserRouter, Route, Routes, useLocation } from "react-router-dom";
 import { SessionProvider } from "./components/auth-provider.tsx";
 import Layout from "./components/Layout.tsx";
 import { ThemeProvider } from "./components/theme-provider.tsx";
 import "./index.css";
+import { queryClient } from "./lib/react-query.ts";
 
 const Account = lazy(() => import("./scenes/account"));
 const Club = lazy(() => import("./scenes/club"));
@@ -13,8 +13,6 @@ const Game = lazy(() => import("./scenes/game"));
 const Home = lazy(() => import("./scenes/home"));
 const Player = lazy(() => import("./scenes/player"));
 const Auth = lazy(() => import("./scenes/auth"));
-
-const queryClient = new QueryClient();
 
 export default function App() {
   return (
@@ -24,7 +22,6 @@ export default function App() {
           <SessionProvider>
             <Layout>
               <ScrollToTop />
-              <ScrollToHashElement />
               <Suspense fallback={<Fallback />}>
                 <Routes>
                   <Route path="/auth" element={<Auth />} />
@@ -57,9 +54,17 @@ function Fallback() {
 }
 
 function ScrollToTop() {
-  const { pathname } = useLocation();
+  const { pathname, hash } = useLocation();
   useEffect(() => {
-    window.scrollTo(0, 0);
-  }, [pathname]);
+    if (hash) {
+      const id = hash.replace("#", "");
+      const element = document.getElementById(id);
+      if (element) {
+        element.scrollIntoView({ behavior: "smooth" });
+      }
+    } else {
+      window.scrollTo(0, 0);
+    }
+  }, [pathname, hash]);
   return null;
 }

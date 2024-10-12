@@ -26,7 +26,7 @@ import { ArrowRight } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { Tables } from "types/supabase";
-import { Club, fetchPastGames } from "../club.service";
+import { Club, fetchPastGames } from "../lib/club.service";
 
 export default function ClubHistory({ club }: { club: Club }) {
   const [loading, setLoading] = useState(false);

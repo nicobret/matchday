@@ -1,6 +1,6 @@
 import { useDroppable } from "@dnd-kit/core";
+import { Player as PlayerType } from "../../lib/player.service";
 import Player from "./Player";
-import { Player as PlayerType } from "../../games.service";
 
 export default function Team({
   label,

@@ -8,7 +8,13 @@ import {
 import { CalendarEvent, google, ics, outlook, yahoo } from "calendar-link";
 import { Calendar } from "lucide-react";
 
-export default function AddToCalendar({ event }: { event: CalendarEvent }) {
+export default function AddToCalendar({
+  event,
+  disabled,
+}: {
+  event: CalendarEvent;
+  disabled: boolean;
+}) {
   const googleUrl = google(event);
   const outlookUrl = outlook(event);
   const yahooUrl = yahoo(event);
@@ -17,7 +23,7 @@ export default function AddToCalendar({ event }: { event: CalendarEvent }) {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant="secondary">
+        <Button disabled={disabled} variant="secondary">
           <Calendar className="mr-2 inline-block h-5 w-5" />
           Ajouter au calendrier
         </Button>

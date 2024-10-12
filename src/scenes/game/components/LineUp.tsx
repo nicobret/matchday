@@ -1,16 +1,15 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Game, Player } from "../games.service";
+import { Game } from "../lib/game.service";
+import { Player } from "../lib/player.service";
 import LineupEditor from "./LineupEditor";
 
 export default function LineUp({
   game,
   players,
-  setPlayers,
   disabled,
 }: {
   game: Game;
   players: Player[];
-  setPlayers: React.Dispatch<React.SetStateAction<Player[]>>;
   disabled: boolean;
 }) {
   return (
@@ -22,11 +21,7 @@ export default function LineUp({
         <p className="mb-6">
           {players.length} / {game.total_players} joueurs inscrits.
         </p>
-        <LineupEditor
-          players={players}
-          setPlayers={setPlayers}
-          disabled={disabled}
-        />
+        <LineupEditor players={players} disabled={disabled} />
       </CardContent>
     </Card>
   );

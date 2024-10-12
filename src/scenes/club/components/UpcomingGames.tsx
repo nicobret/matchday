@@ -1,6 +1,6 @@
 import { useContext, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { Club, Game, fetchUpcomingGames, isMember } from "../club.service";
+import { Club, Game, fetchUpcomingGames, isMember } from "../lib/club.service";
 
 import { SessionContext } from "@/components/auth-provider";
 import { buttonVariants } from "@/components/ui/button";

@@ -11,56 +11,27 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 import supabase from "@/utils/supabase";
 import { ArrowLeft } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
-import { Tables } from "types/supabase";
-import {
-  Game,
-  categories,
-  fetchGame,
-  getGameDurationInMinutes,
-} from "./games.service";
+import { Game, categories, getGameDurationInMinutes } from "./lib/game.service";
+import useGame from "./lib/useGame";
+import useSeason from "./lib/useSeason";
 
 export default function EditGame() {
   const { id } = useParams();
-  const [loading, setLoading] = useState(true);
-  const [game, setGame] = useState<Game>();
-  const navigate = useNavigate();
+  const { data: game, isIdle, isLoading, isError } = useGame(Number(id));
 
-  useEffect(() => {
-    if (!id) {
-      return navigate("/");
-    }
-    fetchGame(parseInt(id))
-      .then((data) => {
-        if (data) setGame(data);
-      })
-      .catch(console.error)
-      .finally(() => setLoading(false));
-  }, [id]);
-
-  if (loading) {
-    return <div>Loading...</div>;
+  if (isIdle || isLoading) {
+    return <div>Chargement...</div>;
   }
-
-  if (!game) {
-    return <div>Game not found</div>;
+  if (isError) {
+    return <div>Erreur</div>;
   }
-
-  return <Editor game={game} loading={loading} setLoading={setLoading} />;
+  return <Editor game={game} />;
 }
 
-function Editor({
-  game,
-  loading,
-  setLoading,
-}: {
-  game: Game;
-  loading: boolean;
-  setLoading: (loading: boolean) => void;
-}) {
-  console.log("🚀 ~ game:", game);
-  const [data, setData] = useState({
+function getInitialFormData(game: Game) {
+  return {
     date: game.date.split("T")[0] || "",
     time: new Date(game.date).toLocaleTimeString("fr-FR", {
       timeStyle: "short",
@@ -72,13 +43,14 @@ function Editor({
     total_players: game.total_players || 10,
     category: game.category || "futsal",
     season_id: game.season_id || undefined,
-  });
-  console.log("🚀 ~ data:", data);
+  };
+}
 
-  const [seasons, setSeasons] = useState<Tables<"season">[]>([]);
-  console.log("🚀 ~ seasons:", seasons);
-
+function Editor({ game }: { game: Game }) {
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+  const { data: seasons } = useSeason(game.club_id);
+  const [data, setData] = useState(getInitialFormData(game));
 
   async function updateGame() {
     setLoading(true);
@@ -103,19 +75,6 @@ function Editor({
     }
     setLoading(false);
   }
-
-  async function fetchSeasons() {
-    const { data } = await supabase
-      .from("season")
-      .select("*")
-      .eq("club_id", game.club_id)
-      .throwOnError();
-    if (data) setSeasons(data);
-  }
-
-  useEffect(() => {
-    fetchSeasons();
-  }, []);
 
   return (
     <div className="px-4">
@@ -168,7 +127,7 @@ function Editor({
               <SelectValue placeholder="Choisir une saison" />
             </SelectTrigger>
             <SelectContent>
-              {seasons.map((season) => (
+              {seasons?.map((season) => (
                 <SelectItem key={season.id} value={season.id}>
                   {season.name}
                 </SelectItem>

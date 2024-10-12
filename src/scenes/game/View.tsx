@@ -1,7 +1,6 @@
 import { SessionContext } from "@/components/auth-provider";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import supabase from "@/utils/supabase";
 import { useCopyToClipboard } from "@uidotdev/usehooks";
 import { CalendarEvent } from "calendar-link";
 import {
@@ -16,56 +15,32 @@ import {
   Pencil,
   Users,
 } from "lucide-react";
-import { useContext, useEffect, useState } from "react";
+import { useContext, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import AddToCalendar from "./components/AddToCalendar";
 import GameEvents from "./components/GameEvents";
 import GameStats from "./components/GameStats";
 import LineUp from "./components/LineUp";
-import {
-  Game,
-  Player,
-  fetchGame,
-  fetchPlayers,
-  getGameDurationInMinutes,
-} from "./games.service";
+import { getGameDurationInMinutes } from "./lib/game.service";
+import { addPlayerToGame, removePlayerFromGame } from "./lib/player.service";
+import useGame from "./lib/useGame";
+import usePlayers from "./lib/usePlayers";
 
 export default function View() {
   const { id } = useParams();
   const navigate = useNavigate();
   const { session } = useContext(SessionContext);
-  const [loading, setLoading] = useState(true);
-  const [game, setGame] = useState<Game>();
-  const [players, setPlayers] = useState<Player[]>([]);
+  const [loading, setLoading] = useState(false);
   const [copiedText, copyToClipboard] = useCopyToClipboard();
+  const { data: game } = useGame(Number(id));
+  const { data: players } = usePlayers(Number(id));
 
-  useEffect(() => {
-    if (!id) return;
-    setLoading(true);
-    fetchGame(parseInt(id))
-      .then((data) => {
-        if (!data.club) {
-          throw new Error("Club not found");
-        }
-        setGame(data);
-      })
-      .catch((error) => console.error(error));
-    fetchPlayers(parseInt(id))
-      .then((data) => setPlayers(data))
-      .catch((error) => console.error(error))
-      .finally(() => setLoading(false));
-  }, [id]);
-
-  if (loading) {
+  if (!game || !players) {
     return (
       <div className="p-4">
         <p className="animate_pulse text-center">Chargement des données...</p>
       </div>
     );
-  }
-
-  if (!game || !players) {
-    return <div />;
   }
 
   async function handleJoin() {
@@ -75,7 +50,6 @@ export default function View() {
       }
       return;
     }
-
     if (!userIsMember) {
       if (
         window.confirm(
@@ -86,37 +60,24 @@ export default function View() {
       }
       return;
     }
-
-    setLoading(true);
-    try {
-      const { data } = await supabase
-        .from("game_player")
-        .insert({
-          game_id: game?.id,
-          user_id: session?.user.id,
-          status: "confirmed",
-        })
-        .select("*, profile: users (*)")
-        .single()
-        .throwOnError();
-      if (!data) {
-        throw new Error("Player not found");
-      }
-      setPlayers([...players, data]);
-    } catch (error) {
-      console.error(error);
+    if (!game) {
+      return;
     }
+    setLoading(true);
+    await addPlayerToGame(game.id, session.user.id);
     setLoading(false);
   }
 
-  async function leaveGame(game_id: number, user_id: string) {
-    await supabase
-      .from("game_player")
-      .delete()
-      .eq("game_id", game_id)
-      .eq("user_id", user_id)
-      .throwOnError();
-    setPlayers(players.filter((p) => p.user_id !== user_id));
+  async function handleLeave() {
+    if (!window.confirm("Voulez-vous vraiment vous désinscrire ?")) {
+      return;
+    }
+    if (!game || !session?.user) {
+      return;
+    }
+    setLoading(true);
+    await removePlayerFromGame(game.id, session.user.id);
+    setLoading(false);
   }
 
   const gameHasStarted = new Date(game.date) < new Date();
@@ -222,8 +183,12 @@ export default function View() {
             </Link>
           )}
 
-          {!gameHasStarted && !userIsPlayer && (
-            <Button onClick={handleJoin} className="flex gap-2">
+          {!userIsPlayer && (
+            <Button
+              onClick={handleJoin}
+              disabled={loading || gameHasStarted}
+              className="flex gap-2"
+            >
               <ClipboardSignature className="h-5 w-5" />
               <span>Inscription</span>
             </Button>
@@ -240,14 +205,15 @@ export default function View() {
           {session && userIsPlayer && (
             <>
               <Button
-                onClick={() => leaveGame(game.id, session.user.id)}
+                onClick={handleLeave}
+                disabled={loading || gameHasStarted}
                 variant="secondary"
               >
                 <Ban className="mr-2 inline-block h-5 w-5" />
                 Désinscription
               </Button>
 
-              <AddToCalendar event={event} />
+              <AddToCalendar event={event} disabled={gameHasStarted} />
             </>
           )}
         </div>
@@ -276,21 +242,11 @@ export default function View() {
         </TabsList>
 
         <TabsContent value="players" className="mt-4">
-          <LineUp
-            game={game}
-            players={players}
-            setPlayers={setPlayers}
-            disabled={!userIsPlayer}
-          />
+          <LineUp game={game} players={players} disabled={!userIsPlayer} />
         </TabsContent>
 
         <TabsContent value="game_events" className="mt-4">
-          <GameEvents
-            game={game}
-            setGame={setGame}
-            players={players}
-            setPlayers={setPlayers}
-          />
+          <GameEvents game={game} players={players} />
         </TabsContent>
 
         <TabsContent value="stats" className="mt-4">

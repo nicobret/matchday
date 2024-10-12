@@ -1,4 +1,4 @@
-import { fetchGameStats } from "@/stats.service";
+import { fetchGameStats } from "@/lib/stats.service";
 import { useQuery } from "react-query";
 
 export default function useGameStats({

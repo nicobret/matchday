@@ -8,7 +8,7 @@ import {
 } from "@/components/ui/card";
 import { ArrowRight, CheckCircle, Hourglass, Users } from "lucide-react";
 import { Link } from "react-router-dom";
-import { Game } from "../club.service";
+import { Game } from "../lib/club.service";
 
 export default function GameCard({ game }: { game: Game }) {
   const count = game.players.filter((e) => e.status === "confirmed").length;

@@ -17,7 +17,7 @@ import {
 import { ArrowRight } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { Member, fetchMembers } from "../club.service";
+import { Member, fetchMembers } from "../lib/club.service";
 
 function getUsername(member: Member) {
   if (member.profile?.firstname && member.profile?.lastname) {

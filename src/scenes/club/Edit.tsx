@@ -16,7 +16,7 @@ import { countryList } from "@/lib/utils";
 import { Save, Trash } from "lucide-react";
 import { useContext, useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { Club, deleteClub, fetchClub, updateClub } from "./club.service";
+import { Club, deleteClub, fetchClub, updateClub } from "./lib/club.service";
 
 export default function EditClub() {
   const { id } = useParams();

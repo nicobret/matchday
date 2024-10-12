@@ -16,18 +16,16 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import supabase from "@/utils/supabase";
 import { useState } from "react";
 import { Tables } from "types/supabase";
-import { Player } from "../../games.service";
+import { Player } from "../../lib/player.service";
+import useMutateGame from "../../lib/useMutateGame";
 
 export default function Result({
   game,
-  setGame,
   players,
 }: {
   game: Tables<"games">;
-  setGame: React.Dispatch<React.SetStateAction<Tables<"games">>>;
   players: Player[];
 }) {
   return (
@@ -88,44 +86,25 @@ export default function Result({
         )}
       </CardContent>
       <CardFooter className="mt-auto flex justify-end">
-        {new Date() > new Date(game.date) ? (
-          <ScoreDialog game={game} setGame={setGame} />
-        ) : null}
+        {new Date() > new Date(game.date) ? <ScoreDialog game={game} /> : null}
       </CardFooter>
     </Card>
   );
 }
 
-function ScoreDialog({
-  game,
-  setGame,
-}: {
-  game: Tables<"games">;
-  setGame: React.Dispatch<React.SetStateAction<Tables<"games">>>;
-}) {
+function ScoreDialog({ game }: { game: Tables<"games"> }) {
   const [open, setOpen] = useState(false);
-  const [loading, setLoading] = useState(false);
   const [score, setScore] = useState(game.score || [0, 0]);
 
-  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+  const { mutate, isLoading, isSuccess } = useMutateGame();
+
+  function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    setLoading(true);
-    try {
-      const { data } = await supabase
-        .from("games")
-        .update({ score })
-        .eq("id", game.id)
-        .select("*")
-        .single()
-        .throwOnError();
-      console.log("🚀 ~ handleSubmit ~ data:", data);
-      if (data) setGame(data);
+    const newGame = { ...game, score };
+    mutate(newGame);
+    if (isSuccess) {
       setOpen(false);
-    } catch (error) {
-      window.alert("Une erreur s'est produite.");
-      console.error(error);
     }
-    setLoading(false);
   }
 
   return (
@@ -165,7 +144,7 @@ function ScoreDialog({
                   }
                 />
               </div>
-              <Button type="submit" disabled={loading} className="col-span-2">
+              <Button type="submit" disabled={isLoading} className="col-span-2">
                 Enregistrer
               </Button>
             </form>

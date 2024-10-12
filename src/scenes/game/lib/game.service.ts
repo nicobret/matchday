@@ -1,10 +1,6 @@
 import supabase from "@/utils/supabase";
 import { Tables } from "types/supabase";
 
-export type Player = Tables<"game_player"> & {
-  profile: Tables<"users"> | null;
-};
-
 export type Game = Tables<"games"> & {
   club:
     | (Tables<"clubs"> & {
@@ -16,7 +12,7 @@ export type Game = Tables<"games"> & {
 };
 
 export async function fetchGame(id: number) {
-  const { data } = await supabase
+  const { error, data } = await supabase
     .from("games")
     .select(
       `
@@ -29,23 +25,8 @@ export async function fetchGame(id: number) {
     .eq("id", id)
     .single()
     .throwOnError();
-  if (!data) {
-    throw new Error("Game not found");
-  }
-  if (!data.club) {
-    throw new Error("Club not found");
-  }
-  return data;
-}
-
-export async function fetchPlayers(game_id: number) {
-  const { data } = await supabase
-    .from("game_player")
-    .select("*, profile: users (*)")
-    .eq("game_id", game_id)
-    .throwOnError();
-  if (!data) {
-    throw new Error("Players not found");
+  if (error) {
+    throw new Error(error.message);
   }
   return data;
 }

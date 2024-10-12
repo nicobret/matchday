@@ -7,7 +7,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Club } from "@/scenes/club/club.service";
+import { Club } from "@/scenes/club/lib/club.service";
 import { ArrowRight, Eye } from "lucide-react";
 import { Link } from "react-router-dom";
 

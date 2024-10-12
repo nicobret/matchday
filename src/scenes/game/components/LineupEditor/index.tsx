@@ -1,7 +1,6 @@
-import supabase from "@/utils/supabase";
 import { DndContext, DragEndEvent } from "@dnd-kit/core";
 import { Shirt } from "lucide-react";
-import { Player } from "../../games.service";
+import { Player, updatePlayerTeam } from "../../lib/player.service";
 import Team from "./Team";
 
 const teams: { [key: string]: number | null } = {
@@ -12,11 +11,9 @@ const teams: { [key: string]: number | null } = {
 
 export default function LineupEditor({
   players,
-  setPlayers,
   disabled,
 }: {
   players: Player[];
-  setPlayers: React.Dispatch<React.SetStateAction<Player[]>>;
   disabled: boolean;
 }) {
   async function handleDrop(event: DragEndEvent) {
@@ -28,18 +25,12 @@ export default function LineupEditor({
     if (!event.over) return;
 
     const team = teams[event.over.id];
-    setPlayers(
-      players.map((p) => (p.id === event.active.id ? { ...p, team } : p)),
-    );
-
-    const { error } = await supabase
-      .from("game_player")
-      .update({ team })
-      .eq("id", event.active.id);
-    if (error) {
-      console.error("Error updating player:", error.message);
-      setPlayers(players);
+    const player = players.find((p) => p.id === event.active.id);
+    if (!player) {
+      console.error("Player not found");
+      return;
     }
+    await updatePlayerTeam(player, team);
   }
 
   return (

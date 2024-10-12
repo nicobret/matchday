@@ -22,7 +22,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { useState } from "react";
-import useClubStats from "../useClubStats";
+import useClubStats from "../lib/useClubStats";
 
 export default function ClubStats({ clubId }: { clubId: number }) {
   const [sortby, setSortby] = useState<"goals" | "assists" | "saves">("goals");

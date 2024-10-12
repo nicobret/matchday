@@ -16,6 +16,10 @@ import {
 } from "lucide-react";
 import { useContext, useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
+import ClubHistory from "./components/ClubHistory";
+import ClubMembers from "./components/ClubMembers";
+import ClubStats from "./components/ClubStats";
+import UpcomingGames from "./components/UpcomingGames";
 import {
   Club,
   fetchClub,
@@ -23,11 +27,7 @@ import {
   isMember,
   joinClub,
   leaveClub,
-} from "./club.service";
-import ClubHistory from "./components/ClubHistory";
-import ClubMembers from "./components/ClubMembers";
-import ClubStats from "./components/ClubStats";
-import UpcomingGames from "./components/UpcomingGames";
+} from "./lib/club.service";
 
 export default function View() {
   const { session } = useContext(SessionContext);
