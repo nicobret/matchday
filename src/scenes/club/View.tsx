@@ -9,7 +9,6 @@ import {
   Calendar,
   ClipboardSignature,
   Copy,
-  History,
   MapPin,
   Shield,
   Users,
@@ -121,117 +120,115 @@ export default function View() {
           : "Vous n'êtes pas connecté(e)";
 
   return (
-    <div className="p-4">
-      <Link to="/" className="text-sm text-muted-foreground">
-        <ArrowLeft className="mr-2 inline-block h-4 w-4 align-text-top" />
-        Retour à l'accueil
-      </Link>
+    <div className="mx-auto max-w-[100rem] gap-8 p-4 md:flex">
+      <div className="flex-none md:w-96">
+        <Link to="/" className="text-sm text-muted-foreground">
+          <ArrowLeft className="mr-2 inline-block h-4 w-4 align-text-top" />
+          Retour à l'accueil
+        </Link>
 
-      <header className="mx-auto mt-8 flex max-w-lg gap-4">
-        <div className="h-28 w-28 flex-none rounded-xl border-2 border-dashed"></div>
-        <div>
-          <h1 className="text-3xl font-semibold tracking-tight">{club.name}</h1>
+        <header className="mx-auto mt-8 flex max-w-lg gap-4">
+          <div className="h-28 w-28 flex-none rounded-xl border-2 border-dashed"></div>
+          <div>
+            <h1 className="text-3xl font-semibold tracking-tight">
+              {club.name}
+            </h1>
 
-          <p
-            className={`mt-2 text-sm text-muted-foreground ${session && isMember(session.user, club) ? "text-primary" : ""}`}
-          >
-            {userStatus}
-          </p>
-        </div>
-      </header>
+            <p
+              className={`mt-2 text-sm text-muted-foreground ${session && isMember(session.user, club) ? "text-primary" : ""}`}
+            >
+              {userStatus}
+            </p>
+          </div>
+        </header>
 
-      <div className="mx-auto mt-4 grid max-w-lg grid-cols-2 gap-2">
-        {!session || !isMember(session.user, club) ? (
-          <Button onClick={() => handleJoin(club)} className="flex gap-2">
-            <ClipboardSignature className="h-5 w-5" />
-            Rejoindre
-          </Button>
-        ) : (
-          <Button
-            onClick={() => handleLeave(club)}
-            variant="secondary"
-            className="flex gap-2"
-          >
-            <Ban className="inline-block h-5 w-5" />
-            Quitter
-          </Button>
-        )}
-
-        <Button
-          variant="secondary"
-          onClick={() => copyToClipboard(window.location.href)}
-        >
-          <Copy className="mr-2 inline-block h-5 w-5" />
-          {copiedText ? "Copié !" : "Copier le lien"}
-        </Button>
-
-        {session && isAdmin(session?.user, club) && (
-          <Link
-            to={`/club/${club.id}/edit`}
-            className={buttonVariants({ variant: "secondary" })}
-          >
-            <ClipboardSignature className="mr-2 inline-block h-5 w-5" />
-            Modifier
-          </Link>
-        )}
-      </div>
-
-      <div className="mx-auto mt-10 max-w-lg rounded-lg border p-4">
-        <p>
-          <Shield className="mr-2 inline-block h-5 w-5" />
-          Créé le{" "}
-          {new Date(club.created_at).toLocaleDateString("fr-FR", {
-            dateStyle: "long",
-          })}
-        </p>
-
-        {club.description && (
-          <p className="mt-2 leading-relaxed">
-            <Book className="mr-2 inline-block h-5 w-5" />
-            {club.description}
-          </p>
-        )}
-
-        <div className="mt-2 flex gap-2">
-          <MapPin className="h-5 w-5" />
-          {club.address && club.postcode && club.city ? (
-            <div>
-              <p className="leading-relaxed">{club.address}</p>
-              <p>
-                {club.postcode} {club.city}
-              </p>
-            </div>
+        <div className="mx-auto mt-4 grid max-w-lg grid-cols-2 gap-2">
+          {!session || !isMember(session.user, club) ? (
+            <Button onClick={() => handleJoin(club)} className="flex gap-2">
+              <ClipboardSignature className="h-5 w-5" />
+              Rejoindre
+            </Button>
           ) : (
-            <p className="leading-relaxed">Adresse non renseignée.</p>
+            <Button
+              onClick={() => handleLeave(club)}
+              variant="secondary"
+              className="flex gap-2"
+            >
+              <Ban className="inline-block h-5 w-5" />
+              Quitter
+            </Button>
+          )}
+
+          <Button
+            variant="secondary"
+            onClick={() => copyToClipboard(window.location.href)}
+          >
+            <Copy className="mr-2 inline-block h-5 w-5" />
+            {copiedText ? "Copié !" : "Copier le lien"}
+          </Button>
+
+          {session && isAdmin(session?.user, club) && (
+            <Link
+              to={`/club/${club.id}/edit`}
+              className={buttonVariants({ variant: "secondary" })}
+            >
+              <ClipboardSignature className="mr-2 inline-block h-5 w-5" />
+              Modifier
+            </Link>
           )}
         </div>
+
+        <div className="mx-auto mt-10 max-w-lg rounded-lg border p-4">
+          <p>
+            <Shield className="mr-2 inline-block h-5 w-5" />
+            Créé le{" "}
+            {new Date(club.created_at).toLocaleDateString("fr-FR", {
+              dateStyle: "long",
+            })}
+          </p>
+
+          {club.description && (
+            <p className="mt-2 leading-relaxed">
+              <Book className="mr-2 inline-block h-5 w-5" />
+              {club.description}
+            </p>
+          )}
+
+          <div className="mt-2 flex gap-2">
+            <MapPin className="h-5 w-5" />
+            {club.address && club.postcode && club.city ? (
+              <div>
+                <p className="leading-relaxed">{club.address}</p>
+                <p>
+                  {club.postcode} {club.city}
+                </p>
+              </div>
+            ) : (
+              <p className="leading-relaxed">Adresse non renseignée.</p>
+            )}
+          </div>
+        </div>
       </div>
 
-      <Tabs defaultValue="schedule" className="mt-10">
+      <Tabs defaultValue="schedule" className="mt-14 w-full">
         <TabsList className="w-full">
-          <TabsTrigger value="schedule" className="w-1/3">
+          <TabsTrigger value="schedule" className="w-1/2">
             <Calendar className="mr-2 inline-block h-4 w-4" />
             Calendrier
           </TabsTrigger>
-          <TabsTrigger value="members" className="w-1/3">
+          <TabsTrigger value="members" className="w-1/2">
             <Users className="mr-2 inline-block h-4 w-4" />
             Membres
           </TabsTrigger>
-          <TabsTrigger value="history" className="w-1/3">
-            <History className="mr-2 inline-block h-4 w-4" />
-            Historique
-          </TabsTrigger>
         </TabsList>
 
-        <TabsContent value="schedule">
+        <TabsContent value="schedule" className="grid grid-cols-1 gap-4">
           <UpcomingGames club={club} />
+          <ClubHistory club={club} />
         </TabsContent>
         <TabsContent value="members" className="grid grid-cols-1 gap-4">
           <ClubMembers clubId={club.id} />
           <ClubStats clubId={club.id} />
-        </TabsContent>
-        <TabsContent value="history">
-          <ClubHistory club={club} />
         </TabsContent>
       </Tabs>
     </div>
