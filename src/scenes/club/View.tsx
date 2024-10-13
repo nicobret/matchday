@@ -120,7 +120,7 @@ export default function View() {
           : "Vous n'êtes pas connecté(e)";
 
   return (
-    <div className="mx-auto max-w-[100rem] gap-8 p-4 md:flex">
+    <div className="mx-auto max-w-[100rem] gap-4 p-4 md:flex">
       <div className="flex-none md:w-96">
         <Link to="/" className="text-sm text-muted-foreground">
           <ArrowLeft className="mr-2 inline-block h-4 w-4 align-text-top" />
@@ -227,8 +227,8 @@ export default function View() {
           <ClubHistory club={club} />
         </TabsContent>
         <TabsContent value="members" className="grid grid-cols-1 gap-4">
-          <ClubMembers clubId={club.id} />
           <ClubStats clubId={club.id} />
+          <ClubMembers clubId={club.id} />
         </TabsContent>
       </Tabs>
     </div>

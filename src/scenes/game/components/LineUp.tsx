@@ -1,4 +1,10 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Game } from "../lib/game.service";
 import { Player } from "../lib/player.service";
 import LineupEditor from "./LineupEditor";
@@ -15,7 +21,7 @@ export default function LineUp({
   return (
     <Card className="md:col-span-2">
       <CardHeader>
-        <CardTitle>Composition</CardTitle>
+        <CardTitle>Equipes</CardTitle>
       </CardHeader>
       <CardContent>
         <p className="mb-6">
@@ -23,6 +29,7 @@ export default function LineUp({
         </p>
         <LineupEditor players={players} disabled={disabled} />
       </CardContent>
+      <CardFooter></CardFooter>
     </Card>
   );
 }

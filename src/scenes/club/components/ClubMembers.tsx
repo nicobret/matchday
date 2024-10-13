@@ -48,7 +48,7 @@ export default function ClubMembers({ clubId }: { clubId: number }) {
     <Card id="members">
       <CardHeader>
         <CardTitle>
-          <p>Membres</p>
+          <p>Liste des membres</p>
         </CardTitle>
       </CardHeader>
 
@@ -58,7 +58,7 @@ export default function ClubMembers({ clubId }: { clubId: number }) {
         ) : members.length === 0 ? (
           <p className="text-center">Aucun joueur dans ce club.</p>
         ) : (
-          <Table className="border">
+          <Table>
             <TableHeader>
               <TableRow>
                 <TableHead>Nom</TableHead>

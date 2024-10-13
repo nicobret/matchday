@@ -1,8 +1,8 @@
+import { ArrowLeft, TrafficCone } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { Tables } from "types/supabase";
 import { fetchPlayer } from "./player.service";
-import { ArrowLeft } from "lucide-react";
 
 export default function Player() {
   const { id } = useParams();
@@ -46,9 +46,10 @@ export default function Player() {
       <h1 className="mt-6 scroll-m-20 text-2xl font-bold tracking-tight lg:text-5xl">
         {player.firstname} {player.lastname}
       </h1>
-      <h2 className="mt-6 scroll-m-20 border-b pb-2 text-3xl font-semibold tracking-tight first:mt-0">
-        Clubs
-      </h2>
+      <p className="mt-2">
+        <TrafficCone className="mr-2 inline-block h-4 w-4" />
+        Page en chantier.
+      </p>
     </div>
   );
 }

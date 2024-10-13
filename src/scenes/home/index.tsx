@@ -39,7 +39,7 @@ export default function Home() {
   );
 
   return (
-    <div className="p-4">
+    <div className="mx-auto max-w-5xl p-4">
       <Guide profile={profile} />
 
       <section id="clubs" className="mt-12">
@@ -50,7 +50,7 @@ export default function Home() {
         <div className="mt-6">{session?.user ? <CreateDialog /> : null}</div>
 
         <Tabs
-          defaultValue={session?.user ? "club-list" : "search"}
+          defaultValue={myClubs.length > 1 ? "club-list" : "search"}
           className="mt-8"
         >
           <TabsList className="w-full">
