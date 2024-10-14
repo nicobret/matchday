@@ -30,25 +30,25 @@ export default function AddToCalendar({
       </DropdownMenuTrigger>
 
       <DropdownMenuContent align="start">
-        <DropdownMenuItem className="p-4">
+        <DropdownMenuItem asChild className="p-4">
           <a href={googleUrl} target="_blank" className="flex gap-2">
             Google
           </a>
         </DropdownMenuItem>
 
-        <DropdownMenuItem className="p-4">
+        <DropdownMenuItem asChild className="p-4">
           <a href={outlookUrl} target="_blank" className="flex gap-2">
             Outlook
           </a>
         </DropdownMenuItem>
 
-        <DropdownMenuItem className="p-4">
+        <DropdownMenuItem asChild className="p-4">
           <a href={yahooUrl} target="_blank" className="flex gap-2">
             Yahoo
           </a>
         </DropdownMenuItem>
 
-        <DropdownMenuItem className="p-4">
+        <DropdownMenuItem asChild className="p-4">
           <a href={icsUrl} target="_blank" className="flex gap-2">
             iCal
           </a>
