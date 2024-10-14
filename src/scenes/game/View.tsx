@@ -195,10 +195,10 @@ export default function View() {
               <Ban className="mr-2 inline-block h-5 w-5" />
               Désinscription
             </Button>
-
-            <AddToCalendar event={event} disabled={gameHasStarted} />
           </>
         )}
+
+        <AddToCalendar event={event} disabled={gameHasStarted} />
 
         {session && userIsMember && (
           <Link
