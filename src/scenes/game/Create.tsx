@@ -110,7 +110,7 @@ function GameForm({ user, club }: { user: User; club: Club }) {
   }
 
   return (
-    <div className="px-4">
+    <div className="p-4">
       <Link to={`/club/${club.id}`} className="text-sm text-muted-foreground">
         <ArrowLeft className="mr-2 inline-block h-4 w-4 align-text-top" />
         Retour au match

@@ -1,8 +1,9 @@
-import { Breadcrumbs } from "@/components/Breadcrumbs";
 import useSeasons from "@/scenes/club/lib/useSeasons";
-import { useParams } from "react-router-dom";
+import { ArrowLeft } from "lucide-react";
+import { Link, useParams } from "react-router-dom";
 import useClub from "../lib/useClub";
 import ClubForm from "./ClubForm";
+import DeleteClub from "./DeleteClub";
 import SeasonList from "./SeasonList";
 
 export default function EditClub() {
@@ -13,26 +14,31 @@ export default function EditClub() {
     return <p className="animate_pulse text-center">Chargement...</p>;
   }
   return (
-    <div className="p-4">
-      <Breadcrumbs
-        links={[
-          { label: club.name || "", link: `/club/${id}` },
-          { label: "Modifier", link: "#" },
-        ]}
-      />
+    <div className="mx-auto max-w-5xl p-4">
+      <Link to={`/club/${id}`} className="text-sm text-muted-foreground">
+        <ArrowLeft className="mr-2 inline-block h-4 w-4 align-text-top" />
+        Retour au club
+      </Link>
 
       <section id="club" className="mt-6">
-        <h2 className="mb-2 text-3xl font-semibold tracking-tight">
+        <h2 className="text-2xl font-semibold uppercase tracking-tight">
           Modifier mon club
         </h2>
         <ClubForm initialData={club} />
       </section>
 
-      <section id="seasons" className="mt-12">
-        <h2 className="mb-4 text-3xl font-semibold tracking-tight">
-          Gérer les saisons
+      <section id="seasons" className="mt-16">
+        <h2 className="mb-4 text-2xl font-semibold uppercase tracking-tight">
+          Liste des saisons
         </h2>
         <SeasonList clubId={club.id} seasons={seasons} />
+      </section>
+
+      <section id="delete" className="mt-16">
+        <h2 className="mb-4 text-2xl font-semibold uppercase tracking-tight">
+          Supprimer le club
+        </h2>
+        <DeleteClub club={club} />
       </section>
     </div>
   );

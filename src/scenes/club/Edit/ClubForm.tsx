@@ -1,6 +1,5 @@
 import { SessionContext } from "@/components/auth-provider";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button, buttonVariants } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
@@ -12,10 +11,10 @@ import {
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { countryList } from "@/lib/utils";
-import { Save, Trash } from "lucide-react";
+import { Save } from "lucide-react";
 import { useContext, useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { Club, deleteClub, updateClub } from "../lib/club.service";
+import { Link, useNavigate } from "react-router-dom";
+import { Club, updateClub } from "../lib/club.service";
 
 export default function ClubForm({ initialData }: { initialData: Club }) {
   const { session } = useContext(SessionContext);
@@ -30,26 +29,6 @@ export default function ClubForm({ initialData }: { initialData: Club }) {
     city: initialData.city || "",
     country: initialData.country || "France",
   });
-
-  async function handleDelete(club: Club) {
-    try {
-      if (!session?.user) {
-        throw new Error("Vous devez être connecté pour supprimer un club.");
-      }
-      if (session.user?.id !== club.creator_id) {
-        throw new Error("Vous n'êtes pas autorisé à supprimer ce club.");
-      }
-      if (window.confirm("Voulez-vous vraiment supprimer ce club ?")) {
-        await deleteClub(club);
-        window.alert("Club supprimé avec succès !");
-        navigate("/");
-      }
-    } catch (error) {
-      window.alert(error);
-    } finally {
-      setLoading(false);
-    }
-  }
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -69,56 +48,40 @@ export default function ClubForm({ initialData }: { initialData: Club }) {
     }
   }
   return (
-    <form onSubmit={handleSubmit} className="mt-4 grid gap-4 md:grid-cols-2">
-      <Card>
-        <CardHeader>
-          <CardTitle className="scroll-m-20 border-b pb-2 text-3xl font-semibold tracking-tight first:mt-0">
-            Informations
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="grid w-full items-center gap-2">
-            <Label htmlFor="clubname">Nom du club</Label>
-            <Input
-              type="text"
-              id="clubname"
-              placeholder="Le club des champions"
-              value={formData.name}
-              onChange={(e) =>
-                setFormData({ ...formData, name: e.target.value })
-              }
-            />
-          </div>
+    <form onSubmit={handleSubmit} className="mt-6 grid gap-6 md:grid-cols-2">
+      <div className="grid gap-6">
+        <div className="grid gap-2">
+          <Label htmlFor="clubname">Nom du club</Label>
+          <Input
+            type="text"
+            id="clubname"
+            placeholder="Le club des champions"
+            value={formData.name}
+            onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+          />
+        </div>
 
-          <div className="mt-4 grid w-full items-center gap-2">
-            <Label htmlFor="clubdescription">Description</Label>
-            <Textarea
-              id="clubdescription"
-              placeholder="Le meilleur club de tous les temps."
-              value={formData.description}
-              onChange={(e) =>
-                setFormData({ ...formData, description: e.target.value })
-              }
-              rows={5}
-            />
-          </div>
-
-          {/* <div className="mt-4 grid w-full items-center gap-2">
+        <div className="grid gap-2">
+          <Label htmlFor="clubdescription">Description</Label>
+          <Textarea
+            id="clubdescription"
+            placeholder="Le meilleur club de tous les temps."
+            value={formData.description}
+            onChange={(e) =>
+              setFormData({ ...formData, description: e.target.value })
+            }
+            rows={5}
+          />
+        </div>
+        {/* <div className="mt-4 grid w-full items-center gap-2">
           <Label htmlFor="clublogo">Logo</Label>
           <Input type="file" id="clublogo" />
         </div> */}
-        </CardContent>
-      </Card>
+      </div>
 
-      <Card className="">
-        <CardHeader>
-          <h2 className="scroll-m-20 border-b pb-2 text-3xl font-semibold tracking-tight first:mt-0">
-            Adresse
-          </h2>
-        </CardHeader>
-
-        <CardContent className="">
-          <div className="grid w-full items-center gap-2">
+      <div>
+        <div className="grid gap-6">
+          <div className="grid gap-2">
             <Label htmlFor="country">Pays</Label>
             <Select
               onValueChange={(value) =>
@@ -140,7 +103,7 @@ export default function ClubForm({ initialData }: { initialData: Club }) {
             </Select>
           </div>
 
-          <div className="mt-4 grid w-full items-center gap-2">
+          <div className="grid gap-2">
             <Label htmlFor="address">Numéro et rue</Label>
             <Input
               type="text"
@@ -153,7 +116,7 @@ export default function ClubForm({ initialData }: { initialData: Club }) {
             />
           </div>
 
-          <div className="mt-4 grid w-full gap-4 md:grid-cols-2">
+          <div className="grid w-full gap-4 md:grid-cols-2">
             <div className="grid w-full max-w-sm items-center gap-2">
               <Label htmlFor="postcode">Code Postal</Label>
               <Input
@@ -180,26 +143,19 @@ export default function ClubForm({ initialData }: { initialData: Club }) {
               />
             </div>
           </div>
-        </CardContent>
-      </Card>
-
-      <div className="grid w-full gap-4 md:grid-cols-2">
-        <Button type="submit" disabled={!formData.name}>
-          <Save className="mr-2 h-5 w-5" />
-          Enregistrer
-        </Button>
-        {initialData.id && (
-          <Button
-            type="button"
-            variant="secondary"
-            disabled={loading || initialData.creator_id !== session?.user?.id}
-            onClick={() => handleDelete(initialData)}
-          >
-            <Trash className="mr-2 h-5 w-5" />
-            Supprimer le club
-          </Button>
-        )}
+        </div>
       </div>
+
+      <Button type="submit" disabled={loading || !formData.name}>
+        <Save className="mr-2 h-5 w-5" />
+        Enregistrer
+      </Button>
+      <Link
+        to={`/club/${initialData.id}`}
+        className={buttonVariants({ variant: "secondary" })}
+      >
+        Annuler
+      </Link>
     </form>
   );
 }

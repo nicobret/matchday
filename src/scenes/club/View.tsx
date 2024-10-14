@@ -3,7 +3,6 @@ import { Button, buttonVariants } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useCopyToClipboard } from "@uidotdev/usehooks";
 import {
-  ArrowLeft,
   Ban,
   Book,
   Calendar,
@@ -121,13 +120,8 @@ export default function View() {
 
   return (
     <div className="mx-auto max-w-[100rem] gap-4 p-4 md:flex">
-      <div className="flex-none md:w-96">
-        <Link to="/" className="text-sm text-muted-foreground">
-          <ArrowLeft className="mr-2 inline-block h-4 w-4 align-text-top" />
-          Retour à l'accueil
-        </Link>
-
-        <header className="mx-auto mt-8 flex max-w-lg gap-4">
+      <div className="flex-none md:w-96 md:px-2">
+        <header className="mx-auto flex max-w-lg gap-4">
           <div className="h-28 w-28 flex-none rounded-xl border-2 border-dashed"></div>
           <div>
             <h1 className="text-3xl font-semibold tracking-tight">
@@ -142,7 +136,7 @@ export default function View() {
           </div>
         </header>
 
-        <div className="mx-auto mt-4 grid max-w-lg grid-cols-2 gap-2">
+        <div className="mx-auto mt-6 grid max-w-lg grid-cols-2 gap-2">
           {!session || !isMember(session.user, club) ? (
             <Button onClick={() => handleJoin(club)} className="flex gap-2">
               <ClipboardSignature className="h-5 w-5" />
@@ -178,7 +172,7 @@ export default function View() {
           )}
         </div>
 
-        <div className="mx-auto mt-10 max-w-lg rounded-lg border p-4">
+        <div className="mx-auto mt-8 max-w-lg rounded-lg border p-4">
           <p>
             <Shield className="mr-2 inline-block h-5 w-5" />
             Créé le{" "}
@@ -210,7 +204,7 @@ export default function View() {
         </div>
       </div>
 
-      <Tabs defaultValue="schedule" className="mt-14 w-full">
+      <Tabs defaultValue="schedule" className="mt-8 w-full md:mt-0">
         <TabsList className="w-full">
           <TabsTrigger value="schedule" className="w-1/2">
             <Calendar className="mr-2 inline-block h-4 w-4" />

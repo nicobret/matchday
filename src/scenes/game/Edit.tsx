@@ -1,4 +1,4 @@
-import { Button } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
@@ -77,7 +77,7 @@ function Editor({ game }: { game: Game }) {
   }
 
   return (
-    <div className="px-4">
+    <div className="mx-auto max-w-5xl p-4">
       <Link to={`/game/${game.id}`} className="text-sm text-muted-foreground">
         <ArrowLeft className="mr-2 inline-block h-4 w-4 align-text-top" />
         Retour au match
@@ -199,13 +199,21 @@ function Editor({ game }: { game: Game }) {
           </div>
         </div>
 
-        <Button
-          type="submit"
-          disabled={loading}
-          className="mt-8 w-full max-w-md"
-        >
-          Enregistrer
-        </Button>
+        <div className="mt-8 grid grid-cols-1 gap-4 md:grid-cols-2">
+          <Button
+            type="submit"
+            disabled={loading}
+            className="w-full md:order-2"
+          >
+            Enregistrer
+          </Button>
+          <Link
+            to={`/game/${game.id}`}
+            className={buttonVariants({ variant: "secondary" })}
+          >
+            Annuler
+          </Link>
+        </div>
       </form>
     </div>
   );

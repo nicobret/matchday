@@ -118,112 +118,110 @@ export default function View() {
   };
 
   return (
-    <div className="mx-auto max-w-[100rem] gap-4 p-4 md:flex">
-      <div className="flex-none md:w-96">
-        <Link
-          to={`/club/${game.club?.id}`}
-          className="text-sm text-muted-foreground"
+    <div className="mx-auto max-w-5xl p-4">
+      <Link
+        to={`/club/${game.club?.id}`}
+        className="text-sm text-muted-foreground"
+      >
+        <ArrowLeft className="mr-2 inline-block h-4 w-4 align-text-top" />
+        Retour au club
+      </Link>
+
+      <header className="mt-6 text-center">
+        <p className="text-xs font-bold uppercase tracking-tight text-muted-foreground">
+          {game.club?.name}
+          {game.season?.name ? ` • Saison ${game.season?.name}` : ""}
+        </p>
+
+        <h1 className="text-4xl font-semibold uppercase tracking-tight">
+          {new Date(game.date).toLocaleDateString("fr-FR", {
+            weekday: "long",
+            day: "numeric",
+            month: "long",
+          })}
+        </h1>
+
+        <p
+          className={`mt-1 line-clamp-1 text-sm ${userIsPlayer ? "text-primary" : ""}`}
         >
-          <ArrowLeft className="mr-2 inline-block h-4 w-4 align-text-top" />
-          Retour au club
-        </Link>
+          {gameHasEnded
+            ? `Match terminé${game.score ? ` • ${game.score[0]} - ${game.score[1]}` : ""}`
+            : userStatus}
+        </p>
+      </header>
 
-        <header className="mt-8 text-center">
-          <p className="text-xs font-bold uppercase tracking-tight text-muted-foreground">
-            {game.club?.name}
-            {game.season?.name ? ` • Saison ${game.season?.name}` : ""}
-          </p>
+      <div className="mx-auto mt-8 rounded-xl border p-4 text-left text-sm md:w-1/2">
+        <p>
+          <Clock className="mr-2 inline-block h-4 w-4 align-text-top" />
+          {new Date(game.date).toLocaleTimeString("fr-FR", {
+            timeStyle: "short",
+          })}
+        </p>
 
-          <h1 className="text-4xl font-semibold uppercase tracking-tight">
-            {new Date(game.date).toLocaleDateString("fr-FR", {
-              weekday: "long",
-              day: "numeric",
-              month: "long",
-            })}
-          </h1>
+        <p className="mt-1">
+          <MapPin className="mr-2 inline-block h-4 w-4 align-text-top" />
+          {game.location}
+        </p>
 
-          <p
-            className={`mt-1 line-clamp-1 text-sm ${userIsPlayer ? "text-primary" : ""}`}
-          >
-            {gameHasEnded
-              ? `Match terminé${game.score ? ` • ${game.score[0]} - ${game.score[1]}` : ""}`
-              : userStatus}
-          </p>
-
-          <div className="mx-auto mt-8 max-w-lg rounded-xl border p-4 text-left text-sm">
-            <p>
-              <Clock className="mr-2 inline-block h-4 w-4 align-text-top" />
-              {new Date(game.date).toLocaleTimeString("fr-FR", {
-                timeStyle: "short",
-              })}
-            </p>
-
-            <p className="mt-1">
-              <MapPin className="mr-2 inline-block h-4 w-4 align-text-top" />
-              {game.location}
-            </p>
-
-            {/* <p className="mt-1">
+        {/* <p className="mt-1">
             Durée : {durationInMinutes} minute{durationInMinutes > 1 ? "s" : ""}
           </p> */}
 
-            <p className="mt-1">
-              <Users className="mr-2 inline-block h-4 w-4 align-text-top" />
-              {players.length} / {game.total_players} joueurs inscrits.
-            </p>
-          </div>
+        <p className="mt-1">
+          <Users className="mr-2 inline-block h-4 w-4 align-text-top" />
+          {players.length} / {game.total_players} joueurs inscrits.
+        </p>
+      </div>
 
-          <div className="mx-auto mt-10 grid max-w-lg grid-cols-2 gap-2">
-            {session && userIsMember && (
-              <Link
-                to={`/game/${game.id}/edit`}
-                className={buttonVariants({ variant: "secondary" })}
-              >
-                <Pencil className="mr-2 h-4 w-4" />
-                Modifier
-              </Link>
-            )}
+      <div className="mt-8 grid grid-cols-2 gap-2 md:grid-cols-4">
+        {!userIsPlayer && (
+          <Button
+            onClick={handleJoin}
+            disabled={loading || gameHasStarted}
+            className="flex gap-2"
+          >
+            <ClipboardSignature className="h-5 w-5" />
+            <span>Inscription</span>
+          </Button>
+        )}
 
-            {!userIsPlayer && (
-              <Button
-                onClick={handleJoin}
-                disabled={loading || gameHasStarted}
-                className="flex gap-2"
-              >
-                <ClipboardSignature className="h-5 w-5" />
-                <span>Inscription</span>
-              </Button>
-            )}
-
+        {session && userIsPlayer && (
+          <>
             <Button
-              onClick={() => copyToClipboard(window.location.href)}
+              onClick={handleLeave}
+              disabled={loading || gameHasStarted}
               variant="secondary"
             >
-              <Copy className="mr-2 inline-block h-5 w-5" />
-              {copiedText ? "Copié !" : "Copier le lien"}
+              <Ban className="mr-2 inline-block h-5 w-5" />
+              Désinscription
             </Button>
 
-            {session && userIsPlayer && (
-              <>
-                <Button
-                  onClick={handleLeave}
-                  disabled={loading || gameHasStarted}
-                  variant="secondary"
-                >
-                  <Ban className="mr-2 inline-block h-5 w-5" />
-                  Désinscription
-                </Button>
+            <AddToCalendar event={event} disabled={gameHasStarted} />
+          </>
+        )}
 
-                <AddToCalendar event={event} disabled={gameHasStarted} />
-              </>
-            )}
-          </div>
-        </header>
+        {session && userIsMember && (
+          <Link
+            to={`/game/${game.id}/edit`}
+            className={buttonVariants({ variant: "secondary" })}
+          >
+            <Pencil className="mr-2 h-4 w-4" />
+            Modifier
+          </Link>
+        )}
+
+        <Button
+          onClick={() => copyToClipboard(window.location.href)}
+          variant="secondary"
+        >
+          <Copy className="mr-2 inline-block h-5 w-5" />
+          {copiedText ? "Copié !" : "Copier le lien"}
+        </Button>
       </div>
 
       <Tabs
         defaultValue={userIsMember ? "players" : "stats"}
-        className="mt-12 w-full"
+        className="mt-8 w-full"
       >
         <TabsList className="w-full">
           <TabsTrigger
