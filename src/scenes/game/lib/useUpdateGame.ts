@@ -1,12 +1,11 @@
 import { queryClient } from "@/lib/react-query";
 import { useMutation } from "react-query";
-import { Tables } from "types/supabase";
-import { updateGame } from "./game.service";
+import { updateGame, updateGamePayload } from "./game.service";
 
-export default function useMutateGame(gameId: number) {
+export default function useUpdateGame(gameId: number) {
   return useMutation({
-    mutationFn: async (data: Partial<Tables<"games">>) => {
-      return await updateGame(data, gameId);
+    mutationFn: async (data: updateGamePayload) => {
+      return await updateGame(gameId, data);
     },
     onSuccess: (data) => {
       queryClient.setQueryData(["game", data?.id], data);

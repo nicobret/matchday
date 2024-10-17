@@ -1,6 +1,5 @@
 import { queryClient } from "@/lib/react-query";
 import supabase from "@/utils/supabase";
-import { User } from "@supabase/supabase-js";
 import { Tables } from "types/supabase";
 
 export type Club = Tables<"clubs"> & {
@@ -16,19 +15,6 @@ export type Game = Tables<"games"> & {
 export type Member = Tables<"club_member"> & {
   profile: Tables<"users"> | null;
 };
-
-export function isMember(user: User, club: Club) {
-  if (!club.members) return false;
-  return club.members.map((m) => m.user_id).includes(user.id);
-}
-
-export function isAdmin(user: User, club: Club) {
-  if (!club.members) return false;
-  return club.members
-    .filter((m) => m.role === "admin")
-    .map((m) => m.user_id)
-    .includes(user.id);
-}
 
 export async function fetchClub(id: number) {
   const { data } = await supabase

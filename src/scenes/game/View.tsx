@@ -21,7 +21,6 @@ import AddToCalendar from "./components/AddToCalendar";
 import GameEvents from "./components/GameEvents";
 import GameStats from "./components/GameStats";
 import LineUp from "./components/LineUp";
-import { getGameDurationInMinutes } from "./lib/game.service";
 import { addPlayerToGame, removePlayerFromGame } from "./lib/player.service";
 import useGame from "./lib/useGame";
 import usePlayers from "./lib/usePlayers";
@@ -32,15 +31,14 @@ export default function View() {
   const { session } = useContext(SessionContext);
   const [loading, setLoading] = useState(false);
   const [copiedText, copyToClipboard] = useCopyToClipboard();
-  const { data: game } = useGame(Number(id));
-  const { data: players } = usePlayers(Number(id));
-  const { data: club } = useClub(Number(game?.club_id));
+  const { data: game, hasStarted, hasEnded } = useGame(Number(id));
+  const { data: players, isPlayer } = usePlayers(Number(id));
+  const { isMember } = useClub(Number(game?.club_id));
 
   if (!id) {
     return <div>Erreur</div>;
   }
-
-  if (!game || !players || !club) {
+  if (!game || !players) {
     return (
       <div className="p-4">
         <p className="animate_pulse text-center">Chargement des données...</p>
@@ -84,16 +82,6 @@ export default function View() {
     await removePlayerFromGame(game.id, session.user.id);
     setLoading(false);
   }
-
-  const hasStarted = new Date(game.date) < new Date();
-
-  const durationInMinutes = getGameDurationInMinutes(String(game.duration));
-  const endDate = new Date(game.date);
-  endDate.setMinutes(endDate.getMinutes() + durationInMinutes);
-  const hasEnded = endDate < new Date();
-
-  const isPlayer = players.map((p) => p.profile?.id).includes(session?.user.id);
-  const isMember = club?.members.some((m) => m.user_id === session?.user.id);
 
   const userStatus = isPlayer
     ? "✓ Vous êtes inscrit(e)"

@@ -1,8 +1,7 @@
-import { useContext, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { Club, Game, fetchUpcomingGames, isMember } from "../lib/club.service";
+import { Club, Game, fetchUpcomingGames } from "../lib/club.service";
 
-import { SessionContext } from "@/components/auth-provider";
 import { buttonVariants } from "@/components/ui/button";
 import {
   Card,
@@ -21,8 +20,13 @@ import {
 import { Plus } from "lucide-react";
 import GameCard from "./GameCard";
 
-export default function UpcomingGames({ club }: { club: Club }) {
-  const { session } = useContext(SessionContext);
+export default function UpcomingGames({
+  club,
+  enableGameCreation,
+}: {
+  club: Club;
+  enableGameCreation: boolean;
+}) {
   const [games, setGames] = useState<Game[]>([]);
   const [loading, setLoading] = useState(false);
 
@@ -70,7 +74,7 @@ export default function UpcomingGames({ club }: { club: Club }) {
       </CardContent>
 
       <CardFooter className="mt-auto flex justify-end gap-2">
-        {session?.user && club && isMember(session?.user, club) && (
+        {enableGameCreation && (
           <Link
             to={`/game/create?clubId=${club.id}`}
             className={buttonVariants({ variant: "secondary" })}

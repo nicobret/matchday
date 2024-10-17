@@ -1,4 +1,3 @@
-import { SessionContext } from "@/components/auth-provider";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -10,19 +9,23 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
-import supabase from "@/utils/supabase";
-import { User } from "@supabase/supabase-js";
 import { ArrowLeft } from "lucide-react";
-import { useContext, useState } from "react";
+import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { Club, isMember } from "../club/lib/club.service";
+import { Club } from "../club/lib/club.service";
 import useClub from "../club/lib/useClub";
 import { categories } from "./lib/game.service";
+import useCreateGame from "./lib/useCreateGame";
 
 export default function CreateGame() {
   const clubId = new URLSearchParams(window.location.search).get("clubId");
-  const { session } = useContext(SessionContext);
-  const { data: club, isIdle, isLoading, isError } = useClub(Number(clubId));
+  const {
+    data: club,
+    isIdle,
+    isLoading,
+    isError,
+    isMember,
+  } = useClub(Number(clubId));
 
   if (isIdle) {
     return <p className="text-center">Sélectionnez un club</p>;
@@ -33,25 +36,17 @@ export default function CreateGame() {
   if (isError) {
     return <p className="text-center">Une erreur s'est produite</p>;
   }
-  if (!session?.user) {
-    return (
-      <p className="text-center">
-        Vous devez être connecté pour créer un match
-      </p>
-    );
-  }
-  if (!isMember(session.user, club)) {
+  if (!isMember) {
     return (
       <p className="text-center">Vous n&apos;êtes pas membre de ce club</p>
     );
   }
-  return <GameForm user={session?.user} club={club} />;
+  return <GameForm club={club} />;
 }
 
-function GameForm({ user, club }: { user: User; club: Club }) {
+function GameForm({ club }: { club: Club }) {
   const navigate = useNavigate();
-  const [loading, setLoading] = useState(false);
-  const [category, setCategory] = useState("football"); // ["football", "futsal", "basketball", "handball"]
+  const [category, setCategory] = useState("football");
   const [date, setDate] = useState("");
   const [time, setTime] = useState("");
   const [durationInMinutes, setDurationInMinutes] = useState(60);
@@ -59,6 +54,7 @@ function GameForm({ user, club }: { user: User; club: Club }) {
   const [location, setLocation] = useState(
     `${club?.address}, ${club?.postcode} ${club?.city}`,
   );
+  const { mutate, isLoading } = useCreateGame(club.id);
 
   const seasons = club.seasons || [];
   const seasonOptions = [
@@ -69,44 +65,34 @@ function GameForm({ user, club }: { user: User; club: Club }) {
   ];
   const [season, setSeason] = useState(seasonOptions[0].value);
 
+  function validateForm() {
+    return (
+      date && time && playerCount && location && durationInMinutes && category
+    );
+  }
+
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    if (
-      !date ||
-      !time ||
-      !playerCount ||
-      !location ||
-      !durationInMinutes ||
-      !category
-    ) {
+
+    if (!validateForm()) {
       return window.alert("Veuillez remplir tous les champs");
     }
-    setLoading(true);
-    try {
-      const { data } = await supabase
-        .from("games")
-        .insert({
-          creator_id: user.id,
-          club_id: club.id,
-          date: new Date(`${date} ${time}`).toISOString(),
-          total_players: playerCount,
-          location: location,
-          status: "published",
-          duration: durationInMinutes * 60,
-          category,
-        })
-        .select()
-        .single()
-        .throwOnError();
-      if (data) {
+
+    const newgame = {
+      date: new Date(`${date} ${time}`).toISOString(),
+      total_players: playerCount,
+      location: location,
+      status: "published",
+      duration: durationInMinutes * 60,
+      category,
+    };
+
+    mutate(newgame, {
+      onSuccess: (data) => {
         window.alert("Match créé avec succès");
-        navigate(`/game/${data.id}`);
-      }
-    } catch (error) {
-      console.error(error);
-    } finally {
-      setLoading(false);
-    }
+        navigate(`/game/${data?.id}`);
+      },
+    });
   }
 
   return (
@@ -227,7 +213,7 @@ function GameForm({ user, club }: { user: User; club: Club }) {
           <Button type="button" asChild variant="secondary">
             <Link to={`/club/${club.id}`}>Annuler</Link>
           </Button>
-          <Button type="submit" disabled={loading}>
+          <Button type="submit" disabled={isLoading}>
             Créer
           </Button>
         </div>

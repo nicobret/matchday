@@ -1,6 +1,7 @@
 import { SessionContext } from "@/components/auth-provider";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { queryClient } from "@/lib/react-query";
 import { useCopyToClipboard } from "@uidotdev/usehooks";
 import {
   Ban,
@@ -12,27 +13,28 @@ import {
   Shield,
   Users,
 } from "lucide-react";
-import { useContext, useEffect, useState } from "react";
+import { useContext, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import ClubHistory from "./components/ClubHistory";
 import ClubMembers from "./components/ClubMembers";
 import ClubStats from "./components/ClubStats";
 import UpcomingGames from "./components/UpcomingGames";
-import {
-  Club,
-  fetchClub,
-  isAdmin,
-  isMember,
-  joinClub,
-  leaveClub,
-} from "./lib/club.service";
+import { Club, joinClub, leaveClub } from "./lib/club.service";
+import useClub from "./lib/useClub";
 
 export default function View() {
   const { session } = useContext(SessionContext);
   const { id } = useParams();
-  const [club, setClub] = useState<Club>();
   const [loading, setLoading] = useState(false);
   const [copiedText, copyToClipboard] = useCopyToClipboard();
+  const {
+    data: club,
+    isIdle,
+    isLoading,
+    isError,
+    isMember,
+    isAdmin,
+  } = useClub(Number(id));
 
   async function handleJoin(club: Club) {
     if (!session?.user) {
@@ -41,82 +43,54 @@ export default function View() {
       }
       return;
     }
+    if (isMember) {
+      throw new Error("User is already a member.");
+    }
 
+    setLoading(true);
     try {
-      if (!session?.user) {
-        throw new Error("User must be logged in.");
-      }
-      if (club.members?.some((m) => m.user_id === session.user.id)) {
-        throw new Error("User is already a member.");
-      }
-      setLoading(true);
-      const data = await joinClub(club.id, session.user.id);
-      setClub((prev) => {
-        if (!prev) return prev;
-        return { ...prev, members: [...(prev.members || []), data] };
-      });
+      await joinClub(club.id, session.user.id);
+      queryClient.invalidateQueries(["club", club.id]);
     } catch (error) {
       window.alert("Une erreur est survenue.");
       console.error(error);
-    } finally {
-      setLoading(false);
     }
+    setLoading(false);
   }
 
   async function handleLeave(club: Club) {
+    if (!session?.user) {
+      throw new Error("Vous n'êtes pas connecté.");
+    }
     if (!window.confirm("Voulez-vous vraiment quitter ce club ?")) {
       return;
     }
 
+    setLoading(true);
     try {
-      if (!session?.user) {
-        throw new Error("Vous n'êtes pas connecté.");
-      }
-      setLoading(true);
       await leaveClub(club.id, session.user.id);
-      setClub((prev) => {
-        if (!prev) return prev;
-        return {
-          ...prev,
-          members: (prev.members || []).filter(
-            (m) => m.user_id !== session?.user.id,
-          ),
-        };
-      });
+      queryClient.invalidateQueries(["club", club.id]);
     } catch (error) {
-      window.alert(error);
+      window.alert("Une erreur est survenue.");
       console.error(error);
-    } finally {
-      setLoading(false);
     }
+    setLoading(false);
   }
 
-  useEffect(() => {
-    if (id) {
-      setLoading(true);
-      fetchClub(parseInt(id))
-        .then((data) => setClub(data))
-        .catch(console.error)
-        .finally(() => setLoading(false));
-    }
-  }, [id]);
-
-  if (loading) {
+  if (isIdle || isLoading) {
     return <p className="animate_pulse text-center">Chargement...</p>;
   }
-
-  if (!club) {
-    return <p className="text-center">Club non trouvé</p>;
+  if (isError) {
+    return <p className="text-center">Une erreur s'est produite.</p>;
   }
 
-  const userStatus =
-    session && isAdmin(session?.user, club)
-      ? "✓ Vous êtes administrateur"
-      : session && isMember(session?.user, club)
-        ? "✓ Vous êtes membre."
-        : session
-          ? "Vous n'êtes pas membre."
-          : "Vous n'êtes pas connecté(e)";
+  const userStatus = isAdmin
+    ? "✓ Vous êtes administrateur"
+    : isMember
+      ? "✓ Vous êtes membre."
+      : session
+        ? "Vous n'êtes pas membre."
+        : "Vous n'êtes pas connecté(e)";
 
   return (
     <div className="mx-auto max-w-[100rem] gap-4 p-4 md:flex">
@@ -129,7 +103,7 @@ export default function View() {
             </h1>
 
             <p
-              className={`mt-2 text-sm text-muted-foreground ${session && isMember(session.user, club) ? "text-primary" : ""}`}
+              className={`mt-2 text-sm text-muted-foreground ${isMember ? "text-primary" : ""}`}
             >
               {userStatus}
             </p>
@@ -137,14 +111,19 @@ export default function View() {
         </header>
 
         <div className="mx-auto mt-6 grid max-w-lg grid-cols-2 gap-2">
-          {!session || !isMember(session.user, club) ? (
-            <Button onClick={() => handleJoin(club)} className="flex gap-2">
+          {!isMember ? (
+            <Button
+              onClick={() => handleJoin(club)}
+              disabled={loading}
+              className="flex gap-2"
+            >
               <ClipboardSignature className="h-5 w-5" />
               Rejoindre
             </Button>
           ) : (
             <Button
               onClick={() => handleLeave(club)}
+              disabled={loading}
               variant="secondary"
               className="flex gap-2"
             >
@@ -161,7 +140,7 @@ export default function View() {
             {copiedText ? "Copié !" : "Copier le lien"}
           </Button>
 
-          {session && isAdmin(session?.user, club) && (
+          {isAdmin && (
             <Link
               to={`/club/${club.id}/edit`}
               className={buttonVariants({ variant: "secondary" })}
@@ -217,7 +196,7 @@ export default function View() {
         </TabsList>
 
         <TabsContent value="schedule" className="grid grid-cols-1 gap-4">
-          <UpcomingGames club={club} />
+          <UpcomingGames club={club} enableGameCreation={isMember} />
           <ClubHistory club={club} />
         </TabsContent>
         <TabsContent value="members" className="grid grid-cols-1 gap-4">

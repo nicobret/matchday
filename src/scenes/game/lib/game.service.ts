@@ -3,69 +3,58 @@ import { CalendarEvent } from "calendar-link";
 import { Tables } from "types/supabase";
 
 export type Game = Tables<"games"> & {
-  club:
-    | (Tables<"clubs"> & {
-        members: Tables<"club_member">[];
-      })
-    | null;
+  club?: Tables<"clubs"> | null;
   players?: Tables<"game_player">[];
   season?: Tables<"season"> | null;
 };
 
-export async function fetchGame(id: number) {
-  const { error, data } = await supabase
-    .from("games")
-    .select(
-      `
-        *,
-        club: clubs!games_club_id_fkey (*, members: club_member (*)),
-        players: game_player (*),
-        season: season (*)
-      `,
-    )
-    .eq("id", id)
-    .single()
-    .throwOnError();
-  if (error) {
-    throw new Error(error.message);
-  }
-  return data;
-}
-
-export async function createGame(game: {
+export type createGamePayload = {
   creator_id: string;
   club_id: number;
   date: string;
   total_players: number;
   location: string;
-}) {
+  status: string;
+  duration: number;
+  category: string;
+};
+
+export type updateGamePayload = Partial<
+  Omit<Tables<"games">, "id" | "club_id" | "created_at" | "edited_at">
+>;
+
+const queryString =
+  "*, club: clubs!games_club_id_fkey (*), players: game_player (*), season: season (*)";
+
+export async function fetchGame(id: number) {
   const { data } = await supabase
     .from("games")
-    .insert(game)
+    .select(queryString)
+    .eq("id", id)
+    .single()
+    .throwOnError();
+  if (!data) {
+    throw new Error("Match non trouvé");
+  }
+  return data;
+}
+
+export async function createGame(payload: createGamePayload) {
+  const { data } = await supabase
+    .from("games")
+    .insert(payload)
     .select()
     .single()
     .throwOnError();
   return data;
 }
 
-export async function updateGame(
-  newData: Partial<
-    Omit<Tables<"games">, "id" | "club_id" | "created_at" | "edited_at">
-  >,
-  gameId: number,
-) {
+export async function updateGame(id: number, payload: updateGamePayload) {
   const { data } = await supabase
     .from("games")
-    .update(newData)
-    .eq("id", Number(gameId))
-    .select(
-      `
-      *,
-      club: clubs!games_club_id_fkey (*, members: club_member (*)),
-      players: game_player (*),
-      season: season (*)
-    `,
-    )
+    .update(payload)
+    .eq("id", id)
+    .select(queryString)
     .single()
     .throwOnError();
   return data;

@@ -15,7 +15,7 @@ import { Link, useNavigate, useParams } from "react-router-dom";
 import useSeasons from "../club/lib/useSeasons";
 import { Game, categories, getGameDurationInMinutes } from "./lib/game.service";
 import useGame from "./lib/useGame";
-import useMutateGame from "./lib/useMutateGame";
+import useUpdateGame from "./lib/useUpdateGame";
 
 export default function EditGame() {
   const { id } = useParams();
@@ -50,7 +50,7 @@ function Editor({ game }: { game: Game }) {
   const navigate = useNavigate();
   const { data: seasons } = useSeasons(game.club_id);
   const [data, setData] = useState(getInitialFormData(game));
-  const { mutate, isLoading } = useMutateGame(game.id);
+  const { mutate, isLoading } = useUpdateGame(game.id);
 
   function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -62,8 +62,9 @@ function Editor({ game }: { game: Game }) {
       category: data.category,
       season_id: data.season_id,
     };
-    mutate(updatedGame);
-    navigate(`/game/${game.id}`);
+    mutate(updatedGame, {
+      onSuccess: () => navigate(`/game/${game.id}`),
+    });
   }
 
   return (

@@ -19,7 +19,7 @@ import { Label } from "@/components/ui/label";
 import { useState } from "react";
 import { Tables } from "types/supabase";
 import { Player } from "../../lib/player.service";
-import useMutateGame from "../../lib/useMutateGame";
+import useUpdateGame from "../../lib/useUpdateGame";
 
 export default function Result({
   game,
@@ -95,7 +95,7 @@ export default function Result({
 function ScoreDialog({ game }: { game: Tables<"games"> }) {
   const [open, setOpen] = useState(false);
   const [score, setScore] = useState(game.score || [0, 0]);
-  const { mutate, isLoading } = useMutateGame(game.id);
+  const { mutate, isLoading } = useUpdateGame(game.id);
 
   function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
