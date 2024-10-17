@@ -2,7 +2,6 @@ import { SessionContext } from "@/components/auth-provider";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useCopyToClipboard } from "@uidotdev/usehooks";
-import { CalendarEvent } from "calendar-link";
 import {
   ArrowLeft,
   Ban,
@@ -17,6 +16,7 @@ import {
 } from "lucide-react";
 import { useContext, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
+import useClub from "../club/lib/useClub";
 import AddToCalendar from "./components/AddToCalendar";
 import GameEvents from "./components/GameEvents";
 import GameStats from "./components/GameStats";
@@ -34,8 +34,13 @@ export default function View() {
   const [copiedText, copyToClipboard] = useCopyToClipboard();
   const { data: game } = useGame(Number(id));
   const { data: players } = usePlayers(Number(id));
+  const { data: club } = useClub(Number(game?.club_id));
 
-  if (!game || !players) {
+  if (!id) {
+    return <div>Erreur</div>;
+  }
+
+  if (!game || !players || !club) {
     return (
       <div className="p-4">
         <p className="animate_pulse text-center">Chargement des données...</p>
@@ -50,13 +55,13 @@ export default function View() {
       }
       return;
     }
-    if (!userIsMember) {
+    if (!isMember) {
       if (
         window.confirm(
           "Pour vous inscrire à un match, veuillez rejoindre le club organisateur.",
         )
       ) {
-        navigate(`/club/${game?.club?.id}`);
+        navigate(`/club/${game?.club_id}`);
       }
       return;
     }
@@ -80,47 +85,28 @@ export default function View() {
     setLoading(false);
   }
 
-  const gameHasStarted = new Date(game.date) < new Date();
+  const hasStarted = new Date(game.date) < new Date();
 
   const durationInMinutes = getGameDurationInMinutes(String(game.duration));
   const endDate = new Date(game.date);
   endDate.setMinutes(endDate.getMinutes() + durationInMinutes);
-  const gameHasEnded = endDate < new Date();
+  const hasEnded = endDate < new Date();
 
-  const userIsPlayer = players
-    .map((p) => p.profile?.id)
-    .includes(session?.user.id);
+  const isPlayer = players.map((p) => p.profile?.id).includes(session?.user.id);
+  const isMember = club?.members.some((m) => m.user_id === session?.user.id);
 
-  const userIsMember = game.club?.members.some(
-    (m) => m.user_id === session?.user.id,
-  );
-
-  const userStatus = userIsPlayer
+  const userStatus = isPlayer
     ? "✓ Vous êtes inscrit(e)"
-    : userIsMember
+    : isMember
       ? "Vous n'êtes pas inscrit(e)"
       : session
         ? "Vous n'êtes pas membre du club"
         : "Vous n'êtes pas connecté(e)";
 
-  const event: CalendarEvent = {
-    title: `${game.club?.name} - Match du ${new Date(
-      game.date,
-    ).toLocaleDateString("fr-FR", {
-      dateStyle: "long",
-    })}`,
-    description: `Match de ${game.category} organisé par ${game.club?.name}`,
-    start: new Date(game.date),
-    duration: [durationInMinutes, "minutes"],
-    location:
-      game.location ||
-      `${game.club?.address}, ${game.club?.city} ${game.club?.postcode}`,
-  };
-
   return (
     <div className="mx-auto max-w-5xl p-4">
       <Link
-        to={`/club/${game.club?.id}`}
+        to={`/club/${game.club_id}`}
         className="text-sm text-muted-foreground"
       >
         <ArrowLeft className="mr-2 inline-block h-4 w-4 align-text-top" />
@@ -142,9 +128,9 @@ export default function View() {
         </h1>
 
         <p
-          className={`mt-1 line-clamp-1 text-sm ${userIsPlayer ? "text-primary" : ""}`}
+          className={`mt-1 line-clamp-1 text-sm ${isPlayer ? "text-primary" : ""}`}
         >
-          {gameHasEnded
+          {hasEnded
             ? `Match terminé${game.score ? ` • ${game.score[0]} - ${game.score[1]}` : ""}`
             : userStatus}
         </p>
@@ -174,10 +160,10 @@ export default function View() {
       </div>
 
       <div className="mt-8 grid grid-cols-2 gap-2 md:grid-cols-4">
-        {!userIsPlayer && (
+        {!isPlayer && (
           <Button
             onClick={handleJoin}
-            disabled={loading || gameHasStarted}
+            disabled={loading || hasStarted}
             className="flex gap-2"
           >
             <ClipboardSignature className="h-5 w-5" />
@@ -185,11 +171,11 @@ export default function View() {
           </Button>
         )}
 
-        {session && userIsPlayer && (
+        {session && isPlayer && (
           <>
             <Button
               onClick={handleLeave}
-              disabled={loading || gameHasStarted}
+              disabled={loading || hasStarted}
               variant="secondary"
             >
               <Ban className="mr-2 inline-block h-5 w-5" />
@@ -198,9 +184,9 @@ export default function View() {
           </>
         )}
 
-        <AddToCalendar event={event} disabled={gameHasStarted} />
+        <AddToCalendar game={game} />
 
-        {session && userIsMember && (
+        {session && isMember && (
           <Link
             to={`/game/${game.id}/edit`}
             className={buttonVariants({ variant: "secondary" })}
@@ -220,15 +206,11 @@ export default function View() {
       </div>
 
       <Tabs
-        defaultValue={userIsMember ? "players" : "stats"}
+        defaultValue={isMember ? "players" : "stats"}
         className="mt-8 w-full"
       >
         <TabsList className="w-full">
-          <TabsTrigger
-            value="players"
-            disabled={!userIsMember}
-            className="w-1/2"
-          >
+          <TabsTrigger value="players" disabled={!isMember} className="w-1/2">
             <Users className="mr-2 inline-block h-4 w-4" />
             Compos
           </TabsTrigger>
@@ -245,7 +227,7 @@ export default function View() {
         </TabsList>
 
         <TabsContent value="players" className="mt-4">
-          <LineUp game={game} players={players} disabled={!userIsPlayer} />
+          <LineUp game={game} players={players} disabled={!isPlayer} />
         </TabsContent>
 
         <TabsContent value="game_events" className="mt-4">
@@ -253,7 +235,7 @@ export default function View() {
         </TabsContent>
 
         <TabsContent value="stats" className="mt-4">
-          <GameStats gameId={game.id} />
+          <GameStats gameId={Number(id)} />
         </TabsContent>
       </Tabs>
     </div>

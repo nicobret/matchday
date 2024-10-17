@@ -1,32 +1,19 @@
 import { queryClient } from "@/lib/react-query";
-import supabase from "@/utils/supabase";
 import { useMutation } from "react-query";
 import { Tables } from "types/supabase";
+import { updateGame } from "./game.service";
 
-export default function useMutateGame() {
+export default function useMutateGame(gameId: number) {
   return useMutation({
-    mutationFn: async (newGame: Tables<"games">) => {
-      return await updateGame(newGame);
+    mutationFn: async (data: Partial<Tables<"games">>) => {
+      return await updateGame(data, gameId);
     },
     onSuccess: (data) => {
-      if (data?.id) {
-        queryClient.invalidateQueries({ queryKey: ["game", data.id] });
-      }
+      queryClient.setQueryData(["game", data?.id], data);
     },
-    onError: (error: Error) => {
+    onError: (e: Error) => {
       window.alert("Une erreur s'est produite.");
-      console.error(error);
+      console.error(e);
     },
   });
-}
-
-async function updateGame(game: Partial<Tables<"games">>) {
-  const { data } = await supabase
-    .from("games")
-    .update(game)
-    .eq("id", Number(game.id))
-    .select("*")
-    .single()
-    .throwOnError();
-  return data;
 }

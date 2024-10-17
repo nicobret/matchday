@@ -9,13 +9,13 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
-import supabase from "@/utils/supabase";
 import { ArrowLeft } from "lucide-react";
 import { useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
-import useSeason from "../club/lib/useSeasons";
+import useSeasons from "../club/lib/useSeasons";
 import { Game, categories, getGameDurationInMinutes } from "./lib/game.service";
 import useGame from "./lib/useGame";
+import useMutateGame from "./lib/useMutateGame";
 
 export default function EditGame() {
   const { id } = useParams();
@@ -47,33 +47,23 @@ function getInitialFormData(game: Game) {
 }
 
 function Editor({ game }: { game: Game }) {
-  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
-  const { data: seasons } = useSeason(game.club_id);
+  const { data: seasons } = useSeasons(game.club_id);
   const [data, setData] = useState(getInitialFormData(game));
+  const { mutate, isLoading } = useMutateGame(game.id);
 
-  async function updateGame() {
-    setLoading(true);
-    try {
-      await supabase
-        .from("games")
-        .update({
-          date: `${data.date}T${data.time}+02:00`,
-          duration: data.durationInMinutes * 60,
-          location: data.location,
-          total_players: data.total_players,
-          category: data.category,
-          season_id: data.season_id,
-        })
-        .eq("id", game.id)
-        .select("*")
-        .single()
-        .throwOnError();
-      navigate(`/game/${game.id}`);
-    } catch (error) {
-      console.error(error);
-    }
-    setLoading(false);
+  function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    const updatedGame = {
+      date: `${data.date}T${data.time}+02:00`,
+      duration: data.durationInMinutes * 60,
+      location: data.location,
+      total_players: data.total_players,
+      category: data.category,
+      season_id: data.season_id,
+    };
+    mutate(updatedGame);
+    navigate(`/game/${game.id}`);
   }
 
   return (
@@ -87,13 +77,7 @@ function Editor({ game }: { game: Game }) {
         Modifier un match
       </h1>
 
-      <form
-        onSubmit={async (e) => {
-          e.preventDefault();
-          await updateGame();
-        }}
-        className="mt-6"
-      >
+      <form onSubmit={handleSubmit} className="mt-6">
         <div className="grid grid-cols-2 gap-4">
           <div>
             <Label htmlFor="date">Date</Label>
@@ -202,7 +186,7 @@ function Editor({ game }: { game: Game }) {
         <div className="mt-8 grid grid-cols-1 gap-4 md:grid-cols-2">
           <Button
             type="submit"
-            disabled={loading}
+            disabled={isLoading}
             className="w-full md:order-2"
           >
             Enregistrer

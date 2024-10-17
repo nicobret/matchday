@@ -1,4 +1,5 @@
 import supabase from "@/utils/supabase";
+import { CalendarEvent } from "calendar-link";
 import { Tables } from "types/supabase";
 
 export type Game = Tables<"games"> & {
@@ -45,6 +46,46 @@ export async function createGame(game: {
     .single()
     .throwOnError();
   return data;
+}
+
+export async function updateGame(
+  newData: Partial<
+    Omit<Tables<"games">, "id" | "club_id" | "created_at" | "edited_at">
+  >,
+  gameId: number,
+) {
+  const { data } = await supabase
+    .from("games")
+    .update(newData)
+    .eq("id", Number(gameId))
+    .select(
+      `
+      *,
+      club: clubs!games_club_id_fkey (*, members: club_member (*)),
+      players: game_player (*),
+      season: season (*)
+    `,
+    )
+    .single()
+    .throwOnError();
+  return data;
+}
+
+export function getCalendarEvent(g: Game): CalendarEvent {
+  const durationInMinutes = getGameDurationInMinutes(String(g.duration));
+  return {
+    title: `${g.club?.name} - Match du ${new Date(g.date).toLocaleDateString(
+      "fr-FR",
+      {
+        dateStyle: "long",
+      },
+    )}`,
+    description: `Match de ${g.category} organisé par ${g.club?.name}`,
+    start: new Date(g.date),
+    duration: [durationInMinutes, "minutes"],
+    location:
+      g.location || `${g.club?.address}, ${g.club?.city} ${g.club?.postcode}`,
+  };
 }
 
 export function getGameDurationInMinutes(duration: string) {

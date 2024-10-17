@@ -95,16 +95,12 @@ export default function Result({
 function ScoreDialog({ game }: { game: Tables<"games"> }) {
   const [open, setOpen] = useState(false);
   const [score, setScore] = useState(game.score || [0, 0]);
-
-  const { mutate, isLoading, isSuccess } = useMutateGame();
+  const { mutate, isLoading } = useMutateGame(game.id);
 
   function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    const newGame = { ...game, score };
-    mutate(newGame);
-    if (isSuccess) {
-      setOpen(false);
-    }
+    mutate({ score });
+    setOpen(false);
   }
 
   return (
@@ -144,7 +140,11 @@ function ScoreDialog({ game }: { game: Tables<"games"> }) {
                   }
                 />
               </div>
-              <Button type="submit" disabled={isLoading} className="col-span-2">
+              <Button
+                type="submit"
+                disabled={!score[0] || !score[1] || isLoading}
+                className="col-span-2"
+              >
                 Enregistrer
               </Button>
             </form>

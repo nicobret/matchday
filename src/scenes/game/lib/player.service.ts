@@ -60,7 +60,7 @@ export async function removePlayerFromGame(game_id: number, user_id: string) {
   }
 }
 
-function updateTeams(player: Player) {
+function updateCachedTeams(player: Player) {
   queryClient.setQueryData(
     ["players", player.game_id],
     (oldPlayers?: Player[]) => {
@@ -76,7 +76,7 @@ function updateTeams(player: Player) {
 export async function updatePlayerTeam(player: Player, team: number | null) {
   try {
     // Optimistic update
-    updateTeams({ ...player, team });
+    updateCachedTeams({ ...player, team });
     // call
     const { data } = await supabase
       .from("game_player")
@@ -85,12 +85,12 @@ export async function updatePlayerTeam(player: Player, team: number | null) {
       .select("*, profile: users (*)")
       .single()
       .throwOnError();
-    // update with real data
     if (data) {
-      updateTeams(data);
+      // update with real data
+      updateCachedTeams(data);
     } else {
       // rollback
-      updateTeams(player);
+      updateCachedTeams(player);
     }
   } catch (error) {
     console.error(error);

@@ -5,16 +5,12 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { CalendarEvent, google, ics, outlook, yahoo } from "calendar-link";
+import { google, ics, outlook, yahoo } from "calendar-link";
 import { Calendar } from "lucide-react";
+import { Game, getCalendarEvent } from "../lib/game.service";
 
-export default function AddToCalendar({
-  event,
-  disabled,
-}: {
-  event: CalendarEvent;
-  disabled: boolean;
-}) {
+export default function AddToCalendar({ game }: { game: Game }) {
+  const event = getCalendarEvent(game);
   const googleUrl = google(event);
   const outlookUrl = outlook(event);
   const yahooUrl = yahoo(event);
@@ -23,7 +19,7 @@ export default function AddToCalendar({
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button disabled={disabled} variant="secondary">
+        <Button variant="secondary">
           <Calendar className="mr-2 inline-block h-5 w-5" />
           Ajouter au calendrier
         </Button>
