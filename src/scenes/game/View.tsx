@@ -42,12 +42,13 @@ export default function View() {
     players?.filter((p) => p.status === "confirmed") || [];
 
   useEffect(() => {
-    const playerChannel = getPlayerChannel(Number(id));
+    if (!id) return;
+    const playerChannel = getPlayerChannel(parseInt(id));
     playerChannel.subscribe();
     return () => {
       playerChannel.unsubscribe();
     };
-  }, [game?.id]);
+  }, [id]);
 
   if (!id) {
     return <div>Erreur</div>;

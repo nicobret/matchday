@@ -1,6 +1,7 @@
 import {
   Card,
   CardContent,
+  CardDescription,
   CardFooter,
   CardHeader,
   CardTitle,
@@ -22,6 +23,9 @@ export default function LineUp({
     <Card className="md:col-span-2">
       <CardHeader>
         <CardTitle>Equipes</CardTitle>
+        <CardDescription>
+          Prépare les compos de manière collaborative, en temps réel.
+        </CardDescription>
       </CardHeader>
       <CardContent>
         <p className="mb-6">

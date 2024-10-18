@@ -90,7 +90,7 @@ export async function updatePlayerTeam(player: Player, team: number | null) {
   }
 }
 
-export async function updateCache(data: Partial<Player>) {
+async function updateCache(data: Partial<Player>) {
   const cacheData: Player[] =
     queryClient.getQueryData(["players", data.game_id]) ?? [];
 
@@ -140,7 +140,7 @@ export function getPlayerChannel(gameId: number) {
   return supabase.channel("game_player").on(
     REALTIME_LISTEN_TYPES.POSTGRES_CHANGES,
     {
-      event: REALTIME_POSTGRES_CHANGES_LISTEN_EVENT.ALL,
+      event: REALTIME_POSTGRES_CHANGES_LISTEN_EVENT.ALL, // Does not listen to DELETE events because of the filter.
       schema: "public",
       table: "game_player",
       filter: `game_id=eq.${gameId}`,
