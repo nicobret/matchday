@@ -95,21 +95,21 @@ async function updateCache(data: Partial<Player>) {
     queryClient.getQueryData(["players", data.game_id]) ?? [];
 
   if (cacheData.some((p: Player) => p.id === data.id)) {
-    queryClient.setQueryData(["players", data.game_id], (cache?: Player[]) => {
-      return (
-        cache?.map((oldPlayer) =>
-          oldPlayer.id === data.id ? { ...oldPlayer, ...data } : oldPlayer,
-        ) ?? []
-      );
-    });
-  } else {
-    if (!data.id) return;
+    queryClient.setQueryData(
+      ["players", data.game_id],
+      (cache?: Player[]) =>
+        cache?.map((p) => (p.id === data.id ? { ...p, ...data } : p)) ?? [],
+    );
+  } else if (data.id) {
     const player = await fetchPlayer(data.id);
-    queryClient.setQueryData(["players", data.game_id], (cache: any) => [
+    if (!player) return;
+    queryClient.setQueryData(["players", data.game_id], (cache?: Player[]) => [
       ...(cache || []),
       player,
     ]);
   }
+
+  return queryClient.getQueryData(["players", data.game_id]) as Player[];
 }
 
 export async function updatePlayerEvents(
