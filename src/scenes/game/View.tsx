@@ -14,14 +14,18 @@ import {
   Pencil,
   Users,
 } from "lucide-react";
-import { useContext, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import useClub from "../club/lib/useClub";
 import AddToCalendar from "./components/AddToCalendar";
 import GameEvents from "./components/GameEvents";
 import GameStats from "./components/GameStats";
 import LineUp from "./components/LineUp";
-import { addPlayerToGame, removePlayerFromGame } from "./lib/player.service";
+import {
+  addPlayerToGame,
+  getPlayerChannel,
+  removePlayerFromGame,
+} from "./lib/player.service";
 import useGame from "./lib/useGame";
 import usePlayers from "./lib/usePlayers";
 
@@ -34,6 +38,14 @@ export default function View() {
   const { data: game, hasStarted, hasEnded } = useGame(Number(id));
   const { data: players, isPlayer } = usePlayers(Number(id));
   const { isMember } = useClub(Number(game?.club_id));
+
+  useEffect(() => {
+    const playerChannel = getPlayerChannel(Number(id));
+    playerChannel.subscribe();
+    return () => {
+      playerChannel.unsubscribe();
+    };
+  }, [game?.id]);
 
   if (!id) {
     return <div>Erreur</div>;
@@ -194,7 +206,7 @@ export default function View() {
       </div>
 
       <Tabs
-        defaultValue={isMember ? "players" : "stats"}
+        defaultValue={hasEnded ? "stats" : "players"}
         className="mt-8 w-full"
       >
         <TabsList className="w-full">
