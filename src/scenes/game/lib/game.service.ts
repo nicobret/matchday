@@ -20,7 +20,10 @@ export type createGamePayload = {
 };
 
 export type updateGamePayload = Partial<
-  Omit<Tables<"games">, "id" | "club_id" | "created_at" | "edited_at">
+  Omit<
+    Tables<"games">,
+    "id" | "club_id" | "creator_id" | "created_at" | "edited_at"
+  >
 >;
 
 const queryString =
@@ -43,7 +46,7 @@ export async function createGame(payload: createGamePayload) {
   const { data } = await supabase
     .from("games")
     .insert(payload)
-    .select()
+    .select(queryString)
     .single()
     .throwOnError();
   return data;

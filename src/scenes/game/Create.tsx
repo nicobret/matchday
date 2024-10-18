@@ -75,7 +75,8 @@ function GameForm({ club }: { club: Club }) {
     e.preventDefault();
 
     if (!validateForm()) {
-      return window.alert("Veuillez remplir tous les champs");
+      window.alert("Veuillez remplir tous les champs");
+      return;
     }
 
     const newgame = {
