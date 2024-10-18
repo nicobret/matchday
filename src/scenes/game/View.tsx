@@ -38,6 +38,8 @@ export default function View() {
   const { data: game, hasStarted, hasEnded } = useGame(Number(id));
   const { data: players, isPlayer } = usePlayers(Number(id));
   const { isMember } = useClub(Number(game?.club_id));
+  const confirmedPlayers =
+    players?.filter((p) => p.status === "confirmed") || [];
 
   useEffect(() => {
     const playerChannel = getPlayerChannel(Number(id));
@@ -155,7 +157,7 @@ export default function View() {
 
         <p className="mt-1">
           <Users className="mr-2 inline-block h-4 w-4 align-text-top" />
-          {players.length} / {game.total_players} joueurs inscrits.
+          {confirmedPlayers.length} / {game.total_players} joueurs inscrits.
         </p>
       </div>
 
@@ -227,11 +229,11 @@ export default function View() {
         </TabsList>
 
         <TabsContent value="players" className="mt-4">
-          <LineUp game={game} players={players} disabled={!isPlayer} />
+          <LineUp game={game} players={confirmedPlayers} disabled={!isPlayer} />
         </TabsContent>
 
         <TabsContent value="game_events" className="mt-4">
-          <GameEvents game={game} players={players} />
+          <GameEvents game={game} players={confirmedPlayers} />
         </TabsContent>
 
         <TabsContent value="stats" className="mt-4">

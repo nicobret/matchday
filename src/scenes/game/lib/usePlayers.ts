@@ -10,6 +10,8 @@ export default function usePlayers(gameId: number) {
     queryFn: () => fetchPlayers(Number(gameId)),
     enabled: !!gameId,
   });
-  const isPlayer = res.data?.some((p) => p.profile?.id === session?.user.id);
+  const isPlayer = res.data?.some(
+    (p) => p.profile?.id === session?.user.id && p.status === "confirmed",
+  );
   return { ...res, isPlayer };
 }

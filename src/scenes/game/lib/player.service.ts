@@ -33,15 +33,19 @@ export async function addPlayerToGame(game_id: number, user_id: string) {
   try {
     const { data } = await supabase
       .from("game_player")
-      .insert({
-        game_id,
-        user_id,
-        status: "confirmed",
-      })
+      .upsert(
+        {
+          game_id,
+          user_id,
+          status: "confirmed",
+        },
+        { onConflict: "game_id, user_id" },
+      )
       .select("*, profile: users (*)")
+      .single()
       .throwOnError();
     if (data) {
-      addCachedPlayer(data[0]);
+      await updateCache(data);
     }
   } catch (error) {
     console.error(error);
@@ -50,15 +54,17 @@ export async function addPlayerToGame(game_id: number, user_id: string) {
 
 export async function removePlayerFromGame(game_id: number, user_id: string) {
   try {
-    await supabase
+    const { data } = await supabase
       .from("game_player")
-      .delete()
+      .update({ status: "cancelled" })
       .eq("game_id", game_id)
       .eq("user_id", user_id)
       .select("*, profile: users (*)")
       .single()
       .throwOnError();
-    deleteCachedPlayer({ game_id, profile: { id: user_id } } as Player);
+    if (data) {
+      await updateCache(data);
+    }
   } catch (error) {
     console.error(error);
   }
@@ -67,7 +73,7 @@ export async function removePlayerFromGame(game_id: number, user_id: string) {
 export async function updatePlayerTeam(player: Player, team: number | null) {
   try {
     // Optimistic update
-    updateCachedPlayer({ ...player, team });
+    updateCache({ ...player, team });
     const { data } = await supabase
       .from("game_player")
       .update({ team })
@@ -80,30 +86,30 @@ export async function updatePlayerTeam(player: Player, team: number | null) {
     console.error(e);
     window.alert("Une erreur s'est produite.");
     // Rollback
-    updateCachedPlayer(player);
+    await updateCache(player);
   }
 }
 
-export function addCachedPlayer(player: Player) {
-  queryClient.setQueryData(["players", player.game_id], (cache?: Player[]) => {
-    return [...(cache ?? []), player];
-  });
-}
+export async function updateCache(data: Partial<Player>) {
+  const cacheData: Player[] =
+    queryClient.getQueryData(["players", data.game_id]) ?? [];
 
-export function updateCachedPlayer(player: Partial<Player>) {
-  queryClient.setQueryData(["players", player.game_id], (cache?: Player[]) => {
-    return (
-      cache?.map((oldPlayer) =>
-        oldPlayer.id === player.id ? { ...oldPlayer, ...player } : oldPlayer,
-      ) ?? []
-    );
-  });
-}
-
-export function deleteCachedPlayer(player: Partial<Player>) {
-  queryClient.setQueryData(["players", player.game_id], (cache?: Player[]) => {
-    return cache?.filter((oldPlayer) => oldPlayer.id !== player.id) ?? [];
-  });
+  if (cacheData.some((p: Player) => p.id === data.id)) {
+    queryClient.setQueryData(["players", data.game_id], (cache?: Player[]) => {
+      return (
+        cache?.map((oldPlayer) =>
+          oldPlayer.id === data.id ? { ...oldPlayer, ...data } : oldPlayer,
+        ) ?? []
+      );
+    });
+  } else {
+    if (!data.id) return;
+    const player = await fetchPlayer(data.id);
+    queryClient.setQueryData(["players", data.game_id], (cache: any) => [
+      ...(cache || []),
+      player,
+    ]);
+  }
 }
 
 export async function updatePlayerEvents(
@@ -120,14 +126,10 @@ export async function updatePlayerEvents(
       })
       .eq("id", player.id)
       .select("*, profile: users (*)")
+      .single()
       .throwOnError();
     if (data) {
-      queryClient.setQueryData(
-        ["players", player.game_id],
-        (cache?: Player[]) => {
-          return data ?? cache ?? ([] as Player[]);
-        },
-      );
+      await updateCache(data);
     }
   } catch (error) {
     console.error(error);
@@ -135,43 +137,14 @@ export async function updatePlayerEvents(
 }
 
 export function getPlayerChannel(gameId: number) {
-  return supabase
-    .channel("game_player")
-    .on(
-      REALTIME_LISTEN_TYPES.POSTGRES_CHANGES,
-      {
-        event: REALTIME_POSTGRES_CHANGES_LISTEN_EVENT.INSERT,
-        schema: "public",
-        table: "game_player",
-        filter: `game_id=eq.${gameId}`,
-      },
-      async (payload) => {
-        try {
-          const player = await fetchPlayer(payload.new.id);
-          if (!player) return;
-          addCachedPlayer(player);
-        } catch (error) {
-          console.error(error);
-        }
-      },
-    )
-    .on(
-      REALTIME_LISTEN_TYPES.POSTGRES_CHANGES,
-      {
-        event: REALTIME_POSTGRES_CHANGES_LISTEN_EVENT.UPDATE,
-        schema: "public",
-        table: "game_player",
-        filter: `game_id=eq.${gameId}`,
-      },
-      (payload) => updateCachedPlayer(payload.new),
-    )
-    .on(
-      REALTIME_LISTEN_TYPES.POSTGRES_CHANGES,
-      {
-        event: REALTIME_POSTGRES_CHANGES_LISTEN_EVENT.DELETE,
-        schema: "public",
-        table: "game_player",
-      },
-      (payload) => queryClient.invalidateQueries("players"),
-    );
+  return supabase.channel("game_player").on(
+    REALTIME_LISTEN_TYPES.POSTGRES_CHANGES,
+    {
+      event: REALTIME_POSTGRES_CHANGES_LISTEN_EVENT.ALL,
+      schema: "public",
+      table: "game_player",
+      filter: `game_id=eq.${gameId}`,
+    },
+    async (payload) => await updateCache(payload.new),
+  );
 }
