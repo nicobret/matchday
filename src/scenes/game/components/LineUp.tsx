@@ -9,6 +9,7 @@ import {
 import { Game } from "../lib/game.service";
 import { Player } from "../lib/player.service";
 import LineupEditor from "./LineupEditor";
+import InviteDialog from "./LineupEditor/InviteDialog";
 
 export default function LineUp({
   game,
@@ -33,7 +34,9 @@ export default function LineUp({
         </p>
         <LineupEditor players={players} disabled={disabled} />
       </CardContent>
-      <CardFooter></CardFooter>
+      <CardFooter>
+        <InviteDialog gameId={game.id} disabled={disabled} />
+      </CardFooter>
     </Card>
   );
 }

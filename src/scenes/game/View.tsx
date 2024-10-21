@@ -21,11 +21,8 @@ import AddToCalendar from "./components/AddToCalendar";
 import GameEvents from "./components/GameEvents";
 import GameStats from "./components/GameStats";
 import LineUp from "./components/LineUp";
-import {
-  addPlayerToGame,
-  getPlayerChannel,
-  removePlayerFromGame,
-} from "./lib/player.service";
+import { getPlayerChannel, removePlayerFromGame } from "./lib/player.service";
+import useCreatePlayer from "./lib/useCreatePlayer";
 import useGame from "./lib/useGame";
 import usePlayers from "./lib/usePlayers";
 
@@ -40,6 +37,7 @@ export default function View() {
   const { isMember } = useClub(Number(game?.club_id));
   const confirmedPlayers =
     players?.filter((p) => p.status === "confirmed") || [];
+  const { mutate, isLoading } = useCreatePlayer(Number(game?.id));
 
   useEffect(() => {
     if (!id) return;
@@ -81,9 +79,7 @@ export default function View() {
     if (!game) {
       return;
     }
-    setLoading(true);
-    await addPlayerToGame(game.id, session.user.id);
-    setLoading(false);
+    mutate({ user_id: session.user.id });
   }
 
   async function handleLeave() {
@@ -166,7 +162,7 @@ export default function View() {
         {!isPlayer && (
           <Button
             onClick={handleJoin}
-            disabled={loading || hasStarted}
+            disabled={isLoading || hasStarted}
             className="flex gap-2"
           >
             <ClipboardSignature className="h-5 w-5" />

@@ -29,27 +29,29 @@ export async function fetchPlayers(game_id: number) {
   return data;
 }
 
-export async function addPlayerToGame(game_id: number, user_id: string) {
-  try {
-    const { data } = await supabase
-      .from("game_player")
-      .upsert(
-        {
-          game_id,
-          user_id,
-          status: "confirmed",
-        },
-        { onConflict: "game_id, user_id" },
-      )
-      .select("*, profile: users (*)")
-      .single()
-      .throwOnError();
-    if (data) {
-      await updateCache(data);
-    }
-  } catch (error) {
-    console.error(error);
+export async function createPlayer(
+  game_id: number,
+  user_id?: string,
+  name?: string,
+) {
+  if (!user_id && !name) {
+    throw new Error("user_id or name is required");
   }
+  const { data } = await supabase
+    .from("game_player")
+    .upsert(
+      {
+        game_id,
+        user_id,
+        name,
+        status: "confirmed",
+      },
+      { onConflict: "game_id, user_id" },
+    )
+    .select()
+    .single()
+    .throwOnError();
+  return data;
 }
 
 export async function removePlayerFromGame(game_id: number, user_id: string) {
@@ -90,7 +92,7 @@ export async function updatePlayerTeam(player: Player, team: number | null) {
   }
 }
 
-async function updateCache(data: Partial<Player>) {
+export async function updateCache(data: Partial<Player>) {
   const cacheData: Player[] =
     queryClient.getQueryData(["players", data.game_id]) ?? [];
 

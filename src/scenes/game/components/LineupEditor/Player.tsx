@@ -21,7 +21,7 @@ export default function Player({ player }: { player: PlayerType }) {
       className="flex cursor-grab touch-none items-center gap-2 rounded-lg bg-muted p-2 text-left active:cursor-grabbing active:shadow-lg"
     >
       <Grip className="h-4 w-4" />
-      {player.profile?.firstname}
+      {player.name || player.profile?.firstname}
     </div>
   );
 }
