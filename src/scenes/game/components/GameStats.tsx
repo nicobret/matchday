@@ -41,7 +41,7 @@ export default function Statistics({ gameId }: { gameId: number }) {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Evénements</CardTitle>
+        <CardTitle>Joueurs</CardTitle>
       </CardHeader>
 
       <CardContent>
@@ -97,6 +97,7 @@ export default function Statistics({ gameId }: { gameId: number }) {
           </TableHeader>
           <TableBody>
             {data
+              .filter((row) => !!row.user_id)
               .filter((row) => (team === "all" ? true : row.user_team === team))
               .map((row) => {
                 return (

@@ -39,8 +39,11 @@ export default function InviteDialog({
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Ajouter un joueur</DialogTitle>
-          <DialogDescription>Non inscrit sur la plateforme.</DialogDescription>
+          <DialogTitle>Ajouter un joueur extérieur à la plateforme</DialogTitle>
+          <DialogDescription>
+            Il s'agit d'un profil temporaire qui n'existera que dans le cadre de
+            ce match.
+          </DialogDescription>
         </DialogHeader>
         <form id="invite-form" onSubmit={handleSubmit}>
           <Input

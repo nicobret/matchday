@@ -6,14 +6,26 @@ import {
 } from "@supabase/supabase-js";
 import { Tables } from "types/supabase";
 
+const statusTranslation: { [key: string]: string } = {
+  confirmed: "Confirmé",
+  cancelled: "Annulé",
+};
+
+export function translateStatus(status?: string) {
+  if (!status) return "inconnu";
+  return statusTranslation[status] || status;
+}
+
 export type Player = Tables<"game_player"> & {
   profile: Tables<"users"> | null;
 };
 
+const query = "*, profile: users (*)";
+
 export async function fetchPlayer(id: string) {
   const { data } = await supabase
     .from("game_player")
-    .select("*, profile: users (*)")
+    .select(query)
     .eq("id", id)
     .single()
     .throwOnError();
@@ -23,7 +35,7 @@ export async function fetchPlayer(id: string) {
 export async function fetchPlayers(game_id: number) {
   const { data } = await supabase
     .from("game_player")
-    .select("*, profile: users (*)")
+    .select(query)
     .eq("game_id", game_id)
     .throwOnError();
   return data;
@@ -54,6 +66,19 @@ export async function createPlayer(
   return data;
 }
 
+export async function updatePlayer(id: string, payload: Partial<Player>) {
+  const { data } = await supabase
+    .from("game_player")
+    .update(payload)
+    .eq("id", id)
+    .select(query)
+    .single()
+    .throwOnError();
+  if (data) {
+    return data;
+  }
+}
+
 export async function removePlayerFromGame(game_id: number, user_id: string) {
   try {
     const { data } = await supabase
@@ -61,7 +86,7 @@ export async function removePlayerFromGame(game_id: number, user_id: string) {
       .update({ status: "cancelled" })
       .eq("game_id", game_id)
       .eq("user_id", user_id)
-      .select("*, profile: users (*)")
+      .select(query)
       .single()
       .throwOnError();
     if (data) {
@@ -80,7 +105,7 @@ export async function updatePlayerTeam(player: Player, team: number | null) {
       .from("game_player")
       .update({ team })
       .eq("id", player.id)
-      .select("*, profile: users (*)")
+      .select(query)
       .single()
       .throwOnError();
     return data;
@@ -114,30 +139,6 @@ export async function updateCache(data: Partial<Player>) {
   return queryClient.getQueryData(["players", data.game_id]) as Player[];
 }
 
-export async function updatePlayerEvents(
-  player: Player,
-  events: Partial<Player>,
-) {
-  try {
-    const { data } = await supabase
-      .from("game_player")
-      .update({
-        goals: events.goals,
-        assists: events.assists,
-        saves: events.saves,
-      })
-      .eq("id", player.id)
-      .select("*, profile: users (*)")
-      .single()
-      .throwOnError();
-    if (data) {
-      await updateCache(data);
-    }
-  } catch (error) {
-    console.error(error);
-  }
-}
-
 export function getPlayerChannel(gameId: number) {
   return supabase.channel("game_player").on(
     REALTIME_LISTEN_TYPES.POSTGRES_CHANGES,
@@ -147,6 +148,9 @@ export function getPlayerChannel(gameId: number) {
       table: "game_player",
       filter: `game_id=eq.${gameId}`,
     },
-    async (payload) => await updateCache(payload.new),
+    async (payload) => {
+      console.log("🚀 ~ payload:", payload);
+      await updateCache(payload.new);
+    },
   );
 }

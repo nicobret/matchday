@@ -18,9 +18,11 @@ import { useContext, useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import useClub from "../club/lib/useClub";
 import AddToCalendar from "./components/AddToCalendar";
-import GameEvents from "./components/GameEvents";
 import GameStats from "./components/GameStats";
 import LineUp from "./components/LineUp";
+import MyEvents from "./components/MyEvents";
+import PlayerTable from "./components/PlayerTable";
+import Score from "./components/Score";
 import { getPlayerChannel, removePlayerFromGame } from "./lib/player.service";
 import useCreatePlayer from "./lib/useCreatePlayer";
 import useGame from "./lib/useGame";
@@ -37,6 +39,7 @@ export default function View() {
   const { isMember } = useClub(Number(game?.club_id));
   const confirmedPlayers =
     players?.filter((p) => p.status === "confirmed") || [];
+  const player = players?.find((p) => p.user_id === session?.user.id);
   const { mutate, isLoading } = useCreatePlayer(Number(game?.id));
 
   useEffect(() => {
@@ -74,9 +77,6 @@ export default function View() {
       ) {
         navigate(`/club/${game?.club_id}`);
       }
-      return;
-    }
-    if (!game) {
       return;
     }
     mutate({ user_id: session.user.id });
@@ -209,31 +209,39 @@ export default function View() {
         className="mt-8 w-full"
       >
         <TabsList className="w-full">
-          <TabsTrigger value="players" disabled={!isMember} className="w-1/2">
+          <TabsTrigger value="players" disabled={!isMember} className="w-1/3">
             <Users className="mr-2 inline-block h-4 w-4" />
-            Compos
+            Joueurs
           </TabsTrigger>
 
-          <TabsTrigger value="game_events" className="w-1/2">
+          <TabsTrigger value="results" className="w-1/3">
             <List className="mr-2 inline-block h-4 w-4" />
             Résultats
           </TabsTrigger>
 
-          <TabsTrigger value="stats" className="w-1/2">
+          <TabsTrigger value="stats" className="w-1/3">
             <BarChart className="mr-2 inline-block h-4 w-4" />
             Stats
           </TabsTrigger>
         </TabsList>
 
-        <TabsContent value="players" className="mt-4">
+        <TabsContent value="players">
           <LineUp game={game} players={confirmedPlayers} disabled={!isPlayer} />
+          <br />
+          <PlayerTable players={players} />
         </TabsContent>
 
-        <TabsContent value="game_events" className="mt-4">
-          <GameEvents game={game} players={confirmedPlayers} />
+        <TabsContent value="results">
+          <Score game={game} players={confirmedPlayers} />
         </TabsContent>
 
-        <TabsContent value="stats" className="mt-4">
+        <TabsContent value="stats">
+          {!!player && (
+            <>
+              <MyEvents player={player} />
+              <br />
+            </>
+          )}
           <GameStats gameId={Number(id)} />
         </TabsContent>
       </Tabs>

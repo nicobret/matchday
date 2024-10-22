@@ -8,11 +8,12 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { useState } from "react";
-import { Player, updatePlayerEvents } from "../../lib/player.service";
+import { queryClient } from "@/lib/react-query";
+import { Player } from "../lib/player.service";
+import useUpdatePlayer from "../lib/useUpdatePlayer";
 
 export default function MyEvents({ player }: { player: Player }) {
-  const [loading, setLoading] = useState(false);
+  const { mutate, isLoading } = useUpdatePlayer(player.id);
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -22,9 +23,10 @@ export default function MyEvents({ player }: { player: Player }) {
     const assists = parseInt(form.get("assists") as string) || 0;
     const saves = parseInt(form.get("saves") as string) || 0;
 
-    setLoading(true);
-    await updatePlayerEvents(player, { goals, assists, saves });
-    setLoading(false);
+    mutate(
+      { goals, assists, saves },
+      { onSuccess: () => queryClient.invalidateQueries("game_stats") },
+    );
   }
 
   return (
@@ -37,10 +39,10 @@ export default function MyEvents({ player }: { player: Player }) {
         <form
           onSubmit={handleSubmit}
           id="my-events"
-          className="grid grid-cols-1 gap-4 md:grid-cols-3"
+          className="grid grid-cols-3 gap-4"
         >
           <div>
-            <Label htmlFor="goals">Buts de gueudin</Label>
+            <Label htmlFor="goals">Buts</Label>
             <Input
               id="goals"
               name="goals"
@@ -49,7 +51,7 @@ export default function MyEvents({ player }: { player: Player }) {
             />
           </div>
           <div>
-            <Label htmlFor="assists">Passes dé de l'espace</Label>
+            <Label htmlFor="assists">Passes dé</Label>
             <Input
               id="assists"
               name="assists"
@@ -58,7 +60,7 @@ export default function MyEvents({ player }: { player: Player }) {
             />
           </div>
           <div>
-            <Label htmlFor="saves">Arrêts de star</Label>
+            <Label htmlFor="saves">Arrêts</Label>
             <Input
               id="saves"
               name="saves"
@@ -70,8 +72,8 @@ export default function MyEvents({ player }: { player: Player }) {
       </CardContent>
 
       <CardFooter>
-        <Button type="submit" disabled={loading} form="my-events">
-          {loading ? "En cours..." : "Enregistrer"}
+        <Button type="submit" disabled={isLoading} form="my-events">
+          {isLoading ? "En cours..." : "Enregistrer"}
         </Button>
       </CardFooter>
     </Card>

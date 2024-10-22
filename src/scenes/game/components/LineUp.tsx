@@ -21,9 +21,9 @@ export default function LineUp({
   disabled: boolean;
 }) {
   return (
-    <Card className="md:col-span-2">
+    <Card>
       <CardHeader>
-        <CardTitle>Equipes</CardTitle>
+        <CardTitle>Compos</CardTitle>
         <CardDescription>
           Prépare les compos de manière collaborative, en temps réel.
         </CardDescription>

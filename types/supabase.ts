@@ -139,7 +139,7 @@ export type Database = {
         Row: {
           assists: number | null;
           created_at: string;
-          game_id: number | null;
+          game_id: number;
           goals: number | null;
           id: string;
           name: string | null;
@@ -151,7 +151,7 @@ export type Database = {
         Insert: {
           assists?: number | null;
           created_at?: string;
-          game_id?: number | null;
+          game_id: number;
           goals?: number | null;
           id?: string;
           name?: string | null;
@@ -163,7 +163,7 @@ export type Database = {
         Update: {
           assists?: number | null;
           created_at?: string;
-          game_id?: number | null;
+          game_id?: number;
           goals?: number | null;
           id?: string;
           name?: string | null;
