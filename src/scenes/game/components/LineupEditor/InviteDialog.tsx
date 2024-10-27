@@ -10,7 +10,7 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { useState } from "react";
-import useCreatePlayer from "../../lib/useCreatePlayer";
+import useCreatePlayer from "../../lib/player/useCreatePlayer";
 
 export default function InviteDialog({
   gameId,

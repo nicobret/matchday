@@ -23,14 +23,12 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { ArrowRight } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Link } from "react-router-dom";
-import { Tables } from "types/supabase";
-import { Club, fetchPastGames } from "../lib/club.service";
+import { Club } from "../lib/club.service";
+import useGames from "../lib/useGames";
 
 export default function ClubHistory({ club }: { club: Club }) {
-  const [loading, setLoading] = useState(false);
-  const [games, setGames] = useState<Tables<"games">[]>();
   const seasons = club.seasons || [];
 
   const seasonOptions = [
@@ -44,15 +42,9 @@ export default function ClubHistory({ club }: { club: Club }) {
     seasonOptions[0].value,
   );
 
-  useEffect(() => {
-    setLoading(true);
-    fetchPastGames(club.id, selectedSeason)
-      .then((data) => setGames(data))
-      .catch(console.error)
-      .finally(() => setLoading(false));
-  }, [club.id, selectedSeason]);
+  const { data: games, isLoading } = useGames(club.id, "past", selectedSeason);
 
-  if (loading) {
+  if (isLoading) {
     return <p className="text-center">Chargement...</p>;
   }
   return (
@@ -79,7 +71,7 @@ export default function ClubHistory({ club }: { club: Club }) {
           </SelectContent>
         </Select>
 
-        {loading ? (
+        {isLoading ? (
           <p className="text-center">Chargement...</p>
         ) : games?.length ? (
           <Table className="mt-4 border">

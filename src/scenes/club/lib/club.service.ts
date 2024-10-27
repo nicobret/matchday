@@ -60,37 +60,6 @@ export async function deleteClub(club: Club) {
   return data;
 }
 
-export async function fetchUpcomingGames(clubId: number) {
-  const { data } = await supabase
-    .from("games")
-    .select("*, players:game_player(*), season:season(*)")
-    .eq("club_id", clubId)
-    .gte("date", new Date().toISOString())
-    .order("date")
-    .throwOnError();
-  if (!data) return [];
-  return data;
-}
-
-export async function fetchPastGames(clubId: number, season_id: string) {
-  let query = supabase
-    .from("games")
-    .select()
-    .eq("club_id", clubId)
-    .lte("date", new Date().toISOString())
-    .order("date", { ascending: false });
-
-  if (season_id === "none") {
-    query = query.is("season_id", null);
-  } else {
-    query = query.eq("season_id", season_id);
-  }
-
-  const { data } = await query.throwOnError();
-  if (!data) return [];
-  return data;
-}
-
 async function fetchMember(clubId: number, userId: string) {
   const { data } = await supabase
     .from("club_member")

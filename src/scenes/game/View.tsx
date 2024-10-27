@@ -10,11 +10,12 @@ import {
   Clock,
   Copy,
   List,
+  Loader,
   MapPin,
   Pencil,
   Users,
 } from "lucide-react";
-import { useContext, useEffect, useState } from "react";
+import { useContext, useEffect } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import useClub from "../club/lib/useClub";
 import AddToCalendar from "./components/AddToCalendar";
@@ -23,16 +24,16 @@ import LineUp from "./components/LineUp";
 import MyEvents from "./components/MyEvents";
 import PlayerTable from "./components/PlayerTable";
 import Score from "./components/Score";
-import { getPlayerChannel, removePlayerFromGame } from "./lib/player.service";
-import useCreatePlayer from "./lib/useCreatePlayer";
-import useGame from "./lib/useGame";
-import usePlayers from "./lib/usePlayers";
+import useGame from "./lib/game/useGame";
+import { getPlayerChannel } from "./lib/player/player.service";
+import useCreatePlayer from "./lib/player/useCreatePlayer";
+import usePlayers from "./lib/player/usePlayers";
+import useUpdatePlayer from "./lib/player/useUpdatePlayer";
 
 export default function View() {
   const { id } = useParams();
   const navigate = useNavigate();
   const { session } = useContext(SessionContext);
-  const [loading, setLoading] = useState(false);
   const [copiedText, copyToClipboard] = useCopyToClipboard();
   const { data: game, hasStarted, hasEnded } = useGame(Number(id));
   const { data: players, isPlayer } = usePlayers(Number(id));
@@ -40,7 +41,9 @@ export default function View() {
   const confirmedPlayers =
     players?.filter((p) => p.status === "confirmed") || [];
   const player = players?.find((p) => p.user_id === session?.user.id);
-  const { mutate, isLoading } = useCreatePlayer(Number(game?.id));
+
+  const createPlayer = useCreatePlayer(Number(id));
+  const updatePlayer = useUpdatePlayer(Number(id));
 
   useEffect(() => {
     if (!id) return;
@@ -79,7 +82,7 @@ export default function View() {
       }
       return;
     }
-    mutate({ user_id: session.user.id });
+    createPlayer.mutate({ user_id: session.user.id });
   }
 
   async function handleLeave() {
@@ -89,9 +92,7 @@ export default function View() {
     if (!game || !session?.user) {
       return;
     }
-    setLoading(true);
-    await removePlayerFromGame(game.id, session.user.id);
-    setLoading(false);
+    updatePlayer.mutate({ id: session.user.id, status: "cancelled" });
   }
 
   const userStatus = isPlayer
@@ -129,9 +130,11 @@ export default function View() {
         <p
           className={`mt-1 line-clamp-1 text-sm ${isPlayer ? "text-primary" : ""}`}
         >
-          {hasEnded
-            ? `Match terminé${game.score ? ` • ${game.score[0]} - ${game.score[1]}` : ""}`
-            : userStatus}
+          {game.status === "deleted"
+            ? "Match supprimé"
+            : hasEnded
+              ? `Match terminé${game.score ? ` • ${game.score[0]} - ${game.score[1]}` : ""}`
+              : userStatus}
         </p>
       </header>
 
@@ -162,11 +165,17 @@ export default function View() {
         {!isPlayer && (
           <Button
             onClick={handleJoin}
-            disabled={isLoading || hasStarted}
+            disabled={createPlayer.isLoading || hasStarted}
             className="flex gap-2"
           >
-            <ClipboardSignature className="h-5 w-5" />
-            <span>Inscription</span>
+            {createPlayer.isLoading ? (
+              <Loader className="h-5 w-5 animate-spin" />
+            ) : (
+              <>
+                <ClipboardSignature className="h-5 w-5" />
+                <span>Inscription</span>
+              </>
+            )}
           </Button>
         )}
 
@@ -174,11 +183,17 @@ export default function View() {
           <>
             <Button
               onClick={handleLeave}
-              disabled={loading || hasStarted}
+              disabled={updatePlayer.isLoading || hasStarted}
               variant="secondary"
             >
-              <Ban className="mr-2 inline-block h-5 w-5" />
-              Désinscription
+              {updatePlayer.isLoading ? (
+                <Loader className="h-5 w-5 animate-spin" />
+              ) : (
+                <>
+                  <Ban className="mr-2 inline-block h-5 w-5" />
+                  <span>Désinscription</span>
+                </>
+              )}
             </Button>
           </>
         )}
@@ -226,9 +241,14 @@ export default function View() {
         </TabsList>
 
         <TabsContent value="players">
-          <LineUp game={game} players={confirmedPlayers} disabled={!isPlayer} />
-          <br />
-          <PlayerTable players={players} />
+          <div className="grid grid-cols-1 gap-2">
+            <LineUp
+              game={game}
+              players={confirmedPlayers}
+              disabled={!isMember}
+            />
+            <PlayerTable players={players} />
+          </div>
         </TabsContent>
 
         <TabsContent value="results">

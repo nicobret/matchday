@@ -1,6 +1,4 @@
-import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { Club, Game, fetchUpcomingGames } from "../lib/club.service";
 
 import { buttonVariants } from "@/components/ui/button";
 import {
@@ -18,30 +16,17 @@ import {
   CarouselPrevious,
 } from "@/components/ui/carousel";
 import { Plus } from "lucide-react";
+import useGames from "../lib/useGames";
 import GameCard from "./GameCard";
 
 export default function UpcomingGames({
-  club,
+  clubId,
   enableGameCreation,
 }: {
-  club: Club;
+  clubId: number;
   enableGameCreation: boolean;
 }) {
-  const [games, setGames] = useState<Game[]>([]);
-  const [loading, setLoading] = useState(false);
-
-  useEffect(() => {
-    setLoading(true);
-    fetchUpcomingGames(club.id)
-      .then((data) => setGames(data))
-      .catch(console.error)
-      .finally(() => setLoading(false));
-  }, [club.id]);
-
-  if (loading) {
-    return <p className="text-center">Chargement...</p>;
-  }
-
+  const { data: games } = useGames(clubId, "next");
   return (
     <Card className="flex flex-col md:col-span-2" id="upcoming">
       <CardHeader>
@@ -51,9 +36,7 @@ export default function UpcomingGames({
       </CardHeader>
 
       <CardContent>
-        {loading ? (
-          <p className="text-center">Chargement...</p>
-        ) : games.length ? (
+        {games?.length ? (
           <Carousel className="mx-10">
             <CarouselContent>
               {games.map((game) => (
@@ -76,7 +59,7 @@ export default function UpcomingGames({
       <CardFooter className="mt-auto flex justify-end gap-2">
         {enableGameCreation && (
           <Link
-            to={`/game/create?clubId=${club.id}`}
+            to={`/game/create?clubId=${clubId}`}
             className={buttonVariants({ variant: "secondary" })}
           >
             <Plus className="mr-2 h-5 w-5" />

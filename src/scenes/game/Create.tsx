@@ -14,8 +14,8 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Club } from "../club/lib/club.service";
 import useClub from "../club/lib/useClub";
-import { categories } from "./lib/game.service";
-import useCreateGame from "./lib/useCreateGame";
+import { categories } from "./lib/game/game.service";
+import useCreateGame from "./lib/game/useCreateGame";
 
 export default function CreateGame() {
   const clubId = new URLSearchParams(window.location.search).get("clubId");

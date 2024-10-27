@@ -196,7 +196,7 @@ export default function View() {
         </TabsList>
 
         <TabsContent value="schedule" className="grid grid-cols-1 gap-4">
-          <UpcomingGames club={club} enableGameCreation={isMember} />
+          <UpcomingGames clubId={club.id} enableGameCreation={isMember} />
           <ClubHistory club={club} />
         </TabsContent>
         <TabsContent value="members" className="grid grid-cols-1 gap-4">

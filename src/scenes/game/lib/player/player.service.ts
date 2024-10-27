@@ -63,7 +63,9 @@ export async function createPlayer(
     .select()
     .single()
     .throwOnError();
-  return data;
+  if (data) {
+    return data;
+  }
 }
 
 export async function updatePlayer(id: string, payload: Partial<Player>) {
@@ -79,45 +81,12 @@ export async function updatePlayer(id: string, payload: Partial<Player>) {
   }
 }
 
-export async function removePlayerFromGame(game_id: number, user_id: string) {
-  try {
-    const { data } = await supabase
-      .from("game_player")
-      .update({ status: "cancelled" })
-      .eq("game_id", game_id)
-      .eq("user_id", user_id)
-      .select(query)
-      .single()
-      .throwOnError();
-    if (data) {
-      await updateCache(data);
-    }
-  } catch (error) {
-    console.error(error);
-  }
-}
-
-export async function updatePlayerTeam(player: Player, team: number | null) {
-  try {
-    // Optimistic update
-    updateCache({ ...player, team });
-    const { data } = await supabase
-      .from("game_player")
-      .update({ team })
-      .eq("id", player.id)
-      .select(query)
-      .single()
-      .throwOnError();
-    return data;
-  } catch (e) {
-    console.error(e);
-    window.alert("Une erreur s'est produite.");
-    // Rollback
-    await updateCache(player);
-  }
-}
-
 export async function updateCache(data: Partial<Player>) {
+  if (!data.game_id) {
+    console.error("game_id is required to update cache");
+    return;
+  }
+
   const cacheData: Player[] =
     queryClient.getQueryData(["players", data.game_id]) ?? [];
 
@@ -148,9 +117,6 @@ export function getPlayerChannel(gameId: number) {
       table: "game_player",
       filter: `game_id=eq.${gameId}`,
     },
-    async (payload) => {
-      console.log("🚀 ~ payload:", payload);
-      await updateCache(payload.new);
-    },
+    async (payload) => await updateCache(payload.new),
   );
 }

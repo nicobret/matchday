@@ -1,6 +1,7 @@
 import { DndContext, DragEndEvent } from "@dnd-kit/core";
 import { Shirt } from "lucide-react";
-import { Player, updatePlayerTeam } from "../../lib/player.service";
+import { Player } from "../../lib/player/player.service";
+import useUpdatePlayer from "../../lib/player/useUpdatePlayer";
 import Team from "./Team";
 
 const teams: { [key: string]: number | null } = {
@@ -10,13 +11,16 @@ const teams: { [key: string]: number | null } = {
 };
 
 export default function LineupEditor({
+  gameId,
   players,
   disabled,
 }: {
+  gameId: number;
   players: Player[];
   disabled: boolean;
 }) {
-  async function handleDrop(event: DragEndEvent) {
+  const { mutate } = useUpdatePlayer(gameId);
+  function handleDrop(event: DragEndEvent) {
     if (disabled) {
       window.alert("Vous n'avez pas la permission de modifier l'équipe.");
       return;
@@ -25,12 +29,17 @@ export default function LineupEditor({
     if (!event.over) return;
 
     const team = teams[event.over.id];
+    if (team === undefined) {
+      console.error("Team not found");
+      return;
+    }
+
     const player = players.find((p) => p.id === event.active.id);
     if (!player) {
       console.error("Player not found");
       return;
     }
-    await updatePlayerTeam(player, team);
+    mutate({ id: player.id, team });
   }
 
   return (

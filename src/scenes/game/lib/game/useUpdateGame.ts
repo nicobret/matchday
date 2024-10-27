@@ -4,9 +4,8 @@ import { updateGame, updateGamePayload } from "./game.service";
 
 export default function useUpdateGame(gameId: number) {
   return useMutation({
-    mutationFn: async (data: updateGamePayload) => {
-      return await updateGame(gameId, data);
-    },
+    mutationFn: async (data: updateGamePayload) =>
+      await updateGame(gameId, data),
     onSuccess: (data) => {
       queryClient.setQueryData(["game", data?.id], data);
     },
