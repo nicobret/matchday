@@ -22,7 +22,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { useState } from "react";
-import useGameStats from "../lib/useGameStats";
+import useGameStats from "../lib/game/useGameStats";
 
 export default function Statistics({ gameId }: { gameId: number }) {
   const [team, setTeam] = useState("all");

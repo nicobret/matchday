@@ -18,8 +18,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useState } from "react";
 import { Tables } from "types/supabase";
-import { Player } from "../lib/player.service";
-import useUpdateGame from "../lib/useUpdateGame";
+import useUpdateGame from "../lib/game/useUpdateGame";
+import { Player } from "../lib/player/player.service";
 
 export default function Result({
   game,

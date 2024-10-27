@@ -16,8 +16,8 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { useContext } from "react";
-import { Player, translateStatus } from "../lib/player.service";
-import useUpdatePlayer from "../lib/useUpdatePlayer";
+import { Player, translateStatus } from "../lib/player/player.service";
+import useUpdatePlayer from "../lib/player/useUpdatePlayer";
 
 export default function PlayerTable({ players }: { players: Player[] }) {
   return (
@@ -25,34 +25,36 @@ export default function PlayerTable({ players }: { players: Player[] }) {
       <CardHeader>
         <CardTitle>Liste</CardTitle>
       </CardHeader>
-      <CardContent className="overflow-x-auto">
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>Prénom</TableHead>
-              <TableHead>Inscription</TableHead>
-              <TableHead>Statut</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {players
-              .sort(
-                (a, b) =>
-                  new Date(b.created_at).getTime() -
-                  new Date(a.created_at).getTime(),
-              )
-              .map((player) => (
-                <Row key={player.id} player={player} />
-              ))}
-          </TableBody>
-        </Table>
+      <CardContent>
+        <div className="overflow-x-auto">
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Prénom</TableHead>
+                <TableHead>Inscription</TableHead>
+                <TableHead>Statut</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {players
+                .sort(
+                  (a, b) =>
+                    new Date(b.created_at).getTime() -
+                    new Date(a.created_at).getTime(),
+                )
+                .map((player) => (
+                  <Row key={player.id} player={player} />
+                ))}
+            </TableBody>
+          </Table>
+        </div>
       </CardContent>
     </Card>
   );
 }
 
 function Row({ player }: { player: Player }) {
-  const { mutate, isLoading } = useUpdatePlayer(player.id);
+  const { mutate, isLoading } = useUpdatePlayer(player.game_id);
   const { session } = useContext(SessionContext);
   const enabled = !player.user_id || session?.user?.id === player.user_id;
 
@@ -64,7 +66,7 @@ function Row({ player }: { player: Player }) {
         <Select
           name="status"
           value={player.status || undefined}
-          onValueChange={(value) => mutate({ status: value })}
+          onValueChange={(value) => mutate({ id: player.id, status: value })}
           disabled={!enabled || isLoading}
         >
           <SelectTrigger>

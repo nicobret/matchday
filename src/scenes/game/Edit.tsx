@@ -12,14 +12,15 @@ import { Textarea } from "@/components/ui/textarea";
 import { ArrowLeft } from "lucide-react";
 import { useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
+import { Game } from "../club/lib/club.service";
 import useSeasons from "../club/lib/useSeasons";
-import { Game, categories, getGameDurationInMinutes } from "./lib/game.service";
-import useGame from "./lib/useGame";
-import useUpdateGame from "./lib/useUpdateGame";
+import { categories, getGameDurationInMinutes } from "./lib/game/game.service";
+import useGame from "./lib/game/useGame";
+import useUpdateGame from "./lib/game/useUpdateGame";
 
 export default function EditGame() {
   const { id } = useParams();
-  const { data: game, isIdle, isLoading, isError } = useGame(Number(id));
+  const { data, isIdle, isLoading, isError } = useGame(Number(id));
 
   if (isIdle || isLoading) {
     return <div>Chargement...</div>;
@@ -27,7 +28,7 @@ export default function EditGame() {
   if (isError) {
     return <div>Erreur</div>;
   }
-  return <Editor game={game} />;
+  return <Editor game={data} />;
 }
 
 function getInitialFormData(game: Game) {
@@ -65,6 +66,15 @@ function Editor({ game }: { game: Game }) {
     mutate(updatedGame, {
       onSuccess: () => navigate(`/game/${game.id}`),
     });
+  }
+
+  function handleDelete() {
+    if (window.confirm("Êtes-vous sûr de vouloir supprimer ce match ?")) {
+      mutate(
+        { status: "deleted" },
+        { onSuccess: () => navigate(`/club/${game.club_id}`) },
+      );
+    }
   }
 
   return (
@@ -200,6 +210,14 @@ function Editor({ game }: { game: Game }) {
           </Link>
         </div>
       </form>
+
+      <h1 className="mt-12 scroll-m-20 text-2xl font-semibold uppercase tracking-tight">
+        Supprimer le match
+      </h1>
+
+      <Button onClick={handleDelete} variant="destructive" className="mt-4">
+        Supprimer le match
+      </Button>
     </div>
   );
 }

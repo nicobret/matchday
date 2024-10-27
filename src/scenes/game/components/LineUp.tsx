@@ -6,8 +6,8 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Game } from "../lib/game.service";
-import { Player } from "../lib/player.service";
+import { Game } from "../lib/game/game.service";
+import { Player } from "../lib/player/player.service";
 import LineupEditor from "./LineupEditor";
 import InviteDialog from "./LineupEditor/InviteDialog";
 
@@ -32,7 +32,7 @@ export default function LineUp({
         <p className="mb-6">
           {players.length} / {game.total_players} joueurs inscrits.
         </p>
-        <LineupEditor players={players} disabled={disabled} />
+        <LineupEditor gameId={game.id} players={players} disabled={disabled} />
       </CardContent>
       <CardFooter>
         <InviteDialog gameId={game.id} disabled={disabled} />

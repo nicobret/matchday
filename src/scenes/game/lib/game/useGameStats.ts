@@ -10,7 +10,7 @@ export default function useGameStats({
 }) {
   return useQuery({
     queryKey: ["game_stats", gameId, sortby],
-    queryFn: () => fetchGameStats(gameId, sortby),
+    queryFn: async () => await fetchGameStats(gameId, sortby),
     enabled: !!gameId,
   });
 }

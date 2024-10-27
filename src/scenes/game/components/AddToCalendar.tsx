@@ -7,7 +7,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { google, ics, outlook, yahoo } from "calendar-link";
 import { Calendar } from "lucide-react";
-import { Game, getCalendarEvent } from "../lib/game.service";
+import { Game, getCalendarEvent } from "../lib/game/game.service";
 
 export default function AddToCalendar({ game }: { game: Game }) {
   const event = getCalendarEvent(game);

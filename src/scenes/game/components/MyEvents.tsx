@@ -9,11 +9,11 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { queryClient } from "@/lib/react-query";
-import { Player } from "../lib/player.service";
-import useUpdatePlayer from "../lib/useUpdatePlayer";
+import { Player } from "../lib/player/player.service";
+import useUpdatePlayer from "../lib/player/useUpdatePlayer";
 
 export default function MyEvents({ player }: { player: Player }) {
-  const { mutate, isLoading } = useUpdatePlayer(player.id);
+  const { mutate, isLoading } = useUpdatePlayer(player.game_id);
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -24,7 +24,7 @@ export default function MyEvents({ player }: { player: Player }) {
     const saves = parseInt(form.get("saves") as string) || 0;
 
     mutate(
-      { goals, assists, saves },
+      { id: player.id, goals, assists, saves },
       { onSuccess: () => queryClient.invalidateQueries("game_stats") },
     );
   }

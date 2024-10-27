@@ -42,6 +42,42 @@ export async function fetchGame(id: number) {
   return data;
 }
 
+function buildGamesQuery(
+  clubId?: number,
+  filter?: "all" | "next" | "past",
+  seasonId?: string,
+) {
+  let query = supabase.from("games").select(queryString);
+
+  if (clubId) {
+    query = query.eq("club_id", clubId);
+  }
+  if (filter === "next") {
+    query = query.gte("date", new Date().toISOString());
+  }
+  if (filter === "past") {
+    query = query.lt("date", new Date().toISOString());
+  }
+  if (seasonId === "none") {
+    query = query.is("season_id", null);
+  } else if (seasonId) {
+    query = query.eq("season_id", seasonId);
+  }
+
+  return query.neq("status", "deleted").order("date", { ascending: false });
+}
+
+export async function fetchGames(
+  clubId?: number,
+  filter?: "all" | "next" | "past",
+  seasonId?: string,
+) {
+  const query = buildGamesQuery(clubId, filter, seasonId);
+  const { data } = await query.throwOnError();
+  if (!data) return [];
+  return data;
+}
+
 export async function createGame(payload: createGamePayload) {
   const { data } = await supabase
     .from("games")
