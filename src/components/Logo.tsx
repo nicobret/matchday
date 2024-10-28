@@ -1,14 +1,17 @@
 export default function Logo() {
   return (
-    <div className="flex items-center p-2">
+    <div className="relative flex items-center gap-4 p-2">
       <p className="font-new-amsterdam text-3xl text-secondary-foreground">
         Match
+      </p>
+      <p className="font-new-amsterdam text-3xl text-secondary-foreground">
+        day
       </p>
       <svg
         viewBox="0 0 94.415428 123.00688"
         version="1.1"
         id="svg125"
-        className="h-8 w-8 text-primary"
+        className="absolute right-9 h-8 w-8 text-primary"
       >
         <g id="layer1" transform="translate(-39.123776,-65.510006)">
           <path
@@ -18,9 +21,6 @@ export default function Logo() {
           />
         </g>
       </svg>
-      <p className="font-new-amsterdam text-3xl text-secondary-foreground">
-        day
-      </p>
     </div>
   );
 }

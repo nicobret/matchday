@@ -42,7 +42,7 @@ export default function UpcomingGames({
               {games.map((game) => (
                 <CarouselItem
                   key={game.id}
-                  className="lg:basis-1/2 xl:basis-1/3"
+                  className="lg:basis-1/2 xl:basis-1/3 2xl:basis-1/4"
                 >
                   <GameCard game={game} />
                 </CarouselItem>

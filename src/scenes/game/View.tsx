@@ -160,7 +160,7 @@ export default function View() {
         </p>
       </div>
 
-      <div className="mt-8 grid grid-cols-2 gap-2 md:grid-cols-4">
+      <div className="mt-6 grid grid-cols-2 gap-2 md:grid-cols-4">
         {!isPlayer && (
           <Button
             onClick={handleJoin}
@@ -220,7 +220,7 @@ export default function View() {
 
       <Tabs
         defaultValue={hasEnded ? "stats" : "players"}
-        className="mt-8 w-full"
+        className="mt-6 w-full"
       >
         <TabsList className="w-full">
           <TabsTrigger value="players" disabled={!isMember} className="w-1/2">

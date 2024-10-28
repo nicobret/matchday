@@ -151,7 +151,7 @@ export default function View() {
           )}
         </div>
 
-        <div className="mx-auto mt-8 max-w-lg rounded-lg border p-4">
+        <div className="mx-auto mt-6 max-w-lg rounded-lg border p-4">
           <p>
             <Shield className="mr-2 inline-block h-5 w-5" />
             Créé le{" "}
@@ -183,7 +183,7 @@ export default function View() {
         </div>
       </div>
 
-      <Tabs defaultValue="schedule" className="mt-8 w-full md:mt-0">
+      <Tabs defaultValue="schedule" className="mt-6 w-full md:mt-0">
         <TabsList className="w-full">
           <TabsTrigger value="schedule" className="w-1/2">
             <Calendar className="mr-2 inline-block h-4 w-4" />

@@ -61,6 +61,7 @@ export default function ClubStats({ clubId }: { clubId: number }) {
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="games">Matchs</SelectItem>
+                <SelectItem value="wins">Victoires</SelectItem>
                 <SelectItem value="goals">Buts</SelectItem>
                 <SelectItem value="assists">Passes décisives</SelectItem>
                 <SelectItem value="saves">Arrêts</SelectItem>
@@ -74,6 +75,7 @@ export default function ClubStats({ clubId }: { clubId: number }) {
             <TableRow>
               <TableHead>Prénom</TableHead>
               <TableHead>Matchs</TableHead>
+              <TableHead>Victoires</TableHead>
               <TableHead>Buts</TableHead>
               <TableHead>Passes décisives</TableHead>
               <TableHead>Arrêts</TableHead>
@@ -87,6 +89,7 @@ export default function ClubStats({ clubId }: { clubId: number }) {
                   <TableRow key={row.user_id}>
                     <TableCell>{row.firstname}</TableCell>
                     <TableCell>{row.games}</TableCell>
+                    <TableCell>{row.wins}</TableCell>
                     <TableCell>{row.goals}</TableCell>
                     <TableCell>{row.assists}</TableCell>
                     <TableCell>{row.saves}</TableCell>

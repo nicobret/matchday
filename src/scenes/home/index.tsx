@@ -42,16 +42,16 @@ export default function Home() {
     <div className="mx-auto max-w-5xl p-4">
       <Guide profile={profile} />
 
-      <section id="clubs" className="mt-12">
+      <section id="clubs" className="mt-8">
         <h2 className="scroll-m-20 text-3xl font-semibold tracking-tight">
           Clubs
         </h2>
 
-        <div className="mt-6">{session?.user ? <CreateDialog /> : null}</div>
+        <div className="mt-4">{session?.user ? <CreateDialog /> : null}</div>
 
         <Tabs
           defaultValue={myClubs.length > 1 ? "club-list" : "search"}
-          className="mt-8"
+          className="mt-4"
         >
           <TabsList className="w-full">
             <TabsTrigger value="search" className="w-1/2">
