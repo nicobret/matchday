@@ -65,7 +65,7 @@ function buildGamesQuery(
     query = query.eq("season_id", seasonId);
   }
 
-  return query.neq("status", "deleted").order("date", { ascending: true });
+  return query.neq("status", "deleted").order("date", { ascending: false });
 }
 
 export async function fetchGames(

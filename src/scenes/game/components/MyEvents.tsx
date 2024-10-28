@@ -15,7 +15,7 @@ import useUpdatePlayer from "../lib/player/useUpdatePlayer";
 export default function MyEvents({ player }: { player: Player }) {
   const { mutate, isLoading } = useUpdatePlayer(player.game_id);
 
-  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+  function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
 
     const form = new FormData(e.target as HTMLFormElement);
@@ -30,7 +30,7 @@ export default function MyEvents({ player }: { player: Player }) {
   }
 
   return (
-    <Card id="my-events" className="col-span-2 md:col-span-1">
+    <Card id="events" className="col-span-2 md:col-span-1">
       <CardHeader>
         <CardTitle>Mes actions</CardTitle>
       </CardHeader>
