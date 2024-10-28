@@ -10,6 +10,7 @@ import {
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { ArrowLeft } from "lucide-react";
+import moment from "moment-timezone";
 import { useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { Game } from "../club/lib/club.service";
@@ -56,7 +57,7 @@ function Editor({ game }: { game: Game }) {
   function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const updatedGame = {
-      date: `${data.date}T${data.time}+02:00`,
+      date: moment.tz(`${data.date}T${data.time}`, "Europe/Paris").format(),
       duration: data.durationInMinutes * 60,
       location: data.location,
       total_players: data.total_players,

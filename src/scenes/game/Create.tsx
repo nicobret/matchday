@@ -10,6 +10,7 @@ import {
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { ArrowLeft } from "lucide-react";
+import moment from "moment-timezone";
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Club } from "../club/lib/club.service";
@@ -80,7 +81,7 @@ function GameForm({ club }: { club: Club }) {
     }
 
     const newgame = {
-      date: new Date(`${date} ${time}`).toISOString(),
+      date: moment.tz(`${date}T${time}`, "Europe/Paris").format(),
       season_id: season,
       total_players: playerCount,
       location,
