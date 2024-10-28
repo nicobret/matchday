@@ -25,7 +25,9 @@ import { useState } from "react";
 import useClubStats from "../lib/useClubStats";
 
 export default function ClubStats({ clubId }: { clubId: number }) {
-  const [sortby, setSortby] = useState<"goals" | "assists" | "saves">("goals");
+  const [sortby, setSortby] = useState<"games" | "goals" | "assists" | "saves">(
+    "goals",
+  );
   const { data, isError, isLoading, isIdle } = useClubStats({ clubId });
 
   if (isIdle) {
@@ -38,7 +40,7 @@ export default function ClubStats({ clubId }: { clubId: number }) {
     return <div>Erreur</div>;
   }
   return (
-    <Card>
+    <Card id="stats">
       <CardHeader>
         <CardTitle>Statistiques</CardTitle>
       </CardHeader>
@@ -58,6 +60,7 @@ export default function ClubStats({ clubId }: { clubId: number }) {
                 <SelectValue placeholder="Trier par" />
               </SelectTrigger>
               <SelectContent>
+                <SelectItem value="games">Matchs</SelectItem>
                 <SelectItem value="goals">Buts</SelectItem>
                 <SelectItem value="assists">Passes décisives</SelectItem>
                 <SelectItem value="saves">Arrêts</SelectItem>
@@ -70,6 +73,7 @@ export default function ClubStats({ clubId }: { clubId: number }) {
           <TableHeader>
             <TableRow>
               <TableHead>Prénom</TableHead>
+              <TableHead>Matchs</TableHead>
               <TableHead>Buts</TableHead>
               <TableHead>Passes décisives</TableHead>
               <TableHead>Arrêts</TableHead>
@@ -82,6 +86,7 @@ export default function ClubStats({ clubId }: { clubId: number }) {
                 return (
                   <TableRow key={row.user_id}>
                     <TableCell>{row.firstname}</TableCell>
+                    <TableCell>{row.games}</TableCell>
                     <TableCell>{row.goals}</TableCell>
                     <TableCell>{row.assists}</TableCell>
                     <TableCell>{row.saves}</TableCell>

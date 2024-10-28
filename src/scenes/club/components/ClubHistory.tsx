@@ -48,7 +48,7 @@ export default function ClubHistory({ club }: { club: Club }) {
     return <p className="text-center">Chargement...</p>;
   }
   return (
-    <Card className="md:col-span-2" id="history">
+    <Card id="history">
       <CardHeader>
         <CardTitle>Historique</CardTitle>
       </CardHeader>

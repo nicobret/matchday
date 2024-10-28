@@ -11,6 +11,7 @@ export type Game = Tables<"games"> & {
 export type createGamePayload = {
   creator_id: string;
   club_id: number;
+  season_id?: string;
   date: string;
   total_players: number;
   location: string;
@@ -26,13 +27,13 @@ export type updateGamePayload = Partial<
   >
 >;
 
-const queryString =
+const selectQuery =
   "*, club: clubs!games_club_id_fkey (*), players: game_player (*), season: season (*)";
 
 export async function fetchGame(id: number) {
   const { data } = await supabase
     .from("games")
-    .select(queryString)
+    .select(selectQuery)
     .eq("id", id)
     .single()
     .throwOnError();
@@ -47,7 +48,7 @@ function buildGamesQuery(
   filter?: "all" | "next" | "past",
   seasonId?: string,
 ) {
-  let query = supabase.from("games").select(queryString);
+  let query = supabase.from("games").select(selectQuery);
 
   if (clubId) {
     query = query.eq("club_id", clubId);
@@ -64,7 +65,7 @@ function buildGamesQuery(
     query = query.eq("season_id", seasonId);
   }
 
-  return query.neq("status", "deleted").order("date", { ascending: false });
+  return query.neq("status", "deleted").order("date", { ascending: true });
 }
 
 export async function fetchGames(
@@ -82,7 +83,7 @@ export async function createGame(payload: createGamePayload) {
   const { data } = await supabase
     .from("games")
     .insert(payload)
-    .select(queryString)
+    .select(selectQuery)
     .single()
     .throwOnError();
   return data;
@@ -93,7 +94,7 @@ export async function updateGame(id: number, payload: updateGamePayload) {
     .from("games")
     .update(payload)
     .eq("id", id)
-    .select(queryString)
+    .select(selectQuery)
     .single()
     .throwOnError();
   return data;

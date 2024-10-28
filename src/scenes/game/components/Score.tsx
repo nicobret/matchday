@@ -29,64 +29,51 @@ export default function Result({
   players: Player[];
 }) {
   return (
-    <Card>
+    <Card id="score" className="col-span-2 flex flex-col md:col-span-1">
       <CardHeader>
         <CardTitle className="flex items-center gap-3">Résultat</CardTitle>
       </CardHeader>
       <CardContent>
-        {new Date(game.date) > new Date() ? (
-          <p className="text-center text-muted-foreground">
-            Le match commence dans{" "}
-            {Math.floor(
-              (new Date(game.date).getTime() - new Date().getTime()) /
-                (1000 * 60 * 60 * 24),
-            )}{" "}
-            jours.
-          </p>
-        ) : (
-          <div>
-            {game.score ? (
-              <div className="grid grid-cols-3 gap-4">
-                <div className="text-right">
-                  <p>
-                    <strong>Domicile</strong>
+        {game.score ? (
+          <div className="grid grid-cols-3 gap-4">
+            <div className="text-right">
+              <p>
+                <strong>Domicile</strong>
+              </p>
+              {players
+                .filter((p) => p.team === 0)
+                .map((p) => (
+                  <p key={p.id}>
+                    {p.profile?.firstname} {p.profile?.lastname}
                   </p>
-                  {players
-                    .filter((p) => p.team === 0)
-                    .map((p) => (
-                      <p key={p.id}>
-                        {p.profile?.firstname} {p.profile?.lastname}
-                      </p>
-                    ))}
-                </div>
+                ))}
+            </div>
 
-                <div>
-                  <p className="text-center text-lg">
-                    {game.score[0].toString()} - {game.score[1].toString()}
-                  </p>
-                </div>
+            <div>
+              <p className="text-center text-lg">
+                {game.score[0].toString()} - {game.score[1].toString()}
+              </p>
+            </div>
 
-                <div>
-                  <p>
-                    <strong>Visiteurs</strong>
+            <div>
+              <p>
+                <strong>Visiteurs</strong>
+              </p>
+              {players
+                .filter((p) => p.team === 1)
+                .map((p) => (
+                  <p key={p.id}>
+                    {p.profile?.firstname} {p.profile?.lastname}
                   </p>
-                  {players
-                    .filter((p) => p.team === 1)
-                    .map((p) => (
-                      <p key={p.id}>
-                        {p.profile?.firstname} {p.profile?.lastname}
-                      </p>
-                    ))}
-                </div>
-              </div>
-            ) : (
-              <p className="text-center">Aucun résultat.</p>
-            )}
+                ))}
+            </div>
           </div>
+        ) : (
+          <p className="text-center text-muted-foreground">Aucun résultat.</p>
         )}
       </CardContent>
-      <CardFooter className="mt-auto flex justify-end">
-        {new Date() > new Date(game.date) ? <ScoreDialog game={game} /> : null}
+      <CardFooter className="mt-auto">
+        <ScoreDialog game={game} />
       </CardFooter>
     </Card>
   );
@@ -106,7 +93,7 @@ function ScoreDialog({ game }: { game: Tables<"games"> }) {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button variant="secondary">
+        <Button variant={game.score ? "secondary" : "default"}>
           {game.score ? "Modifier" : "Saisir"}
         </Button>
       </DialogTrigger>

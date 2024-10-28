@@ -30,7 +30,7 @@ export default function MyEvents({ player }: { player: Player }) {
   }
 
   return (
-    <Card>
+    <Card id="my-events" className="col-span-2 md:col-span-1">
       <CardHeader>
         <CardTitle>Mes actions</CardTitle>
       </CardHeader>
