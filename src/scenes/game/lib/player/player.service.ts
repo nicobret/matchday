@@ -86,17 +86,23 @@ export async function updateCache(data: Partial<Player>) {
     console.error("game_id is required to update cache");
     return;
   }
+  if (!data.id) {
+    console.error("player id is required to update cache");
+    return;
+  }
 
   const cacheData: Player[] =
     queryClient.getQueryData(["players", data.game_id]) ?? [];
 
   if (cacheData.some((p: Player) => p.id === data.id)) {
+    // update
     queryClient.setQueryData(
       ["players", data.game_id],
       (cache?: Player[]) =>
         cache?.map((p) => (p.id === data.id ? { ...p, ...data } : p)) ?? [],
     );
-  } else if (data.id) {
+  } else {
+    // create
     const player = await fetchPlayer(data.id);
     if (!player) return;
     queryClient.setQueryData(["players", data.game_id], (cache?: Player[]) => [

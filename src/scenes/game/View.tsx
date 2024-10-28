@@ -9,7 +9,6 @@ import {
   ClipboardSignature,
   Clock,
   Copy,
-  List,
   Loader,
   MapPin,
   Pencil,
@@ -224,19 +223,14 @@ export default function View() {
         className="mt-8 w-full"
       >
         <TabsList className="w-full">
-          <TabsTrigger value="players" disabled={!isMember} className="w-1/3">
+          <TabsTrigger value="players" disabled={!isMember} className="w-1/2">
             <Users className="mr-2 inline-block h-4 w-4" />
             Joueurs
           </TabsTrigger>
 
-          <TabsTrigger value="results" className="w-1/3">
-            <List className="mr-2 inline-block h-4 w-4" />
-            Résultats
-          </TabsTrigger>
-
-          <TabsTrigger value="stats" className="w-1/3">
+          <TabsTrigger value="stats" className="w-1/2">
             <BarChart className="mr-2 inline-block h-4 w-4" />
-            Stats
+            Data
           </TabsTrigger>
         </TabsList>
 
@@ -251,18 +245,23 @@ export default function View() {
           </div>
         </TabsContent>
 
-        <TabsContent value="results">
-          <Score game={game} players={confirmedPlayers} />
-        </TabsContent>
-
         <TabsContent value="stats">
-          {!!player && (
-            <>
-              <MyEvents player={player} />
-              <br />
-            </>
-          )}
-          <GameStats gameId={Number(id)} />
+          {/* {hasStarted ? ( */}
+          <div className="grid grid-cols-2 gap-2">
+            <Score game={game} players={confirmedPlayers} />
+            {!!player && <MyEvents player={player} />}
+            <GameStats gameId={Number(id)} />
+          </div>
+          {/* ) : (
+            <p className="mt-4   text-center text-muted-foreground">
+              Le match commence dans{" "}
+              {Math.floor(
+                (new Date(game.date).getTime() - new Date().getTime()) /
+                  (1000 * 60 * 60 * 24),
+              )}{" "}
+              jours.
+            </p>
+          )} */}
         </TabsContent>
       </Tabs>
     </div>

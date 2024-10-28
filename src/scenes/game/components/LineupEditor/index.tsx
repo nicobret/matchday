@@ -34,12 +34,7 @@ export default function LineupEditor({
       return;
     }
 
-    const player = players.find((p) => p.id === event.active.id);
-    if (!player) {
-      console.error("Player not found");
-      return;
-    }
-    mutate({ id: player.id, team });
+    mutate({ id: event.active.id as string, team });
   }
 
   return (

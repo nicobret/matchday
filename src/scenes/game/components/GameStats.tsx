@@ -39,79 +39,91 @@ export default function Statistics({ gameId }: { gameId: number }) {
     return <div>Erreur</div>;
   }
   return (
-    <Card>
+    <Card id="stats" className="col-span-2">
       <CardHeader>
         <CardTitle>Joueurs</CardTitle>
       </CardHeader>
 
       <CardContent>
-        <div className="mb-2 flex gap-2">
-          <div className="grid w-full max-w-36 items-center gap-1.5">
-            <Label>Trier par</Label>
-            <Select
-              name="sortby"
-              value={sortby}
-              onValueChange={(value: "goals" | "assists" | "saves") =>
-                setSortby(value)
-              }
-            >
-              <SelectTrigger>
-                <SelectValue placeholder="Trier par" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="goals">Buts</SelectItem>
-                <SelectItem value="assists">Passes décisives</SelectItem>
-                <SelectItem value="saves">Arrêts</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
+        {data.length ? (
+          <>
+            <div className="mb-2 flex gap-2">
+              <div className="grid w-full max-w-36 items-center gap-1.5">
+                <Label>Trier par</Label>
+                <Select
+                  name="sortby"
+                  value={sortby}
+                  onValueChange={(value: "goals" | "assists" | "saves") =>
+                    setSortby(value)
+                  }
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Trier par" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="goals">Buts</SelectItem>
+                    <SelectItem value="assists">Passes décisives</SelectItem>
+                    <SelectItem value="saves">Arrêts</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
 
-          <div className="grid w-full max-w-36 items-center gap-1.5">
-            <Label>Equipe</Label>
-            <Select
-              name="team"
-              value={team}
-              onValueChange={(value: "home" | "away" | "all") => setTeam(value)}
-            >
-              <SelectTrigger>
-                <SelectValue placeholder="Trier par" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">Toutes</SelectItem>
-                <SelectItem value="home">Domicile</SelectItem>
-                <SelectItem value="away">Extérieur</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-        </div>
-
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>Prénom</TableHead>
-              <TableHead>Equipe</TableHead>
-              <TableHead>Buts</TableHead>
-              <TableHead>Passes décisives</TableHead>
-              <TableHead>Arrêts</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {data
-              .filter((row) => !!row.user_id)
-              .filter((row) => (team === "all" ? true : row.user_team === team))
-              .map((row) => {
-                return (
-                  <TableRow key={row.user_id}>
-                    <TableCell>{row.firstname}</TableCell>
-                    <TableCell>{row.user_team}</TableCell>
-                    <TableCell>{row.goals}</TableCell>
-                    <TableCell>{row.assists}</TableCell>
-                    <TableCell>{row.saves}</TableCell>
-                  </TableRow>
-                );
-              })}
-          </TableBody>
-        </Table>
+              <div className="grid w-full max-w-36 items-center gap-1.5">
+                <Label>Equipe</Label>
+                <Select
+                  name="team"
+                  value={team}
+                  onValueChange={(value: "home" | "away" | "all") =>
+                    setTeam(value)
+                  }
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Trier par" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">Toutes</SelectItem>
+                    <SelectItem value="home">Domicile</SelectItem>
+                    <SelectItem value="away">Extérieur</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Prénom</TableHead>
+                  <TableHead>Equipe</TableHead>
+                  <TableHead>Buts</TableHead>
+                  <TableHead>Passes décisives</TableHead>
+                  <TableHead>Arrêts</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {data
+                  .filter((row) => !!row.user_id)
+                  .filter((row) =>
+                    team === "all" ? true : row.user_team === team,
+                  )
+                  .map((row) => {
+                    return (
+                      <TableRow key={row.user_id}>
+                        <TableCell>{row.firstname}</TableCell>
+                        <TableCell>{row.user_team}</TableCell>
+                        <TableCell>{row.goals}</TableCell>
+                        <TableCell>{row.assists}</TableCell>
+                        <TableCell>{row.saves}</TableCell>
+                      </TableRow>
+                    );
+                  })}
+              </TableBody>
+            </Table>
+          </>
+        ) : (
+          <p className="text-center text-muted-foreground">
+            Afin d'afficher la liste des actions, saisissez un score pour le
+            match.
+          </p>
+        )}
       </CardContent>
 
       <CardFooter></CardFooter>

@@ -195,13 +195,17 @@ export default function View() {
           </TabsTrigger>
         </TabsList>
 
-        <TabsContent value="schedule" className="grid grid-cols-1 gap-4">
-          <UpcomingGames clubId={club.id} enableGameCreation={isMember} />
-          <ClubHistory club={club} />
+        <TabsContent value="schedule">
+          <div className="grid grid-cols-1 gap-2">
+            <UpcomingGames clubId={club.id} enableGameCreation={isMember} />
+            <ClubHistory club={club} />
+          </div>
         </TabsContent>
-        <TabsContent value="members" className="grid grid-cols-1 gap-4">
-          <ClubStats clubId={club.id} />
-          <ClubMembers clubId={club.id} />
+        <TabsContent value="members">
+          <div className="grid grid-cols-1 gap-2">
+            <ClubStats clubId={club.id} />
+            <ClubMembers clubId={club.id} />
+          </div>
         </TabsContent>
       </Tabs>
     </div>

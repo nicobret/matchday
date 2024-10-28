@@ -81,8 +81,9 @@ function GameForm({ club }: { club: Club }) {
 
     const newgame = {
       date: new Date(`${date} ${time}`).toISOString(),
+      season_id: season,
       total_players: playerCount,
-      location: location,
+      location,
       status: "published",
       duration: durationInMinutes * 60,
       category,

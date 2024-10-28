@@ -17,7 +17,7 @@ export default function GameCard({ game }: { game: Game }) {
   return (
     <Card className="bg-accent">
       <CardHeader>
-        <CardTitle className="capitalize">
+        <CardTitle className="line-clamp-1 capitalize">
           {new Date(game.date).toLocaleDateString("fr-FR", {
             weekday: "long",
             month: "short",

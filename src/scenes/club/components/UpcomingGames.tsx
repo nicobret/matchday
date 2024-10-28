@@ -28,7 +28,7 @@ export default function UpcomingGames({
 }) {
   const { data: games } = useGames(clubId, "next");
   return (
-    <Card className="flex flex-col md:col-span-2" id="upcoming">
+    <Card id="upcoming">
       <CardHeader>
         <CardTitle>
           <p>Matches à venir</p>
@@ -42,7 +42,7 @@ export default function UpcomingGames({
               {games.map((game) => (
                 <CarouselItem
                   key={game.id}
-                  className="sm:basis-1/2 lg:basis-1/3 xl:basis-1/4"
+                  className="lg:basis-1/2 xl:basis-1/3"
                 >
                   <GameCard game={game} />
                 </CarouselItem>
@@ -56,7 +56,7 @@ export default function UpcomingGames({
         )}
       </CardContent>
 
-      <CardFooter className="mt-auto flex justify-end gap-2">
+      <CardFooter>
         {enableGameCreation && (
           <Link
             to={`/game/create?clubId=${clubId}`}

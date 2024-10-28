@@ -18,6 +18,7 @@ export default function useClubStats({ clubId }: { clubId: number }) {
       user_id: userId,
       firstname: userStats[0].firstname,
       lastname: userStats[0].lastname,
+      games: userStats.length,
       goals: userStats.reduce((acc, row) => acc + (row.goals || 0), 0),
       assists: userStats.reduce((acc, row) => acc + (row.assists || 0), 0),
       saves: userStats.reduce((acc, row) => acc + (row.saves || 0), 0),
