@@ -40,7 +40,6 @@ export default function View() {
   const confirmedPlayers =
     players?.filter((p) => p.status === "confirmed") || [];
   const player = players?.find((p) => p.user_id === session?.user.id);
-
   const createPlayer = useCreatePlayer(Number(id));
   const updatePlayer = useUpdatePlayer(Number(id));
 
@@ -88,10 +87,11 @@ export default function View() {
     if (!window.confirm("Voulez-vous vraiment vous désinscrire ?")) {
       return;
     }
-    if (!game || !session?.user) {
+    if (!game || !player) {
+      console.error("Game or player not found");
       return;
     }
-    updatePlayer.mutate({ id: session.user.id, status: "cancelled" });
+    updatePlayer.mutate({ id: player.id, status: "cancelled" });
   }
 
   const userStatus = isPlayer

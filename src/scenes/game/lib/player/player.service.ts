@@ -20,12 +20,12 @@ export type Player = Tables<"game_player"> & {
   profile: Tables<"users"> | null;
 };
 
-const query = "*, profile: users (*)";
+const selectQuery = "*, profile: users (*)";
 
 export async function fetchPlayer(id: string) {
   const { data } = await supabase
     .from("game_player")
-    .select(query)
+    .select(selectQuery)
     .eq("id", id)
     .single()
     .throwOnError();
@@ -35,7 +35,7 @@ export async function fetchPlayer(id: string) {
 export async function fetchPlayers(game_id: number) {
   const { data } = await supabase
     .from("game_player")
-    .select(query)
+    .select(selectQuery)
     .eq("game_id", game_id)
     .throwOnError();
   return data;
@@ -73,7 +73,7 @@ export async function updatePlayer(id: string, payload: Partial<Player>) {
     .from("game_player")
     .update(payload)
     .eq("id", id)
-    .select(query)
+    .select(selectQuery)
     .single()
     .throwOnError();
   if (data) {
