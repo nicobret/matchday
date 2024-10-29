@@ -2,6 +2,7 @@ import supabase from "@/utils/supabase";
 import { CalendarEvent } from "calendar-link";
 import { Tables } from "types/supabase";
 
+// Types
 export type Game = Tables<"games"> & {
   club?: Tables<"clubs"> | null;
   players?: Tables<"game_player">[];
@@ -30,6 +31,7 @@ export type updateGamePayload = Partial<
 const selectQuery =
   "*, club: clubs!games_club_id_fkey (*), players: game_player (*), season: season (*)";
 
+// Repository
 export async function fetchGame(id: number) {
   const { data } = await supabase
     .from("games")
@@ -43,37 +45,12 @@ export async function fetchGame(id: number) {
   return data;
 }
 
-function buildGamesQuery(
-  clubId?: number,
-  filter?: "all" | "next" | "past",
-  seasonId?: string,
-) {
-  let query = supabase.from("games").select(selectQuery);
-
-  if (clubId) {
-    query = query.eq("club_id", clubId);
-  }
-  if (filter === "next") {
-    query = query.gte("date", new Date().toISOString());
-  }
-  if (filter === "past") {
-    query = query.lt("date", new Date().toISOString());
-  }
-  if (seasonId === "none") {
-    query = query.is("season_id", null);
-  } else if (seasonId) {
-    query = query.eq("season_id", seasonId);
-  }
-
-  return query.neq("status", "deleted").order("date", { ascending: false });
-}
-
 export async function fetchGames(
   clubId?: number,
   filter?: "all" | "next" | "past",
   seasonId?: string,
 ) {
-  const query = buildGamesQuery(clubId, filter, seasonId);
+  const query = gamesQueryBuilder(clubId, filter, seasonId);
   const { data } = await query.throwOnError();
   if (!data) return [];
   return data;
@@ -98,6 +75,36 @@ export async function updateGame(id: number, payload: updateGamePayload) {
     .single()
     .throwOnError();
   return data;
+}
+
+// Utils
+function gamesQueryBuilder(
+  clubId?: number,
+  filter?: "all" | "next" | "past",
+  seasonId?: string,
+) {
+  let query = supabase.from("games").select(selectQuery);
+
+  if (clubId) {
+    query = query.eq("club_id", clubId);
+  }
+  if (filter === "next") {
+    query = query
+      .gte("date", new Date().toISOString())
+      .order("date", { ascending: true });
+  }
+  if (filter === "past") {
+    query = query
+      .lt("date", new Date().toISOString())
+      .order("date", { ascending: false });
+  }
+  if (seasonId === "none") {
+    query = query.is("season_id", null);
+  } else if (seasonId) {
+    query = query.eq("season_id", seasonId);
+  }
+
+  return query.neq("status", "deleted").order("date", { ascending: false });
 }
 
 export function getCalendarEvent(g: Game): CalendarEvent {
