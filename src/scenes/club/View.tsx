@@ -38,7 +38,11 @@ export default function View() {
 
   async function handleJoin(club: Club) {
     if (!session?.user) {
-      if (window.confirm("Pour vous inscrire, veuillez vous connecter.")) {
+      if (
+        window.confirm(
+          "Pour rejoindre un club, veuillez vous inscrire ou vous connecter.",
+        )
+      ) {
         window.location.href = "/auth?redirectTo=" + window.location.pathname;
       }
       return;
