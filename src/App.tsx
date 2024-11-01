@@ -1,15 +1,21 @@
 import { Suspense, lazy, useEffect } from "react";
 import { QueryClientProvider } from "react-query";
-import { BrowserRouter, Route, Routes, useLocation } from "react-router-dom";
+// import { BrowserRouter, Route, Routes, useLocation } from "react-router-dom";
+import { Route, Switch, useLocation } from "wouter";
 import { SessionProvider } from "./components/auth-provider.tsx";
 import Layout from "./components/Layout.tsx";
 import { ThemeProvider } from "./components/theme-provider.tsx";
 import "./index.css";
 import { queryClient } from "./lib/react-query.ts";
+import EditClub from "./scenes/club/Edit";
+import ViewClub from "./scenes/club/View.tsx";
+import CreateGame from "./scenes/game/Create.tsx";
+import EditGame from "./scenes/game/Edit.tsx";
+import ViewGame from "./scenes/game/View.tsx";
 
 const Account = lazy(() => import("./scenes/account"));
-const Club = lazy(() => import("./scenes/club"));
-const Game = lazy(() => import("./scenes/game"));
+// const Club = lazy(() => import("./scenes/club"));
+// const Game = lazy(() => import("./scenes/game"));
 const Home = lazy(() => import("./scenes/home"));
 const Player = lazy(() => import("./scenes/player"));
 const Auth = lazy(() => import("./scenes/auth"));
@@ -18,24 +24,25 @@ export default function App() {
   return (
     <ThemeProvider storageKey="vite-ui-theme">
       <QueryClientProvider client={queryClient}>
-        <BrowserRouter>
-          <SessionProvider>
-            <Layout>
-              <ScrollToTop />
-              <Suspense fallback={<Fallback />}>
-                <Routes>
-                  <Route path="/auth" element={<Auth />} />
-                  <Route path="/account" element={<Account />} />
-                  <Route path="/club/*" element={<Club />} />
-                  <Route path="/game/*" element={<Game />} />
-                  <Route path="/player/:id" element={<Player />} />
-                  <Route path="/" element={<Home />} />
-                  <Route path="*" element={<NotFound />} />
-                </Routes>
-              </Suspense>
-            </Layout>
-          </SessionProvider>
-        </BrowserRouter>
+        <SessionProvider>
+          <Layout>
+            {/* <ScrollToTop /> */}
+            <Suspense fallback={<Fallback />}>
+              <Switch>
+                <Route path="/auth" component={Auth} />
+                <Route path="/account" component={Account} />
+                <Route path="/club/:id/" component={ViewClub} />
+                <Route path="/club/:id/edit" component={EditClub} />
+                <Route path="/game/:id" component={ViewGame} />
+                <Route path="/game/:id/edit" component={EditGame} />
+                <Route path="/game/create" component={CreateGame} />
+                <Route path="/player/:id" component={Player} />
+                <Route path="/" component={Home} />
+                <Route component={NotFound} />
+              </Switch>
+            </Suspense>
+          </Layout>
+        </SessionProvider>
       </QueryClientProvider>
     </ThemeProvider>
   );

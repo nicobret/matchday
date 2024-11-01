@@ -7,7 +7,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { ArrowRight, CheckCircle, Hourglass, Users } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Link } from "wouter";
 import { Game } from "../lib/club.service";
 
 export default function GameCard({ game }: { game: Game }) {

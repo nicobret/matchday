@@ -24,7 +24,7 @@ import {
 } from "@/components/ui/table";
 import { ArrowRight } from "lucide-react";
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link } from "wouter";
 import { Club } from "../lib/club.service";
 import useGames from "../lib/useGames";
 
