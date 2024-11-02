@@ -22,7 +22,7 @@ export default function Home() {
   }
   // Redirect to account page if profile is not complete
   if (profile && !profile?.firstname) {
-    navigate("/account");
+    navigate("~/account");
   }
   if (isLoading || isIdle) {
     return <p className="animate-pulse text-center">Chargement des clubs...</p>;

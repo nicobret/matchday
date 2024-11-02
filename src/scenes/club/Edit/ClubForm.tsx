@@ -39,7 +39,7 @@ export default function ClubForm({ initialData }: { initialData: Club }) {
       }
       await updateClub(formData, initialData.id);
       window.alert("Club modifié avec succès !");
-      navigate(`/club/${initialData.id}`);
+      navigate(`~/club/${initialData.id}`);
     } catch (error) {
       window.alert(error);
       console.error(error);

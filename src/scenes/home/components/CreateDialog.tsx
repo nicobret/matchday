@@ -75,7 +75,7 @@ export default function CreateDialog() {
 
       if (club_members) {
         window.alert("Club créé avec succès !");
-        navigate(`/club/${club[0].id}`);
+        navigate(`~/club/${club[0].id}`);
       }
     } catch (error) {
       console.error(error);

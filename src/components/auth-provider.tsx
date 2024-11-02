@@ -33,7 +33,7 @@ function SessionProvider({ children }: { children: React.ReactNode }) {
         setSession(session);
         const params = new URLSearchParams(window.location.search);
         const redirectTo = params.get("redirectTo");
-        if (redirectTo) navigate(redirectTo);
+        if (redirectTo) navigate(`~${redirectTo}`);
       } else if (session) {
         setSession(session);
       }

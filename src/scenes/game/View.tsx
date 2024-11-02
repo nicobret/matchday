@@ -66,7 +66,7 @@ export default function View() {
   async function handleJoin() {
     if (!session?.user) {
       if (window.confirm("Pour vous inscrire, veuillez vous connecter.")) {
-        navigate("/auth?redirectTo=" + window.location.pathname);
+        navigate("~/auth?redirectTo=" + window.location.pathname);
       }
       return;
     }
@@ -76,7 +76,7 @@ export default function View() {
           "Pour vous inscrire à un match, veuillez rejoindre le club organisateur.",
         )
       ) {
-        navigate(`/club/${game?.club_id}`);
+        navigate(`~/club/${game?.club_id}`);
       }
       return;
     }

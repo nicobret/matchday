@@ -70,7 +70,7 @@ function Editor({ game }: { game: Game }) {
       season_id: data.season_id,
     };
     mutate(updatedGame, {
-      onSuccess: () => navigate(`/game/${game.id}`),
+      onSuccess: () => navigate(`~/game/${game.id}`),
     });
   }
 
@@ -78,7 +78,7 @@ function Editor({ game }: { game: Game }) {
     if (window.confirm("Êtes-vous sûr de vouloir supprimer ce match ?")) {
       mutate(
         { status: "deleted" },
-        { onSuccess: () => navigate(`/club/${game.club_id}`) },
+        { onSuccess: () => navigate(`~/club/${game.club_id}`) },
       );
     }
   }
