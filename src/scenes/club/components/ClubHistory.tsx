@@ -97,7 +97,7 @@ export default function ClubHistory({ club }: { club: Club }) {
                   </TableCell>
                   <TableCell>
                     <Link
-                      to={`/game/${game.id}`}
+                      to={`~/game/${game.id}`}
                       className={
                         buttonVariants({ variant: "secondary" }) + "gap-2"
                       }

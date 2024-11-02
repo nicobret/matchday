@@ -10,9 +10,9 @@ import {
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { ArrowLeft } from "lucide-react";
-import moment from "moment-timezone";
+import { tz } from "moment-timezone";
 import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useLocation } from "wouter";
 import { Club } from "../club/lib/club.service";
 import useClub from "../club/lib/useClub";
 import { categories } from "./lib/game/game.service";
@@ -46,7 +46,7 @@ export default function CreateGame() {
 }
 
 function GameForm({ club }: { club: Club }) {
-  const navigate = useNavigate();
+  const [_location, navigate] = useLocation();
   const [category, setCategory] = useState("football");
   const [date, setDate] = useState("");
   const [time, setTime] = useState("");
@@ -81,7 +81,7 @@ function GameForm({ club }: { club: Club }) {
     }
 
     const newgame = {
-      date: moment.tz(`${date}T${time}`, "Europe/Paris").format(),
+      date: tz(`${date}T${time}`, "Europe/Paris").format(),
       season_id: season,
       total_players: playerCount,
       location,

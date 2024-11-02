@@ -15,7 +15,7 @@ import {
   Users,
 } from "lucide-react";
 import { useContext, useEffect } from "react";
-import { Link, useNavigate, useParams } from "react-router-dom";
+import { Link, useLocation, useParams } from "wouter";
 import useClub from "../club/lib/useClub";
 import AddToCalendar from "./components/AddToCalendar";
 import GameStats from "./components/GameStats";
@@ -31,7 +31,7 @@ import useUpdatePlayer from "./lib/player/useUpdatePlayer";
 
 export default function View() {
   const { id } = useParams();
-  const navigate = useNavigate();
+  const [_location, navigate] = useLocation();
   const { session } = useContext(SessionContext);
   const [copiedText, copyToClipboard] = useCopyToClipboard();
   const { data: game, hasStarted, hasEnded } = useGame(Number(id));
@@ -105,7 +105,7 @@ export default function View() {
   return (
     <div className="mx-auto max-w-5xl p-4">
       <Link
-        to={`/club/${game.club_id}`}
+        to={`~/club/${game.club_id}`}
         className="text-sm text-muted-foreground"
       >
         <ArrowLeft className="mr-2 inline-block h-4 w-4 align-text-top" />
@@ -200,10 +200,7 @@ export default function View() {
         <AddToCalendar game={game} />
 
         {session && isMember && (
-          <Link
-            to={`/game/${game.id}/edit`}
-            className={buttonVariants({ variant: "secondary" })}
-          >
+          <Link to="/edit" className={buttonVariants({ variant: "secondary" })}>
             <Pencil className="mr-2 h-4 w-4" />
             Modifier
           </Link>

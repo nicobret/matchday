@@ -10,9 +10,9 @@ import {
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { ArrowLeft } from "lucide-react";
-import moment from "moment-timezone";
+import { tz } from "moment-timezone";
 import { useState } from "react";
-import { Link, useNavigate, useParams } from "react-router-dom";
+import { Link, useLocation, useParams } from "wouter";
 import { Game } from "../club/lib/club.service";
 import useSeasons from "../club/lib/useSeasons";
 import { categories, getGameDurationInMinutes } from "./lib/game/game.service";
@@ -49,7 +49,7 @@ function getInitialFormData(game: Game) {
 }
 
 function Editor({ game }: { game: Game }) {
-  const navigate = useNavigate();
+  const [_location, navigate] = useLocation();
   const { data: seasons } = useSeasons(game.club_id);
   const [data, setData] = useState(getInitialFormData(game));
   const { mutate, isLoading } = useUpdateGame(game.id);
@@ -57,7 +57,7 @@ function Editor({ game }: { game: Game }) {
   function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const updatedGame = {
-      date: moment.tz(`${data.date}T${data.time}`, "Europe/Paris").format(),
+      date: tz(`${data.date}T${data.time}`, "Europe/Paris").format(),
       duration: data.durationInMinutes * 60,
       location: data.location,
       total_players: data.total_players,
@@ -80,7 +80,7 @@ function Editor({ game }: { game: Game }) {
 
   return (
     <div className="mx-auto max-w-5xl p-4">
-      <Link to={`/game/${game.id}`} className="text-sm text-muted-foreground">
+      <Link to={`~/game/${game.id}`} className="text-sm text-muted-foreground">
         <ArrowLeft className="mr-2 inline-block h-4 w-4 align-text-top" />
         Retour au match
       </Link>

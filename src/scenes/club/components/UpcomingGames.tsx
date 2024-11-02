@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { Link } from "wouter";
 
 import { buttonVariants } from "@/components/ui/button";
 import {
@@ -59,7 +59,7 @@ export default function UpcomingGames({
       <CardFooter>
         {enableGameCreation && (
           <Link
-            to={`/game/create?clubId=${clubId}`}
+            to={`~/game/create?clubId=${clubId}`}
             className={buttonVariants({ variant: "secondary" })}
           >
             <Plus className="mr-2 h-5 w-5" />

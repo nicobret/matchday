@@ -16,7 +16,7 @@ import {
 } from "@/components/ui/table";
 import { ArrowRight } from "lucide-react";
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link } from "wouter";
 import { Member, fetchMembers } from "../lib/club.service";
 
 function getUsername(member: Member) {
@@ -73,7 +73,7 @@ export default function ClubMembers({ clubId }: { clubId: number }) {
                   <TableCell>{member.role}</TableCell>
                   <TableCell>
                     <Link
-                      to={`/player/${member.profile?.id}?fromClub=${clubId}`}
+                      to={`~/player/${member.profile?.id}?fromClub=${clubId}`}
                       className={buttonVariants({ variant: "secondary" })}
                     >
                       Voir

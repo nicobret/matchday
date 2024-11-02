@@ -40,7 +40,7 @@ export default function GameCard({ game }: { game: Game }) {
 
       <CardFooter>
         <Link
-          to={"/game/" + game.id.toString()}
+          to={"~/game/" + game.id.toString()}
           className={`${buttonVariants()} w-full`}
         >
           Voir

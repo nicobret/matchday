@@ -146,7 +146,7 @@ export default function View() {
 
           {isAdmin && (
             <Link
-              to={`/club/${club.id}/edit`}
+              to="/edit"
               className={buttonVariants({ variant: "secondary" })}
             >
               <ClipboardSignature className="mr-2 inline-block h-5 w-5" />
