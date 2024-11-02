@@ -9,8 +9,8 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
+import { fromZonedTime } from "date-fns-tz";
 import { ArrowLeft } from "lucide-react";
-import { tz } from "moment-timezone";
 import { useState } from "react";
 import { Link, useLocation } from "wouter";
 import { Club } from "../club/lib/club.service";
@@ -80,8 +80,10 @@ function GameForm({ club }: { club: Club }) {
       return;
     }
 
+    const zonedDateTime = fromZonedTime(`${date}T${time}`, "Europe/Paris");
+
     const newgame = {
-      date: tz(`${date}T${time}`, "Europe/Paris").format(),
+      date: zonedDateTime.toISOString(),
       season_id: season,
       total_players: playerCount,
       location,

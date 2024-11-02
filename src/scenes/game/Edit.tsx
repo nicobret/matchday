@@ -9,8 +9,8 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
+import { fromZonedTime } from "date-fns-tz";
 import { ArrowLeft } from "lucide-react";
-import { tz } from "moment-timezone";
 import { useState } from "react";
 import { Link, useLocation, useParams } from "wouter";
 import { Game } from "../club/lib/club.service";
@@ -54,10 +54,15 @@ function Editor({ game }: { game: Game }) {
   const [data, setData] = useState(getInitialFormData(game));
   const { mutate, isLoading } = useUpdateGame(game.id);
 
+  const zonedDateTime = fromZonedTime(
+    `${data.date}T${data.time}`,
+    "Europe/Paris",
+  );
+
   function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const updatedGame = {
-      date: tz(`${data.date}T${data.time}`, "Europe/Paris").format(),
+      date: zonedDateTime.toISOString(),
       duration: data.durationInMinutes * 60,
       location: data.location,
       total_players: data.total_players,
