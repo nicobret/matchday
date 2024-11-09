@@ -11,14 +11,14 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
 import { Tables } from "types/supabase";
+import { useLocation } from "wouter";
 import { fetchProfile, updateProfile } from "./account.service";
 
 export default function Account() {
   const [loading, setLoading] = useState(true);
   const [profile, setProfile] = useState<Tables<"users">>();
-  const navigate = useNavigate();
+  const [_location, navigate] = useLocation();
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();

@@ -1,6 +1,6 @@
 import useSeasons from "@/scenes/club/lib/useSeasons";
 import { ArrowLeft } from "lucide-react";
-import { Link, useParams } from "react-router-dom";
+import { Link, useParams } from "wouter";
 import useClub from "../lib/useClub";
 import ClubForm from "./ClubForm";
 import DeleteClub from "./DeleteClub";

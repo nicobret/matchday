@@ -1,7 +1,7 @@
 import { ArrowLeft, TrafficCone } from "lucide-react";
 import { useEffect, useState } from "react";
-import { Link, useParams } from "react-router-dom";
 import { Tables } from "types/supabase";
+import { Link, useParams } from "wouter";
 import { fetchPlayer } from "./player.service";
 
 export default function Player() {
@@ -37,7 +37,7 @@ export default function Player() {
           Retour au club
         </Link>
       ) : (
-        <Link to="/" className="text-sm text-muted-foreground">
+        <Link to="~/" className="text-sm text-muted-foreground">
           <ArrowLeft className="mr-2 inline-block h-4 w-4 align-text-top" />
           Retour à l'accueil
         </Link>

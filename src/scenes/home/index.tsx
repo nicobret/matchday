@@ -2,7 +2,7 @@ import { SessionContext } from "@/components/auth-provider";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Search, Shield } from "lucide-react";
 import { useContext } from "react";
-import { useNavigate } from "react-router-dom";
+import { useLocation } from "wouter";
 import ClubCard from "./components/ClubCard";
 import CreateDialog from "./components/CreateDialog";
 import Guide from "./components/Guide";
@@ -11,7 +11,7 @@ import useProfile from "./useProfile";
 
 export default function Home() {
   const { session } = useContext(SessionContext);
-  const navigate = useNavigate();
+  const [_location, navigate] = useLocation();
   const { data: profile, isLoading: loadingProfile } = useProfile({ session });
   const { data: clubs, isError, isIdle, isLoading } = useClubs();
 
@@ -22,7 +22,7 @@ export default function Home() {
   }
   // Redirect to account page if profile is not complete
   if (profile && !profile?.firstname) {
-    navigate("/account");
+    navigate("~/account");
   }
   if (isLoading || isIdle) {
     return <p className="animate-pulse text-center">Chargement des clubs...</p>;

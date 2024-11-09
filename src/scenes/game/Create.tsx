@@ -12,7 +12,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { fromZonedTime } from "date-fns-tz";
 import { ArrowLeft } from "lucide-react";
 import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useLocation } from "wouter";
 import { Club } from "../club/lib/club.service";
 import useClub from "../club/lib/useClub";
 import { categories } from "./lib/game/game.service";
@@ -46,7 +46,7 @@ export default function CreateGame() {
 }
 
 function GameForm({ club }: { club: Club }) {
-  const navigate = useNavigate();
+  const [_location, navigate] = useLocation();
   const [category, setCategory] = useState("football");
   const [date, setDate] = useState("");
   const [time, setTime] = useState("");
@@ -95,14 +95,14 @@ function GameForm({ club }: { club: Club }) {
     mutate(newgame, {
       onSuccess: (data) => {
         window.alert("Match créé avec succès");
-        navigate(`/game/${data?.id}`);
+        navigate(`~/game/${data?.id}`);
       },
     });
   }
 
   return (
     <div className="p-4">
-      <Link to={`/club/${club.id}`} className="text-sm text-muted-foreground">
+      <Link to={`~/club/${club.id}`} className="text-sm text-muted-foreground">
         <ArrowLeft className="mr-2 inline-block h-4 w-4 align-text-top" />
         Retour au match
       </Link>

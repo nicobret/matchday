@@ -2,13 +2,13 @@ import { SessionContext } from "@/components/auth-provider";
 import { Button } from "@/components/ui/button";
 import { Trash } from "lucide-react";
 import { useContext, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useLocation } from "wouter";
 import { Club, deleteClub } from "../lib/club.service";
 
 export default function DeleteClub({ club }: { club: Club }) {
   const [loading, setLoading] = useState(false);
   const { session } = useContext(SessionContext);
-  const navigate = useNavigate();
+  const [_location, navigate] = useLocation();
   async function handleDelete() {
     setLoading(true);
     try {
