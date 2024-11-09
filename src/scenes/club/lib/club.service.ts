@@ -71,11 +71,26 @@ async function fetchMember(clubId: number, userId: string) {
   return data;
 }
 
+export async function updateMember(memberId: number, payload: Partial<Member>) {
+  const { data } = await supabase
+    .from("club_member")
+    .update(payload)
+    .eq("id", memberId)
+    .select()
+    .maybeSingle()
+    .throwOnError();
+  if (!data) {
+    throw new Error("Impossible de mettre à jour le membre.");
+  }
+  return data;
+}
+
 export async function fetchMembers(clubId: number) {
   const { data } = await supabase
     .from("club_member")
     .select("*, profile: users(*)")
     .eq("club_id", clubId)
+    .order("created_at", { ascending: false })
     .throwOnError();
   if (!data) return [];
   return data;
@@ -111,4 +126,14 @@ export async function leaveClub(clubId: number, userId: string) {
     throw new Error("Impossible de quitter ce club.");
   }
   return data;
+}
+
+export function getUsername(member: Member) {
+  if (member.profile?.firstname && member.profile?.lastname) {
+    return `${member.profile?.firstname} ${member.profile?.lastname}`;
+  }
+  if (member.profile?.firstname) {
+    return member.profile?.firstname;
+  }
+  return "Utilisateur sans nom";
 }

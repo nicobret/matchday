@@ -1,12 +1,5 @@
 import { Button, buttonVariants } from "@/components/ui/button";
 import {
-  Card,
-  CardContent,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import {
   Table,
   TableBody,
   TableCell,
@@ -14,84 +7,65 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { ArrowRight } from "lucide-react";
-import { useEffect, useState } from "react";
 import { Link } from "wouter";
-import { Member, fetchMembers } from "../lib/club.service";
-
-function getUsername(member: Member) {
-  if (member.profile?.firstname && member.profile?.lastname) {
-    return `${member.profile?.firstname} ${member.profile?.lastname}`;
-  }
-  if (member.profile?.firstname) {
-    return member.profile?.firstname;
-  }
-  return "Utilisateur sans nom";
-}
+import { getUsername } from "../lib/club.service";
+import useClub from "../lib/useClub";
+import { useMembers } from "../lib/useMembers";
+import { RoleSelector } from "./RoleSelector";
 
 export default function ClubMembers({ clubId }: { clubId: number }) {
-  const [members, setMembers] = useState<Member[]>([]);
-  const [loading, setLoading] = useState(false);
+  const { data, isError, isLoading, isIdle } = useMembers(clubId);
+  const { isAdmin } = useClub(clubId);
 
-  useEffect(() => {
-    setLoading(true);
-    fetchMembers(clubId)
-      .then((data) => setMembers(data))
-      .catch(console.error)
-      .finally(() => setLoading(false));
-  }, [clubId]);
-
-  if (loading) {
+  if (isIdle || isLoading) {
     return <p className="text-center">Chargement...</p>;
   }
+  if (isError) {
+    return <p className="text-center">Erreur</p>;
+  }
   return (
-    <Card id="members">
-      <CardHeader>
-        <CardTitle>
-          <p>Liste des membres</p>
-        </CardTitle>
-      </CardHeader>
-
-      <CardContent>
-        {loading ? (
-          <p className="text-center">Chargement...</p>
-        ) : members.length === 0 ? (
-          <p className="text-center">Aucun joueur dans ce club.</p>
-        ) : (
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Nom</TableHead>
-                <TableHead>Rôle</TableHead>
-                <TableHead>Actions</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {members.map((member) => (
-                <TableRow key={member.id}>
-                  <TableCell>{getUsername(member)}</TableCell>
-                  <TableCell>{member.role}</TableCell>
-                  <TableCell>
-                    <Link
-                      to={`~/player/${member.profile?.id}?fromClub=${clubId}`}
-                      className={buttonVariants({ variant: "secondary" })}
-                    >
-                      Voir
-                      <ArrowRight className="ml-2 h-5 w-5" />
-                    </Link>
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        )}
-      </CardContent>
-
-      <CardFooter className="mt-auto flex justify-end gap-2">
+    <section id="members">
+      <h2 className="scroll-m-20 border-b pb-2 text-3xl font-semibold tracking-tight">
+        Liste des membres
+      </h2>
+      <div className="mt-4">
         <Button variant="secondary" disabled>
           Inviter
         </Button>
-      </CardFooter>
-    </Card>
+      </div>
+      {isLoading ? (
+        <p className="text-center">Chargement...</p>
+      ) : data.length === 0 ? (
+        <p className="text-center">Aucun joueur dans ce club.</p>
+      ) : (
+        <Table className="mt-4 border">
+          <TableHeader>
+            <TableRow>
+              <TableHead>Nom</TableHead>
+              <TableHead>Rôle</TableHead>
+              <TableHead>Actions</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {data.map((member) => (
+              <TableRow key={member.id}>
+                <TableCell>{getUsername(member)}</TableCell>
+                <TableCell>
+                  <RoleSelector member={member} enabled={isAdmin} />
+                </TableCell>
+                <TableCell>
+                  <Link
+                    to={`/player/${member.profile?.id}?fromClub=${clubId}`}
+                    className={buttonVariants({ variant: "secondary" })}
+                  >
+                    Voir
+                  </Link>
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      )}
+    </section>
   );
 }
