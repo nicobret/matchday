@@ -13,16 +13,20 @@ export default function useClubStats({ clubId }: { clubId: number }) {
 
   const uniqueUserIds = Array.from(new Set(data.map((r) => r.user_id)));
   const formattedData = uniqueUserIds.map((userId) => {
-    const userStats = data.filter((r) => r.user_id === userId);
+    const userRows = data.filter((r) => r.user_id === userId);
     return {
       user_id: userId,
-      firstname: userStats[0].firstname,
-      lastname: userStats[0].lastname,
-      games: userStats.length,
-      wins: userStats.filter((r) => r.result === "win").length,
-      goals: userStats.reduce((acc, row) => acc + (row.goals || 0), 0),
-      assists: userStats.reduce((acc, row) => acc + (row.assists || 0), 0),
-      saves: userStats.reduce((acc, row) => acc + (row.saves || 0), 0),
+      firstname: userRows[0].firstname,
+      lastname: userRows[0].lastname,
+      games: userRows.length,
+      wins: userRows.filter((r) => r.result === "win").length,
+      winstreak: userRows.reduce(
+        (acc, row) => (row.result === "win" ? acc + 1 : 0),
+        0,
+      ),
+      goals: userRows.reduce((acc, row) => acc + (row.goals || 0), 0),
+      assists: userRows.reduce((acc, row) => acc + (row.assists || 0), 0),
+      saves: userRows.reduce((acc, row) => acc + (row.saves || 0), 0),
     };
   });
 

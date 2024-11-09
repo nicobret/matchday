@@ -200,13 +200,13 @@ export default function View() {
         </TabsList>
 
         <TabsContent value="schedule">
-          <div className="grid grid-cols-1 gap-2">
+          <div className="mb-36 grid grid-cols-1 gap-2">
             <UpcomingGames clubId={club.id} enableGameCreation={isMember} />
             <ClubHistory club={club} />
           </div>
         </TabsContent>
         <TabsContent value="members">
-          <div className="grid grid-cols-1 gap-2">
+          <div className="mb-36 grid grid-cols-1 gap-2">
             <ClubStats clubId={club.id} />
             <ClubMembers clubId={club.id} />
           </div>
