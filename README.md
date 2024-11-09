@@ -1,27 +1,30 @@
-# React + TypeScript + Vite
+# Matchday ⚽
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A modern football game organizer.
 
-Currently, two official plugins are available:
+<img alt="Made with React" src="https://img.shields.io/badge/Made with-React-61DAFB.svg">
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+<img alt="Powered by Supabase" src="https://img.shields.io/badge/Powered by-Supabase-3ECF8E.svg">
 
-## Expanding the ESLint configuration
+## 🌟 Features
 
-If you are developing a production application, we recommend updating the configuration to enable type aware lint rules:
+- **Club Management**: Create and manage football clubs
+- **Event Scheduling**: Plan matches and training sessions
+- **Match Day Preparation**: Real-time collaboration between users
+- **Statistics Recording**: Track team and player performance
+- **Coming Soon**: Player matching and game finding system
 
-- Configure the top-level `parserOptions` property like this:
+## 🛠️ Tech Stack
 
-```js
-   parserOptions: {
-    ecmaVersion: 'latest',
-    sourceType: 'module',
-    project: ['./tsconfig.json', './tsconfig.node.json'],
-    tsconfigRootDir: __dirname,
-   },
-```
+### Frontend
 
-- Replace `plugin:@typescript-eslint/recommended` to `plugin:@typescript-eslint/recommended-type-checked` or `plugin:@typescript-eslint/strict-type-checked`
-- Optionally add `plugin:@typescript-eslint/stylistic-type-checked`
-- Install [eslint-plugin-react](https://github.com/jsx-eslint/eslint-plugin-react) and add `plugin:react/recommended` & `plugin:react/jsx-runtime` to the `extends` list
+- [Vite](https://vitejs.dev/)
+- [React](https://reactjs.org/)
+- [Wouter](https://github.com/molefrog/wouter)
+- [Tailwind CSS](https://tailwindcss.com/)
+- [ShadCN UI](https://shadcn.dev/)
+
+### Backend
+
+- [Supabase](https://supabase.io/)
+- [Resend](https://resend.com/)
