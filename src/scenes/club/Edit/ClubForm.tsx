@@ -13,12 +13,12 @@ import { Textarea } from "@/components/ui/textarea";
 import { countryList } from "@/lib/utils";
 import { Save } from "lucide-react";
 import { useContext, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useLocation } from "wouter";
 import { Club, updateClub } from "../lib/club.service";
 
 export default function ClubForm({ initialData }: { initialData: Club }) {
   const { session } = useContext(SessionContext);
-  const navigate = useNavigate();
+  const [_location, navigate] = useLocation();
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
     id: initialData.id || 0,
@@ -39,7 +39,7 @@ export default function ClubForm({ initialData }: { initialData: Club }) {
       }
       await updateClub(formData, initialData.id);
       window.alert("Club modifié avec succès !");
-      navigate(`/club/${initialData.id}`);
+      navigate(`~/club/${initialData.id}`);
     } catch (error) {
       window.alert(error);
       console.error(error);

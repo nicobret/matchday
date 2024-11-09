@@ -1,8 +1,8 @@
 import { SessionContext } from "@/components/auth-provider";
 import { ChevronUp, Swords, TableProperties, Users } from "lucide-react";
 import { useContext, useState } from "react";
-import { Link } from "react-router-dom";
 import { Tables } from "types/supabase";
+import { Link } from "wouter";
 
 export default function Guide({ profile }: { profile?: Tables<"users"> }) {
   const { session } = useContext(SessionContext);
@@ -55,7 +55,7 @@ export default function Guide({ profile }: { profile?: Tables<"users"> }) {
           {session?.user && !profile?.firstname && (
             <div className="mt-4 text-center">
               <Link
-                to="/account"
+                to="~/account"
                 className="text-primary underline underline-offset-2"
               >
                 Compléter mon profil
@@ -66,7 +66,7 @@ export default function Guide({ profile }: { profile?: Tables<"users"> }) {
           {session?.user ? null : (
             <div className="mt-4 text-center">
               <Link
-                to={`/auth?redirectTo=${window.location.pathname}`}
+                to={`~/auth?redirectTo=${window.location.pathname}`}
                 className="text-primary underline underline-offset-2"
               >
                 C'est parti !

@@ -22,10 +22,10 @@ import { countryList } from "@/lib/utils";
 import supabase from "@/utils/supabase";
 import { Plus } from "lucide-react";
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useLocation } from "wouter";
 
 export default function CreateDialog() {
-  const navigate = useNavigate();
+  const [_location, navigate] = useLocation();
   const [formData, setFormData] = useState({
     name: "",
     description: "",
@@ -75,7 +75,7 @@ export default function CreateDialog() {
 
       if (club_members) {
         window.alert("Club créé avec succès !");
-        navigate(`/club/${club[0].id}`);
+        navigate(`~/club/${club[0].id}`);
       }
     } catch (error) {
       console.error(error);

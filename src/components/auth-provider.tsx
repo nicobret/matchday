@@ -1,7 +1,7 @@
 import supabase from "@/utils/supabase";
 import { Session } from "@supabase/supabase-js";
 import { createContext, useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useLocation } from "wouter";
 
 const SessionContext = createContext<{
   session: Session | null;
@@ -20,7 +20,7 @@ async function fetchSession() {
 
 function SessionProvider({ children }: { children: React.ReactNode }) {
   const [session, setSession] = useState<Session | null>(null);
-  const navigate = useNavigate();
+  const [_location, navigate] = useLocation();
 
   useEffect(() => {
     const {
@@ -33,7 +33,7 @@ function SessionProvider({ children }: { children: React.ReactNode }) {
         setSession(session);
         const params = new URLSearchParams(window.location.search);
         const redirectTo = params.get("redirectTo");
-        if (redirectTo) navigate(redirectTo);
+        if (redirectTo) navigate(`~${redirectTo}`);
       } else if (session) {
         setSession(session);
       }

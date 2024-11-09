@@ -12,7 +12,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { fromZonedTime } from "date-fns-tz";
 import { ArrowLeft } from "lucide-react";
 import { useState } from "react";
-import { Link, useNavigate, useParams } from "react-router-dom";
+import { Link, useLocation, useParams } from "wouter";
 import { Game } from "../club/lib/club.service";
 import useSeasons from "../club/lib/useSeasons";
 import { categories, getGameDurationInMinutes } from "./lib/game/game.service";
@@ -49,7 +49,7 @@ function getInitialFormData(game: Game) {
 }
 
 function Editor({ game }: { game: Game }) {
-  const navigate = useNavigate();
+  const [_location, navigate] = useLocation();
   const { data: seasons } = useSeasons(game.club_id);
   const [data, setData] = useState(getInitialFormData(game));
   const { mutate, isLoading } = useUpdateGame(game.id);
@@ -70,7 +70,7 @@ function Editor({ game }: { game: Game }) {
       season_id: data.season_id,
     };
     mutate(updatedGame, {
-      onSuccess: () => navigate(`/game/${game.id}`),
+      onSuccess: () => navigate(`~/game/${game.id}`),
     });
   }
 
@@ -78,14 +78,14 @@ function Editor({ game }: { game: Game }) {
     if (window.confirm("Êtes-vous sûr de vouloir supprimer ce match ?")) {
       mutate(
         { status: "deleted" },
-        { onSuccess: () => navigate(`/club/${game.club_id}`) },
+        { onSuccess: () => navigate(`~/club/${game.club_id}`) },
       );
     }
   }
 
   return (
     <div className="mx-auto max-w-5xl p-4">
-      <Link to={`/game/${game.id}`} className="text-sm text-muted-foreground">
+      <Link to={`~/game/${game.id}`} className="text-sm text-muted-foreground">
         <ArrowLeft className="mr-2 inline-block h-4 w-4 align-text-top" />
         Retour au match
       </Link>

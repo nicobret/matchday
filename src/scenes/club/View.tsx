@@ -14,7 +14,7 @@ import {
   Users,
 } from "lucide-react";
 import { useContext, useState } from "react";
-import { Link, useParams } from "react-router-dom";
+import { Link, useParams } from "wouter";
 import ClubHistory from "./components/ClubHistory";
 import ClubMembers from "./components/ClubMembers";
 import ClubStats from "./components/ClubStats";
@@ -146,7 +146,7 @@ export default function View() {
 
           {isAdmin && (
             <Link
-              to={`/club/${club.id}/edit`}
+              to="/edit"
               className={buttonVariants({ variant: "secondary" })}
             >
               <ClipboardSignature className="mr-2 inline-block h-5 w-5" />

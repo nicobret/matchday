@@ -1,7 +1,7 @@
 import supabase from "@/utils/supabase";
 import { UserCircle } from "lucide-react";
 import { useContext } from "react";
-import { Link } from "react-router-dom";
+import { Link } from "wouter";
 import { SessionContext } from "./auth-provider";
 import Logo from "./Logo";
 import { ModeToggle } from "./mode-toggle";
