@@ -7,7 +7,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Link } from "react-router-dom";
+import { Link } from "wouter";
 import { getUsername } from "../lib/club.service";
 import useClub from "../lib/useClub";
 import { useMembers } from "../lib/useMembers";
