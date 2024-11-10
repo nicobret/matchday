@@ -188,12 +188,12 @@ export default function View() {
       </div>
 
       <Tabs defaultValue="schedule" className="mt-6 w-full md:mt-0">
-        <TabsList className="w-full">
-          <TabsTrigger value="schedule" className="w-1/2">
+        <TabsList>
+          <TabsTrigger value="schedule">
             <Calendar className="mr-2 inline-block h-4 w-4" />
             Calendrier
           </TabsTrigger>
-          <TabsTrigger value="members" className="w-1/2">
+          <TabsTrigger value="members">
             <Users className="mr-2 inline-block h-4 w-4" />
             Membres
           </TabsTrigger>

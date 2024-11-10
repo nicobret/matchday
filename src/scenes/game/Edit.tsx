@@ -209,7 +209,7 @@ function Editor({ game }: { game: Game }) {
             Enregistrer
           </Button>
           <Link
-            to={`/game/${game.id}`}
+            to={`~/game/${game.id}`}
             className={buttonVariants({ variant: "secondary" })}
           >
             Annuler
