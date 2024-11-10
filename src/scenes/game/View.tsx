@@ -41,7 +41,7 @@ export default function View() {
     players?.filter((p) => p.status === "confirmed") || [];
   const player = players?.find((p) => p.user_id === session?.user.id);
   const createPlayer = useCreatePlayer(Number(id));
-  const updatePlayer = useUpdatePlayer(Number(id));
+  const updatePlayer = useUpdatePlayer(player!);
 
   useEffect(() => {
     if (!id) return;
@@ -91,7 +91,7 @@ export default function View() {
       console.error("Game or player not found");
       return;
     }
-    updatePlayer.mutate({ id: player.id, status: "cancelled" });
+    updatePlayer.mutate({ status: "cancelled" });
   }
 
   const userStatus = isPlayer
