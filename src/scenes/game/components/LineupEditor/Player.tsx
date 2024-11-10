@@ -1,10 +1,13 @@
 import { useDraggable } from "@dnd-kit/core";
 import { Grip } from "lucide-react";
 import { Player as PlayerType } from "../../lib/player/player.service";
+import useUpdatePlayer from "../../lib/player/useUpdatePlayer";
 
 export default function Player({ player }: { player: PlayerType }) {
+  const { mutate } = useUpdatePlayer(player);
   const { attributes, listeners, setNodeRef, transform } = useDraggable({
     id: player.id,
+    data: { mutate },
   });
   const style = transform
     ? {

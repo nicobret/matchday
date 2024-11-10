@@ -1,7 +1,6 @@
 import { DndContext, DragEndEvent } from "@dnd-kit/core";
-import { Loader, Shirt } from "lucide-react";
+import { Shirt } from "lucide-react";
 import { Player } from "../../lib/player/player.service";
-import useUpdatePlayer from "../../lib/player/useUpdatePlayer";
 import Team from "./Team";
 
 const teams: { [key: string]: number | null } = {
@@ -19,7 +18,6 @@ export default function LineupEditor({
   players: Player[];
   disabled: boolean;
 }) {
-  const { mutate, isLoading } = useUpdatePlayer(gameId);
   function handleDrop(event: DragEndEvent) {
     if (disabled) {
       window.alert("Vous n'avez pas la permission de modifier l'équipe.");
@@ -34,7 +32,7 @@ export default function LineupEditor({
       return;
     }
 
-    mutate({ id: event.active.id as string, team });
+    event.active.data.current?.mutate({ team });
   }
 
   return (
@@ -62,14 +60,7 @@ export default function LineupEditor({
         />
       </div>
       <p className="mt-4 text-muted-foreground">
-        {isLoading ? (
-          <>
-            <Loader className="mr-2 inline-block h-5 w-5 animate-spin align-text-bottom" />
-            Enregistrement...
-          </>
-        ) : (
-          "Enregistrement automatique."
-        )}
+        "Enregistrement automatique."
       </p>
     </DndContext>
   );
