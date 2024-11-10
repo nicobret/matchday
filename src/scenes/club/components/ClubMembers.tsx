@@ -24,10 +24,7 @@ export default function ClubMembers({ clubId }: { clubId: number }) {
     return <p className="text-center">Erreur</p>;
   }
   return (
-    <section id="members">
-      <h2 className="scroll-m-20 border-b pb-2 text-3xl font-semibold tracking-tight">
-        Liste des membres
-      </h2>
+    <>
       <div className="mt-4">
         <Button variant="secondary" disabled>
           Inviter
@@ -38,7 +35,7 @@ export default function ClubMembers({ clubId }: { clubId: number }) {
       ) : data.length === 0 ? (
         <p className="text-center">Aucun joueur dans ce club.</p>
       ) : (
-        <Table className="mt-4 border">
+        <Table className="mb-24 mt-4 border">
           <TableHeader>
             <TableRow>
               <TableHead>Nom</TableHead>
@@ -66,6 +63,6 @@ export default function ClubMembers({ clubId }: { clubId: number }) {
           </TableBody>
         </Table>
       )}
-    </section>
+    </>
   );
 }

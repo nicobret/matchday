@@ -98,11 +98,11 @@ export default function View() {
 
   return (
     <div className="mx-auto max-w-[100rem] gap-4 p-4 md:flex">
-      <div className="flex-none md:w-96 md:px-2">
+      <div className="flex-none md:max-w-sm md:px-2">
         <header className="mx-auto flex max-w-lg gap-4">
           <div className="h-28 w-28 flex-none rounded-xl border-2 border-dashed"></div>
           <div>
-            <h1 className="text-3xl font-semibold tracking-tight">
+            <h1 className="text-3xl font-semibold uppercase leading-none tracking-tight">
               {club.name}
             </h1>
 
@@ -187,7 +187,7 @@ export default function View() {
         </div>
       </div>
 
-      <Tabs defaultValue="schedule" className="mt-6 w-full md:mt-0">
+      <Tabs defaultValue="schedule" className="mt-8 w-full md:mt-0">
         <TabsList>
           <TabsTrigger value="schedule">
             <Calendar className="mr-2 inline-block h-4 w-4" />
@@ -200,16 +200,34 @@ export default function View() {
         </TabsList>
 
         <TabsContent value="schedule">
-          <div className="mb-36 grid grid-cols-1 gap-2">
+          <section id="calendar" className="mt-4">
+            <h2 className="scroll-m-20 border-b pb-2 text-3xl font-semibold tracking-tight">
+              Calendrier
+            </h2>
             <UpcomingGames clubId={club.id} enableGameCreation={isMember} />
+          </section>
+
+          <section id="history" className="mt-8">
+            <h2 className="scroll-m-20 border-b pb-2 text-3xl font-semibold tracking-tight">
+              Historique
+            </h2>
             <ClubHistory club={club} />
-          </div>
+          </section>
         </TabsContent>
         <TabsContent value="members">
-          <div className="mb-36 grid grid-cols-1 gap-2">
+          <section id="stats" className="mt-4">
+            <h2 className="scroll-m-20 border-b pb-2 text-3xl font-semibold tracking-tight">
+              Statistiques
+            </h2>
             <ClubStats clubId={club.id} />
+          </section>
+
+          <section id="members" className="mt-8">
+            <h2 className="scroll-m-20 border-b pb-2 text-3xl font-semibold tracking-tight">
+              Liste des membres
+            </h2>
             <ClubMembers clubId={club.id} />
-          </div>
+          </section>
         </TabsContent>
       </Tabs>
     </div>

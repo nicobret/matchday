@@ -33,10 +33,7 @@ export default function ClubStats({ clubId }: { clubId: number }) {
     return <div>Erreur</div>;
   }
   return (
-    <section id="stats" className="mb-8">
-      <h2 className="mt-4 scroll-m-20 border-b pb-2 text-3xl font-semibold tracking-tight">
-        Statistiques
-      </h2>
+    <>
       <div className="mb-2 mt-4 flex gap-2">
         <div className="grid w-full max-w-36 items-center gap-1.5">
           <Label>Trier par</Label>
@@ -92,6 +89,6 @@ export default function ClubStats({ clubId }: { clubId: number }) {
             })}
         </TableBody>
       </Table>
-    </section>
+    </>
   );
 }

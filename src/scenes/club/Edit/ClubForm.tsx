@@ -10,6 +10,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
+import { useToast } from "@/hooks/use-toast";
 import { countryList } from "@/lib/utils";
 import { Save } from "lucide-react";
 import { useContext, useState } from "react";
@@ -29,6 +30,7 @@ export default function ClubForm({ initialData }: { initialData: Club }) {
     city: initialData.city || "",
     country: initialData.country || "France",
   });
+  const { toast } = useToast();
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -38,7 +40,7 @@ export default function ClubForm({ initialData }: { initialData: Club }) {
         throw new Error("Vous devez être connecté pour modifier un club.");
       }
       await updateClub(formData, initialData.id);
-      window.alert("Club modifié avec succès !");
+      toast({ description: "Club modifié avec succès" });
       navigate(`~/club/${initialData.id}`);
     } catch (error) {
       window.alert(error);
