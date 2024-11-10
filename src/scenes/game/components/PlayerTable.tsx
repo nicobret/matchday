@@ -54,7 +54,7 @@ export default function PlayerTable({ players }: { players: Player[] }) {
 }
 
 function Row({ player }: { player: Player }) {
-  const { mutate, isLoading } = useUpdatePlayer(player.game_id);
+  const { mutate, isLoading } = useUpdatePlayer(player);
   const { session } = useContext(SessionContext);
   const enabled = !player.user_id || session?.user?.id === player.user_id;
 
@@ -66,7 +66,7 @@ function Row({ player }: { player: Player }) {
         <Select
           name="status"
           value={player.status || undefined}
-          onValueChange={(value) => mutate({ id: player.id, status: value })}
+          onValueChange={(status) => mutate({ status })}
           disabled={!enabled || isLoading}
         >
           <SelectTrigger>
