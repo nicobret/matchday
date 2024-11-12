@@ -15,7 +15,7 @@ export default function EditClub() {
   }
   return (
     <div className="mx-auto max-w-5xl p-4">
-      <Link to={`/club/${id}`} className="text-sm text-muted-foreground">
+      <Link to={"/"} className="text-sm text-muted-foreground">
         <ArrowLeft className="mr-2 inline-block h-4 w-4 align-text-top" />
         Retour au club
       </Link>

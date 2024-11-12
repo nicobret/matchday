@@ -32,7 +32,7 @@ export default function LineUp({
         <p className="mb-6">
           {players.length} / {game.total_players} joueurs inscrits.
         </p>
-        <LineupEditor gameId={game.id} players={players} disabled={disabled} />
+        <LineupEditor players={players} disabled={disabled} />
       </CardContent>
       <CardFooter>
         <InviteDialog gameId={game.id} disabled={disabled} />

@@ -1,3 +1,4 @@
+import { useToast } from "@/hooks/use-toast";
 import { DndContext, DragEndEvent } from "@dnd-kit/core";
 import { Shirt } from "lucide-react";
 import { Player } from "../../lib/player/player.service";
@@ -10,14 +11,14 @@ const teams: { [key: string]: number | null } = {
 };
 
 export default function LineupEditor({
-  gameId,
   players,
   disabled,
 }: {
-  gameId: number;
   players: Player[];
   disabled: boolean;
 }) {
+  const { toast } = useToast();
+
   function handleDrop(event: DragEndEvent) {
     if (disabled) {
       window.alert("Vous n'avez pas la permission de modifier l'équipe.");
@@ -32,7 +33,15 @@ export default function LineupEditor({
       return;
     }
 
-    event.active.data.current?.mutate({ team });
+    event.active.data.current?.mutate(
+      { team },
+      {
+        onSuccess: () => {
+          console.log("Player moved to team", team);
+        },
+      },
+    );
+    toast({ description: "Modification enregistrée" });
   }
 
   return (
@@ -59,9 +68,7 @@ export default function LineupEditor({
           players={players.filter((p) => p.team === 1)}
         />
       </div>
-      <p className="mt-4 text-muted-foreground">
-        "Enregistrement automatique."
-      </p>
+      <p className="mt-4 text-muted-foreground">Enregistrement automatique.</p>
     </DndContext>
   );
 }

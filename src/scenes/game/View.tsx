@@ -215,17 +215,14 @@ export default function View() {
         </Button>
       </div>
 
-      <Tabs
-        defaultValue={hasEnded ? "stats" : "players"}
-        className="mt-8 w-full"
-      >
-        <TabsList className="w-full">
-          <TabsTrigger value="players" disabled={!isMember} className="w-1/2">
+      <Tabs defaultValue={hasEnded ? "stats" : "players"} className="mt-8">
+        <TabsList className="">
+          <TabsTrigger value="players" disabled={!isMember} className="">
             <Users className="mr-2 inline-block h-4 w-4" />
             Joueurs
           </TabsTrigger>
 
-          <TabsTrigger value="stats" className="w-1/2">
+          <TabsTrigger value="stats" className="">
             <BarChart className="mr-2 inline-block h-4 w-4" />
             Data
           </TabsTrigger>

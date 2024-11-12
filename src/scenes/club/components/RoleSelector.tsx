@@ -5,6 +5,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { useToast } from "@/hooks/use-toast";
 import { Member } from "../lib/club.service";
 import { useUpdateMember } from "../lib/useUpdateMember";
 
@@ -16,6 +17,7 @@ export function RoleSelector({
   enabled: boolean;
 }) {
   const { mutate, isLoading } = useUpdateMember(member);
+  const { toast } = useToast();
 
   const options = [
     { value: "member", label: "Membre" },
@@ -26,7 +28,16 @@ export function RoleSelector({
 
   return (
     <Select
-      onValueChange={(role) => mutate({ role })}
+      onValueChange={(role) =>
+        mutate(
+          { role },
+          {
+            onSuccess: () => {
+              toast({ description: "Rôle mis à jour" });
+            },
+          },
+        )
+      }
       value={selectedOption?.value}
       disabled={!enabled || isLoading}
     >
