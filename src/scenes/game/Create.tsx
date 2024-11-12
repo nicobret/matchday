@@ -135,7 +135,7 @@ function GameForm({ club }: { club: Club }) {
           </Select>
         </div>
         <Link
-          to={`/club/${club.id}/edit#seasons`}
+          to={`~/club/${club.id}/edit#seasons`}
           className="text-sm text-primary"
         >
           Ajouter une saison
@@ -148,6 +148,7 @@ function GameForm({ club }: { club: Club }) {
               name="category"
               value={category}
               onValueChange={setCategory}
+              disabled={true}
             >
               <SelectTrigger>
                 <SelectValue placeholder="Choisir un sport" />
@@ -219,7 +220,7 @@ function GameForm({ club }: { club: Club }) {
 
         <div className="grid grid-cols-2 gap-2">
           <Button type="button" asChild variant="secondary">
-            <Link to={`/club/${club.id}`}>Annuler</Link>
+            <Link to={`~/club/${club.id}`}>Annuler</Link>
           </Button>
           <Button type="submit" disabled={isLoading}>
             Créer

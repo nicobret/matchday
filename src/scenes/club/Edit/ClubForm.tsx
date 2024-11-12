@@ -41,7 +41,7 @@ export default function ClubForm({ initialData }: { initialData: Club }) {
       }
       await updateClub(formData, initialData.id);
       toast({ description: "Club modifié avec succès" });
-      navigate(`~/club/${initialData.id}`);
+      navigate("/");
     } catch (error) {
       window.alert(error);
       console.error(error);
@@ -152,10 +152,7 @@ export default function ClubForm({ initialData }: { initialData: Club }) {
         <Save className="mr-2 h-5 w-5" />
         Enregistrer
       </Button>
-      <Link
-        to={`/club/${initialData.id}`}
-        className={buttonVariants({ variant: "secondary" })}
-      >
+      <Link to={"/"} className={buttonVariants({ variant: "secondary" })}>
         Annuler
       </Link>
     </form>

@@ -191,7 +191,7 @@ export default function View() {
         <TabsList>
           <TabsTrigger value="schedule">
             <Calendar className="mr-2 inline-block h-4 w-4" />
-            Calendrier
+            Matches
           </TabsTrigger>
           <TabsTrigger value="members">
             <Users className="mr-2 inline-block h-4 w-4" />
