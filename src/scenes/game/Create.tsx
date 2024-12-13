@@ -132,7 +132,7 @@ function GameForm({ club }: { club: Club }) {
           </Select>
         </div>
         <Link
-          to={`/club/${club.id}/edit#seasons`}
+          to={`~/club/${club.id}/edit#seasons`}
           className="text-sm text-primary"
         >
           Ajouter une saison
