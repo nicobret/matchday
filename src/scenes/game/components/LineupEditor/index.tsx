@@ -59,9 +59,7 @@ export default function LineupEditor({
           players={players.filter((p) => p.team === 1)}
         />
       </div>
-      <p className="mt-4 text-muted-foreground">
-        "Enregistrement automatique."
-      </p>
+      <p className="mt-4 text-muted-foreground">Enregistrement automatique.</p>
     </DndContext>
   );
 }
