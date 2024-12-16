@@ -71,9 +71,15 @@ export default function Home() {
           <TabsContent value="club-list">
             <div className="mt-4 flex flex-wrap gap-4">
               {myClubs.length ? (
-                myClubs.map((club) => (
-                  <ClubCard key={club.id} club={club} isMember />
-                ))
+                myClubs
+                  .sort(
+                    (a, b) =>
+                      new Date(b.created_at).getTime() -
+                      new Date(a.created_at).getTime(),
+                  )
+                  .map((club) => (
+                    <ClubCard key={club.id} club={club} isMember />
+                  ))
               ) : (
                 <p className="text-center">Vous n'êtes membre d'aucun club</p>
               )}
@@ -82,9 +88,15 @@ export default function Home() {
 
           <TabsContent value="search">
             <div className="mt-4 flex flex-wrap gap-4">
-              {notMyClubs.map((club) => (
-                <ClubCard key={club.id} club={club} />
-              ))}
+              {notMyClubs
+                .sort(
+                  (a, b) =>
+                    new Date(b.created_at).getTime() -
+                    new Date(a.created_at).getTime(),
+                )
+                .map((club) => (
+                  <ClubCard key={club.id} club={club} />
+                ))}
             </div>
           </TabsContent>
         </Tabs>
