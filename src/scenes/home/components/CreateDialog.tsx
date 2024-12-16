@@ -18,6 +18,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
+import { useToast } from "@/hooks/use-toast";
 import { countryList } from "@/lib/utils";
 import supabase from "@/utils/supabase";
 import { Plus } from "lucide-react";
@@ -35,6 +36,7 @@ export default function CreateDialog() {
     country: "France",
   });
   const [loading, setLoading] = useState(false);
+  const { toast } = useToast();
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     try {
@@ -74,7 +76,7 @@ export default function CreateDialog() {
       }
 
       if (club_members) {
-        window.alert("Club créé avec succès !");
+        toast({ description: "Club créé avec succès !" });
         navigate(`~/club/${club[0].id}`);
       }
     } catch (error) {

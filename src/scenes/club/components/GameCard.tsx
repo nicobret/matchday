@@ -15,7 +15,7 @@ export default function GameCard({ game }: { game: Game }) {
   const isFull = count >= (game.total_players || 10);
 
   return (
-    <Card className="bg-accent">
+    <Card>
       <CardHeader>
         <CardTitle className="line-clamp-1 capitalize">
           {new Date(game.date).toLocaleDateString("fr-FR", {

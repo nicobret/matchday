@@ -10,6 +10,7 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { useToast } from "@/hooks/use-toast";
 import { useEffect, useState } from "react";
 import { Tables } from "types/supabase";
 import { useLocation } from "wouter";
@@ -19,6 +20,7 @@ export default function Account() {
   const [loading, setLoading] = useState(true);
   const [profile, setProfile] = useState<Tables<"users">>();
   const [_location, navigate] = useLocation();
+  const { toast } = useToast();
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -32,7 +34,7 @@ export default function Account() {
     try {
       const data = await updateProfile(firstname, lastname);
       setProfile(data);
-      window.alert("Profil mis à jour");
+      toast({ description: "Profil mis à jour" });
       navigate("/");
     } catch (error) {
       console.error(error);

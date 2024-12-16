@@ -9,6 +9,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
+import { useToast } from "@/hooks/use-toast";
 import { fromZonedTime } from "date-fns-tz";
 import { ArrowLeft } from "lucide-react";
 import { useState } from "react";
@@ -66,6 +67,8 @@ function GameForm({ club }: { club: Club }) {
   ];
   const [season, setSeason] = useState(seasonOptions[0].value);
 
+  const { toast } = useToast();
+
   function validateForm() {
     return (
       date && time && playerCount && location && durationInMinutes && category
@@ -94,7 +97,7 @@ function GameForm({ club }: { club: Club }) {
 
     mutate(newgame, {
       onSuccess: (data) => {
-        window.alert("Match créé avec succès");
+        toast({ description: "Match créé avec succès" });
         navigate(`~/game/${data?.id}`);
       },
     });
@@ -145,6 +148,7 @@ function GameForm({ club }: { club: Club }) {
               name="category"
               value={category}
               onValueChange={setCategory}
+              disabled={true}
             >
               <SelectTrigger>
                 <SelectValue placeholder="Choisir un sport" />
@@ -216,7 +220,7 @@ function GameForm({ club }: { club: Club }) {
 
         <div className="grid grid-cols-2 gap-2">
           <Button type="button" asChild variant="secondary">
-            <Link to={`/club/${club.id}`}>Annuler</Link>
+            <Link to={`~/club/${club.id}`}>Annuler</Link>
           </Button>
           <Button type="submit" disabled={isLoading}>
             Créer
