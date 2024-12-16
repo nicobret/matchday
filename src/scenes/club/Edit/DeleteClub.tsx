@@ -24,7 +24,7 @@ export default function DeleteClub({ club }: { club: Club }) {
       if (window.confirm("Voulez-vous vraiment supprimer ce club ?")) {
         await deleteClub(club);
         toast({ description: "Club supprimé avec succès" });
-        navigate("/");
+        navigate("~/");
       }
     } catch (error) {
       window.alert(error);
