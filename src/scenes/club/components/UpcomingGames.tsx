@@ -25,14 +25,14 @@ export default function UpcomingGames({
       {enableGameCreation && (
         <Link
           to={`~/game/create?clubId=${clubId}`}
-          className={`my-4 ${buttonVariants({ variant: "secondary" })}`}
+          className={`mt-4 ${buttonVariants({ variant: "secondary" })}`}
         >
           <Plus className="mr-2 h-5 w-5" />
           Créer un match
         </Link>
       )}
       {games?.length ? (
-        <Carousel className="mx-10">
+        <Carousel className="mx-10 mt-4">
           <CarouselContent>
             {games.map((game) => (
               <CarouselItem
