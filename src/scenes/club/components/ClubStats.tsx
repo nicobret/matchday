@@ -19,7 +19,7 @@ import { useState } from "react";
 import useClubStats, { ClubStatsType } from "../lib/useClubStats";
 
 export default function ClubStats({ clubId }: { clubId: number }) {
-  const { data, isError, isLoading, isIdle } = useClubStats({ clubId });
+  const { data, isError, isLoading, isIdle } = useClubStats(clubId);
 
   if (isIdle) {
     return <div>Selectionnez un club</div>;

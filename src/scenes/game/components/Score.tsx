@@ -127,11 +127,7 @@ function ScoreDialog({ game }: { game: Tables<"games"> }) {
                   }
                 />
               </div>
-              <Button
-                type="submit"
-                disabled={!score[0] || !score[1] || isLoading}
-                className="col-span-2"
-              >
+              <Button type="submit" disabled={isLoading} className="col-span-2">
                 Enregistrer
               </Button>
             </form>

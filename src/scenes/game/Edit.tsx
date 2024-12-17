@@ -9,6 +9,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
+import { useToast } from "@/hooks/use-toast";
 import { fromZonedTime } from "date-fns-tz";
 import { ArrowLeft } from "lucide-react";
 import { useState } from "react";
@@ -53,6 +54,7 @@ function Editor({ game }: { game: Game }) {
   const { data: seasons } = useSeasons(game.club_id);
   const [data, setData] = useState(getInitialFormData(game));
   const { mutate, isLoading } = useUpdateGame(game.id);
+  const { toast } = useToast();
 
   const zonedDateTime = fromZonedTime(
     `${data.date}T${data.time}`,
@@ -70,7 +72,10 @@ function Editor({ game }: { game: Game }) {
       season_id: data.season_id,
     };
     mutate(updatedGame, {
-      onSuccess: () => navigate(`~/game/${game.id}`),
+      onSuccess: () => {
+        toast({ description: "Match mis à jour" });
+        navigate(`~/game/${game.id}`);
+      },
     });
   }
 

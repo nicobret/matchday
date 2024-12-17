@@ -14,7 +14,7 @@ export type ClubStatsType = {
   saves: number;
 };
 
-export default function useClubStats({ clubId }: { clubId: number }) {
+export default function useClubStats(clubId: number) {
   const { data, isError, isLoading, isIdle } = useQuery({
     queryKey: ["club_stats", clubId],
     queryFn: () => fetchClubStats(clubId),
@@ -26,9 +26,6 @@ export default function useClubStats({ clubId }: { clubId: number }) {
 
   const uniqueUserIds = Array.from(new Set(data.map((r) => r.user_id)));
   const formattedData: ClubStatsType[] = uniqueUserIds.map((userId) => {
-    if (!userId) {
-      throw new Error("User ID is missing");
-    }
     const userRows = data.filter((r) => r.user_id === userId);
     return {
       user_id: userId,

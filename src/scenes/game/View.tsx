@@ -137,99 +137,104 @@ export default function View() {
         </p>
       </header>
 
-      <div className="mx-auto mt-8 rounded-xl border p-4 text-left text-sm md:w-1/2">
-        <p>
-          <Clock className="mr-2 inline-block h-4 w-4 align-text-top" />
-          {new Date(game.date).toLocaleTimeString("fr-FR", {
-            timeStyle: "short",
-          })}
-        </p>
+      <div className="mx-auto mt-8 grid gap-2 md:w-1/2">
+        <div className="rounded-xl border p-4 text-left text-sm">
+          <p>
+            <Clock className="mr-2 inline-block h-4 w-4 align-text-top" />
+            {new Date(game.date).toLocaleTimeString("fr-FR", {
+              timeStyle: "short",
+            })}
+          </p>
 
-        <p className="mt-1">
-          <MapPin className="mr-2 inline-block h-4 w-4 align-text-top" />
-          {game.location}
-        </p>
+          <p className="mt-1">
+            <MapPin className="mr-2 inline-block h-4 w-4 align-text-top" />
+            {game.location}
+          </p>
 
-        {/* <p className="mt-1">
+          {/* <p className="mt-1">
             Durée : {durationInMinutes} minute{durationInMinutes > 1 ? "s" : ""}
           </p> */}
 
-        <p className="mt-1">
-          <Users className="mr-2 inline-block h-4 w-4 align-text-top" />
-          {confirmedPlayers.length} / {game.total_players} joueurs inscrits.
-        </p>
-      </div>
+          <p className="mt-1">
+            <Users className="mr-2 inline-block h-4 w-4 align-text-top" />
+            {confirmedPlayers.length} / {game.total_players} joueurs inscrits.
+          </p>
+        </div>
 
-      <div className="mt-2 grid grid-cols-2 gap-2 md:grid-cols-4">
-        {!isPlayer && (
-          <Button
-            onClick={handleJoin}
-            disabled={createPlayer.isLoading || hasStarted}
-            className="flex gap-2"
-          >
-            {createPlayer.isLoading ? (
-              <Loader className="h-5 w-5 animate-spin" />
-            ) : (
-              <>
-                <ClipboardSignature className="h-5 w-5" />
-                <span>Inscription</span>
-              </>
-            )}
-          </Button>
-        )}
-
-        {session && isPlayer && (
-          <>
+        <div className="grid grid-cols-2 gap-2">
+          {!isPlayer && (
             <Button
-              onClick={handleLeave}
-              disabled={updatePlayer.isLoading || hasStarted}
-              variant="secondary"
+              onClick={handleJoin}
+              disabled={createPlayer.isLoading}
+              className="flex gap-2"
             >
-              {updatePlayer.isLoading ? (
+              {createPlayer.isLoading ? (
                 <Loader className="h-5 w-5 animate-spin" />
               ) : (
                 <>
-                  <Ban className="mr-2 inline-block h-5 w-5" />
-                  <span>Désinscription</span>
+                  <ClipboardSignature className="h-5 w-5" />
+                  <span>Inscription</span>
                 </>
               )}
             </Button>
-          </>
-        )}
+          )}
 
-        <AddToCalendar game={game} />
+          {session && isPlayer && (
+            <>
+              <Button
+                onClick={handleLeave}
+                disabled={updatePlayer.isLoading}
+                variant="secondary"
+              >
+                {updatePlayer.isLoading ? (
+                  <Loader className="h-5 w-5 animate-spin" />
+                ) : (
+                  <>
+                    <Ban className="mr-2 inline-block h-5 w-5" />
+                    <span>Désinscription</span>
+                  </>
+                )}
+              </Button>
+            </>
+          )}
 
-        {session && isMember && (
-          <Link to="/edit" className={buttonVariants({ variant: "secondary" })}>
-            <Pencil className="mr-2 h-4 w-4" />
-            Modifier
-          </Link>
-        )}
+          <AddToCalendar game={game} />
 
-        <Button
-          onClick={() => copyToClipboard(window.location.href)}
-          variant="secondary"
-        >
-          <Copy className="mr-2 inline-block h-5 w-5" />
-          {copiedText ? "Copié !" : "Copier le lien"}
-        </Button>
+          {session && isMember && (
+            <Link
+              to="/edit"
+              className={buttonVariants({ variant: "secondary" })}
+            >
+              <Pencil className="mr-2 h-4 w-4" />
+              Modifier
+            </Link>
+          )}
+
+          <Button
+            onClick={() => copyToClipboard(window.location.href)}
+            variant="secondary"
+          >
+            <Copy className="mr-2 inline-block h-5 w-5" />
+            {copiedText ? "Copié !" : "Copier le lien"}
+          </Button>
+        </div>
       </div>
 
       <Tabs defaultValue={hasEnded ? "stats" : "players"} className="mt-8">
-        <TabsList className="">
-          <TabsTrigger value="players" disabled={!isMember} className="">
+        <TabsList className="mx-auto">
+          <TabsTrigger value="players" disabled={!isMember} className="w-32">
             <Users className="mr-2 inline-block h-4 w-4" />
             Joueurs
           </TabsTrigger>
 
-          <TabsTrigger value="stats" className="">
+          <TabsTrigger value="stats" className="w-32">
             <BarChart className="mr-2 inline-block h-4 w-4" />
             Data
           </TabsTrigger>
         </TabsList>
 
         <TabsContent value="players">
-          <div className="grid grid-cols-1 gap-2">
+          <div className="mt-4 grid grid-cols-1 gap-4">
             <LineUp
               game={game}
               players={confirmedPlayers}
@@ -239,9 +244,9 @@ export default function View() {
           </div>
         </TabsContent>
 
-        <TabsContent value="stats">
+        <TabsContent value="stats" className="mt-4">
           {/* {hasStarted ? ( */}
-          <div className="grid grid-cols-2 gap-2">
+          <div className="grid grid-cols-2 gap-4">
             <Score game={game} players={confirmedPlayers} />
             {!!player && <MyEvents player={player} />}
             <GameStats gameId={Number(id)} />

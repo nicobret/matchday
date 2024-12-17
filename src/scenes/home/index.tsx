@@ -47,26 +47,27 @@ export default function Home() {
           Clubs
         </h2>
 
-        <div className="mt-4">{session?.user ? <CreateDialog /> : null}</div>
-
         <Tabs
           defaultValue={myClubs.length > 1 ? "club-list" : "search"}
           className="mt-4"
         >
-          <TabsList className="w-full">
-            <TabsTrigger value="search" className="w-1/2">
-              <Search className="mr-2 inline-block h-4 w-4" />
-              Trouver un club
-            </TabsTrigger>
-            <TabsTrigger
-              value="club-list"
-              disabled={!session?.user}
-              className="w-1/2"
-            >
-              <Shield className="mr-2 inline-block h-4 w-4" />
-              Mes clubs
-            </TabsTrigger>
-          </TabsList>
+          <div className="mt-4 flex gap-4">
+            <TabsList>
+              <TabsTrigger value="search" className="w-44">
+                <Search className="mr-2 inline-block h-4 w-4" />
+                Trouver un club
+              </TabsTrigger>
+              <TabsTrigger
+                value="club-list"
+                disabled={!session?.user}
+                className="w-44"
+              >
+                <Shield className="mr-2 inline-block h-4 w-4" />
+                Mes clubs
+              </TabsTrigger>
+            </TabsList>
+            {session?.user ? <CreateDialog /> : null}
+          </div>
 
           <TabsContent value="club-list">
             <div className="mt-4 flex flex-wrap gap-4">

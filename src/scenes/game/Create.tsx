@@ -19,6 +19,16 @@ import useClub from "../club/lib/useClub";
 import { categories } from "./lib/game/game.service";
 import useCreateGame from "./lib/game/useCreateGame";
 
+type CreateGamePayload = {
+  date: string;
+  total_players: number;
+  location: string;
+  status: string;
+  duration: number;
+  category: string;
+  season_id?: string;
+};
+
 export default function CreateGame() {
   const clubId = new URLSearchParams(window.location.search).get("clubId");
   const {
@@ -71,7 +81,12 @@ function GameForm({ club }: { club: Club }) {
 
   function validateForm() {
     return (
-      date && time && playerCount && location && durationInMinutes && category
+      !!date &&
+      !!time &&
+      !!playerCount &&
+      !!location &&
+      !!durationInMinutes &&
+      !!category
     );
   }
 
@@ -85,15 +100,18 @@ function GameForm({ club }: { club: Club }) {
 
     const zonedDateTime = fromZonedTime(`${date}T${time}`, "Europe/Paris");
 
-    const newgame = {
+    const newgame: CreateGamePayload = {
       date: zonedDateTime.toISOString(),
-      season_id: season,
       total_players: playerCount,
       location,
       status: "published",
       duration: durationInMinutes * 60,
       category,
     };
+
+    if (season) {
+      newgame.season_id = season;
+    }
 
     mutate(newgame, {
       onSuccess: (data) => {
