@@ -1,7 +1,7 @@
 import supabase from "@/utils/supabase";
 import { UserCircle } from "lucide-react";
 import { useContext } from "react";
-import { Link } from "wouter";
+import { Link, useLocation } from "wouter";
 import { SessionContext } from "./auth-provider";
 import Logo from "./Logo";
 import { ModeToggle } from "./mode-toggle";
@@ -16,10 +16,12 @@ import { Toaster } from "./ui/toaster";
 
 export default function Layout({ children }: { children: React.ReactNode }) {
   const { session, setSession } = useContext(SessionContext);
+  const [, navigate] = useLocation();
 
   async function logout() {
     await supabase.auth.signOut();
     setSession(null);
+    navigate("/");
   }
   return (
     <div className="relative">
