@@ -34,7 +34,7 @@ export default function View() {
   const [_location, navigate] = useLocation();
   const { session } = useContext(SessionContext);
   const [copiedText, copyToClipboard] = useCopyToClipboard();
-  const { data: game, hasStarted, hasEnded } = useGame(Number(id));
+  const { data: game, hasEnded } = useGame(Number(id));
   const { data: players, isPlayer } = usePlayers(Number(id));
   const { isMember } = useClub(Number(game?.club_id));
   const confirmedPlayers =
