@@ -98,7 +98,7 @@ export default function View() {
 
   return (
     <div className="mx-auto max-w-[100rem] gap-8 p-4 md:flex">
-      <div className="flex-none md:max-w-sm md:border-r md:pr-8">
+      <div className="flex-none md:w-96 md:pr-4">
         <header className="mx-auto flex max-w-lg gap-4">
           <div className="h-28 w-28 flex-none rounded-xl border-2 border-dashed"></div>
           <div>
