@@ -47,7 +47,7 @@ export default function UpcomingGames({
           <CarouselNext className="text-gray-500 hover:text-gray-800" />
         </Carousel>
       ) : (
-        <p className="text-center">Aucun match prévu.</p>
+        <p className="m-4 text-center">Aucun match prévu.</p>
       )}
     </>
   );

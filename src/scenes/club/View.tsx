@@ -155,9 +155,9 @@ export default function View() {
           )}
         </div>
 
-        <div className="mx-auto mt-6 max-w-lg rounded-lg border p-4">
+        <div className="mx-auto mt-6 max-w-lg rounded-sm border p-3 text-sm text-muted-foreground">
           <p>
-            <Shield className="mr-2 inline-block h-5 w-5" />
+            <Shield className="mr-2 inline-block h-4 w-4 align-text-top" />
             Créé le{" "}
             {new Date(club.created_at).toLocaleDateString("fr-FR", {
               dateStyle: "long",
@@ -165,17 +165,17 @@ export default function View() {
           </p>
 
           {club.description && (
-            <p className="mt-2 leading-relaxed">
-              <Book className="mr-2 inline-block h-5 w-5" />
+            <p className="leading-relaxed">
+              <Book className="mr-2 inline-block h-4 w-4 align-text-top" />
               {club.description}
             </p>
           )}
 
-          <div className="mt-2 flex gap-2">
-            <MapPin className="h-5 w-5" />
+          <div className="mt-1 flex gap-2">
+            <MapPin className="inline-block h-4 w-4" />
             {club.address && club.postcode && club.city ? (
               <div>
-                <p className="leading-relaxed">{club.address}</p>
+                <p>{club.address}</p>
                 <p>
                   {club.postcode} {club.city}
                 </p>
@@ -200,7 +200,7 @@ export default function View() {
         </TabsList>
 
         <TabsContent value="schedule">
-          <section id="calendar" className="mt-8">
+          <section id="schedule" className="mt-8">
             <h2 className="scroll-m-20 border-b pb-2 text-3xl font-semibold tracking-tight">
               Calendrier
             </h2>
