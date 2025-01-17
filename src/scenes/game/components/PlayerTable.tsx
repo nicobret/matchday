@@ -27,7 +27,7 @@ export default function PlayerTable({ players }: { players: Player[] }) {
       </CardHeader>
       <CardContent>
         <div className="overflow-x-auto">
-          <Table>
+          <Table className="w-fit-content">
             <TableHeader>
               <TableRow>
                 <TableHead>Prénom</TableHead>

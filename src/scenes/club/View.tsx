@@ -10,6 +10,7 @@ import {
   ClipboardSignature,
   Copy,
   MapPin,
+  Plus,
   Shield,
   Users,
 } from "lucide-react";
@@ -18,7 +19,7 @@ import { Link, useParams } from "wouter";
 import ClubHistory from "./components/ClubHistory";
 import ClubMembers from "./components/ClubMembers";
 import ClubStats from "./components/ClubStats";
-import UpcomingGames from "./components/UpcomingGames";
+import UpcomingGamesTable from "./components/UpcomingGamesTable";
 import { Club, joinClub, leaveClub } from "./lib/club.service";
 import useClub from "./lib/useClub";
 
@@ -97,7 +98,7 @@ export default function View() {
         : "Vous n'êtes pas connecté(e)";
 
   return (
-    <div className="mx-auto max-w-[100rem] gap-8 p-4 md:flex">
+    <div className="mx-auto max-w-[100rem] gap-8 p-2 md:flex">
       <div className="flex-none md:w-96 md:pr-4">
         <header className="mx-auto flex max-w-lg gap-4">
           <div className="h-28 w-28 flex-none rounded-xl border-2 border-dashed"></div>
@@ -204,7 +205,19 @@ export default function View() {
             <h2 className="scroll-m-20 border-b pb-2 text-3xl font-semibold tracking-tight">
               Calendrier
             </h2>
-            <UpcomingGames clubId={club.id} enableGameCreation={isMember} />
+            {isMember && (
+              <Link
+                to={`~/game/create?clubId=${club.id}`}
+                className={`mt-4 ${buttonVariants({ variant: "secondary" })}`}
+              >
+                <Plus className="mr-2 h-5 w-5" />
+                Créer un match
+              </Link>
+            )}
+            <div className="mt-8 w-fit overflow-x-scroll">
+              <UpcomingGamesTable clubId={club.id} />
+            </div>
+            {/* <UpcomingGames clubId={club.id} enableGameCreation={isMember} /> */}
           </section>
 
           <section id="history" className="mt-10">
