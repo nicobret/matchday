@@ -214,7 +214,7 @@ export default function View() {
                 Créer un match
               </Link>
             )}
-            <div className="mt-8 w-fit overflow-x-scroll">
+            <div className="mt-8 overflow-x-auto">
               <UpcomingGamesTable clubId={club.id} />
             </div>
             {/* <UpcomingGames clubId={club.id} enableGameCreation={isMember} /> */}

@@ -25,13 +25,12 @@ export default function LineUp({
       <CardHeader>
         <CardTitle>Compos</CardTitle>
         <CardDescription>
-          Prépare les compos de manière collaborative, en temps réel.
+          <p>
+            {players.length} / {game.total_players} joueurs inscrits.
+          </p>
         </CardDescription>
       </CardHeader>
       <CardContent>
-        <p className="mb-6">
-          {players.length} / {game.total_players} joueurs inscrits.
-        </p>
         <LineupEditor players={players} disabled={disabled} />
       </CardContent>
       <CardFooter>
