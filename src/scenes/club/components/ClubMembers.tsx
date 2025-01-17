@@ -52,7 +52,7 @@ export default function ClubMembers({ clubId }: { clubId: number }) {
                 </TableCell>
                 <TableCell>
                   <Link
-                    to={`/player/${member.profile?.id}?fromClub=${clubId}`}
+                    to={`~/player/${member.profile?.id}?fromClub=${clubId}`}
                     className={buttonVariants({ variant: "secondary" })}
                   >
                     Voir
