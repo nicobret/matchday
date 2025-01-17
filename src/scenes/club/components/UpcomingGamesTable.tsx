@@ -16,7 +16,7 @@ import usePlayers from "@/scenes/game/lib/player/usePlayers";
 import useUpdatePlayer from "@/scenes/game/lib/player/useUpdatePlayer";
 import { Loader } from "lucide-react";
 import { useContext } from "react";
-import { Game } from "../lib/club.service";
+import { Game, joinClub } from "../lib/club.service";
 import useClub from "../lib/useClub";
 import useGames from "../lib/useGames";
 
@@ -46,13 +46,14 @@ export default function UpcomingGamesTable({ clubId }: { clubId: number }) {
 }
 
 function GameRow({ game }: { game: Game }) {
-  const count = game.players.filter((e) => e.status === "confirmed").length;
-  const isFull = count >= (game.total_players || 10);
   const { session } = useContext(SessionContext);
   const [_location, navigate] = useLocation();
   const { isMember } = useClub(Number(game?.club_id));
   const { data: players, isPlayer } = usePlayers(Number(game.id));
+  const { data: club } = useClub(Number(game?.club_id));
   const player = players?.find((p) => p.user_id === session?.user.id);
+  const count = players?.filter((e) => e.status === "confirmed").length || 0;
+  const isFull = count >= (game.total_players || 10);
   const createPlayer = useCreatePlayer(Number(game.id));
   const updatePlayer = useUpdatePlayer(player!);
 
@@ -66,12 +67,12 @@ function GameRow({ game }: { game: Game }) {
     if (!isMember) {
       if (
         window.confirm(
-          "Pour vous inscrire à un match, veuillez rejoindre le club organisateur.",
+          "Vous n'êtes pas membre du club organisateur, souhaitez-vous le rejoindre ?",
         )
       ) {
-        navigate(`~/club/${game?.club_id}`);
+        await joinClub(club!.id, session.user.id);
+        queryClient.invalidateQueries(["club", club!.id]);
       }
-      return;
     }
     createPlayer.mutate(
       { user_id: session.user.id },
@@ -84,9 +85,6 @@ function GameRow({ game }: { game: Game }) {
   }
 
   async function handleLeave() {
-    if (!window.confirm("Voulez-vous vraiment vous désinscrire ?")) {
-      return;
-    }
     if (!game || !player) {
       console.error("Game or player not found");
       return;

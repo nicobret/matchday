@@ -1,6 +1,6 @@
 import { Breadcrumbs } from "@/components/Breadcrumbs";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { Button } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
 import {
   Card,
   CardContent,
@@ -13,7 +13,7 @@ import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { useEffect, useState } from "react";
 import { Tables } from "types/supabase";
-import { useLocation } from "wouter";
+import { Link, useLocation } from "wouter";
 import { fetchProfile, updateProfile } from "./account.service";
 
 export default function Account() {
@@ -104,9 +104,14 @@ export default function Account() {
         </CardContent>
 
         <CardFooter>
-          <Button form="profile-form" type="submit" disabled={loading}>
-            Enregistrer
-          </Button>
+          <div className="flex gap-2">
+            <Button form="profile-form" type="submit" disabled={loading}>
+              Enregistrer
+            </Button>
+            <Link href="/" className={buttonVariants({ variant: "secondary" })}>
+              Retour à l'accueil
+            </Link>
+          </div>
         </CardFooter>
       </Card>
     </div>

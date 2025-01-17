@@ -2,6 +2,9 @@ import supabase from "@/utils/supabase";
 import { Auth as SupabaseAuth } from "@supabase/auth-ui-react";
 
 export default function Auth() {
+  const params = new URLSearchParams(window.location.search);
+  const redirectTo = params.get("redirectTo");
+
   return (
     <div className="mx-auto max-w-lg p-4">
       <SupabaseAuth
@@ -32,6 +35,7 @@ export default function Auth() {
             },
           },
         }}
+        redirectTo={redirectTo || "/"}
       />
     </div>
   );

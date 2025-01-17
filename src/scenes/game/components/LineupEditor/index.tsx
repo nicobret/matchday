@@ -33,14 +33,7 @@ export default function LineupEditor({
       return;
     }
 
-    event.active.data.current?.mutate(
-      { team },
-      {
-        onSuccess: () => {
-          console.log("Player moved to team", team);
-        },
-      },
-    );
+    event.active.data.current?.mutate({ team });
     toast({ description: "Modification enregistrée" });
   }
 

@@ -2,7 +2,6 @@ import { SessionContext } from "@/components/auth-provider";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Search, Shield } from "lucide-react";
 import { useContext } from "react";
-import { useLocation } from "wouter";
 import ClubCard from "./components/ClubCard";
 import CreateDialog from "./components/CreateDialog";
 import Guide from "./components/Guide";
@@ -11,7 +10,6 @@ import useProfile from "./useProfile";
 
 export default function Home() {
   const { session } = useContext(SessionContext);
-  const [_location, navigate] = useLocation();
   const { data: profile, isLoading: loadingProfile } = useProfile({ session });
   const { data: clubs, isError, isIdle, isLoading } = useClubs();
 
@@ -20,10 +18,7 @@ export default function Home() {
       <p className="animate-pulse text-center">Chargement des données...</p>
     );
   }
-  // Redirect to account page if profile is not complete
-  if (profile && !profile?.firstname) {
-    navigate("~/account");
-  }
+
   if (isLoading || isIdle) {
     return <p className="animate-pulse text-center">Chargement des clubs...</p>;
   }
@@ -38,6 +33,8 @@ export default function Home() {
     (c) => !c.members?.some((m) => m.user_id === session?.user?.id),
   );
 
+  const defaultTab = myClubs.length > 0 ? "club-list" : "search";
+
   return (
     <div className="mx-auto max-w-5xl p-4">
       <Guide profile={profile} />
@@ -47,11 +44,8 @@ export default function Home() {
           Clubs
         </h2>
 
-        <Tabs
-          defaultValue={myClubs.length > 1 ? "club-list" : "search"}
-          className="mt-4"
-        >
-          <div className="mt-4 flex gap-4">
+        <Tabs defaultValue={defaultTab} className="mt-4">
+          <div className="my-4 flex gap-4">
             <TabsList>
               <TabsTrigger value="search" className="w-44">
                 <Search className="mr-2 inline-block h-4 w-4" />
@@ -66,8 +60,8 @@ export default function Home() {
                 Mes clubs
               </TabsTrigger>
             </TabsList>
-            {session?.user ? <CreateDialog /> : null}
           </div>
+          {session?.user ? <CreateDialog /> : null}
 
           <TabsContent value="club-list">
             <div className="mt-4 flex flex-wrap gap-4">

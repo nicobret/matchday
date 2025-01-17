@@ -1,11 +1,15 @@
-import { Suspense, lazy } from "react";
+import { Suspense, lazy, useContext } from "react";
 import { QueryClientProvider } from "react-query";
-import { Route, Switch } from "wouter";
-import { SessionProvider } from "./components/auth-provider.tsx";
+import { Redirect, Route, Switch } from "wouter";
+import {
+  SessionContext,
+  SessionProvider,
+} from "./components/auth-provider.tsx";
 import Layout from "./components/Layout.tsx";
 import { ThemeProvider } from "./components/theme-provider.tsx";
 import "./index.css";
 import { queryClient } from "./lib/react-query.ts";
+import useProfile from "./scenes/home/useProfile.ts";
 
 const Account = lazy(() => import("./scenes/account"));
 const Club = lazy(() => import("./scenes/club/Club.tsx"));
@@ -21,6 +25,7 @@ export default function App() {
         <SessionProvider>
           <Layout>
             <Suspense fallback={<Fallback />}>
+              <RedirectIfProfileNotComplete />
               <Switch>
                 <Route path="/auth" component={Auth} />
                 <Route path="/account" component={Account} />
@@ -48,4 +53,21 @@ function Fallback() {
       Chargement de l'application...
     </div>
   );
+}
+
+function RedirectIfProfileNotComplete() {
+  const { session } = useContext(SessionContext);
+  const { data: profile } = useProfile({ session });
+  const params = new URLSearchParams(window.location.search);
+  const redirectTo = params.get("redirectTo");
+
+  if (profile && !profile?.firstname) {
+    return (
+      <Redirect
+        to={redirectTo ? `/account?redirectTo=${redirectTo}` : "/account"}
+      />
+    );
+  }
+
+  return null;
 }
