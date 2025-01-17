@@ -22,6 +22,7 @@ import useGames from "../lib/useGames";
 
 export default function UpcomingGamesTable({ clubId }: { clubId: number }) {
   const { data: games } = useGames(clubId, "next");
+  const { isMember } = useClub(clubId);
 
   if (!games?.length) {
     return <p className="m-4 text-center">Aucun match prévu.</p>;
@@ -32,7 +33,7 @@ export default function UpcomingGamesTable({ clubId }: { clubId: number }) {
       <TableHeader>
         <TableRow>
           <TableHead>Date</TableHead>
-          <TableHead>Inscrits</TableHead>
+          {isMember && <TableHead>Inscrits</TableHead>}
           <TableHead>Actions</TableHead>
         </TableRow>
       </TableHeader>
@@ -101,9 +102,11 @@ function GameRow({ game }: { game: Game }) {
           day: "numeric",
         })}
       </TableCell>
-      <TableCell>
-        {count} / {game.total_players} {isFull && "✓"}
-      </TableCell>
+      {isMember && (
+        <TableCell>
+          {count} / {game.total_players} {isFull && "✓"}
+        </TableCell>
+      )}
       <TableCell>
         <div className="flex flex-wrap gap-2">
           {!isPlayer && (
