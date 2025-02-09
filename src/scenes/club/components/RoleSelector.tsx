@@ -6,8 +6,8 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
-import { Member } from "../lib/club.service";
-import { useUpdateMember } from "../lib/useUpdateMember";
+import { Member } from "../lib/club/club.service";
+import { useUpdateMember } from "../lib/member/useUpdateMember";
 
 export function RoleSelector({
   member,

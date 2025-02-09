@@ -9,7 +9,7 @@ import {
   CarouselPrevious,
 } from "@/components/ui/carousel";
 import { Plus } from "lucide-react";
-import useGames from "../lib/useGames";
+import useGames from "../../game/lib/game/useGames";
 import GameCard from "./GameCard";
 
 export default function UpcomingGames({

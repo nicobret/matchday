@@ -8,7 +8,7 @@ import {
 } from "@/components/ui/card";
 import { ArrowRight, CheckCircle, Hourglass, Users } from "lucide-react";
 import { Link } from "wouter";
-import { Game } from "../lib/club.service";
+import { Game } from "../lib/club/club.service";
 
 export default function GameCard({ game }: { game: Game }) {
   const count = game.players.filter((e) => e.status === "confirmed").length;
@@ -32,9 +32,9 @@ export default function GameCard({ game }: { game: Game }) {
           {count} / {game.total_players || 10}
         </p>
         {isFull ? (
-          <CheckCircle className="h-6 w-6 text-primary" />
+          <CheckCircle className="text-primary h-6 w-6" />
         ) : (
-          <Hourglass className="h-6 w-6 text-muted-foreground" />
+          <Hourglass className="text-muted-foreground h-6 w-6" />
         )}
       </CardContent>
 

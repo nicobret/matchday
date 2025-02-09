@@ -10,11 +10,9 @@ export default function useClub(id: number) {
     queryFn: () => fetchClub(id),
     enabled: !!id,
   });
-  const isMember =
-    res.data?.members.some((m) => m.user_id === session?.user.id) || false;
   const isAdmin =
     res.data?.members.some(
       (m) => m.user_id === session?.user.id && m.role === "admin",
     ) || false;
-  return { ...res, isMember, isAdmin };
+  return { ...res, isAdmin };
 }

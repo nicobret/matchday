@@ -4,7 +4,7 @@ import { useToast } from "@/hooks/use-toast";
 import { Trash } from "lucide-react";
 import { useContext, useState } from "react";
 import { useLocation } from "wouter";
-import { Club, deleteClub } from "../lib/club.service";
+import { Club, deleteClub } from "../lib/club/club.service";
 
 export default function DeleteClub({ club }: { club: Club }) {
   const [loading, setLoading] = useState(false);

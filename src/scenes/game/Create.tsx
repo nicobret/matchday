@@ -14,8 +14,9 @@ import { fromZonedTime } from "date-fns-tz";
 import { ArrowLeft } from "lucide-react";
 import { useState } from "react";
 import { Link, useLocation } from "wouter";
-import { Club } from "../club/lib/club.service";
-import useClub from "../club/lib/useClub";
+import { Club } from "../club/lib/club/club.service";
+import useClub from "../club/lib/club/useClub";
+import { useMembers } from "../club/lib/member/useMembers";
 import { categories } from "./lib/game/game.service";
 import useCreateGame from "./lib/game/useCreateGame";
 
@@ -31,13 +32,8 @@ type CreateGamePayload = {
 
 export default function CreateGame() {
   const clubId = new URLSearchParams(window.location.search).get("clubId");
-  const {
-    data: club,
-    isIdle,
-    isLoading,
-    isError,
-    isMember,
-  } = useClub(Number(clubId));
+  const { data: club, isIdle, isLoading, isError } = useClub(Number(clubId));
+  const { isMember } = useMembers(Number(clubId));
 
   if (isIdle) {
     return <p className="text-center">Sélectionnez un club</p>;
@@ -90,7 +86,7 @@ function GameForm({ club }: { club: Club }) {
     );
   }
 
-  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+  function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
 
     if (!validateForm()) {
@@ -123,12 +119,12 @@ function GameForm({ club }: { club: Club }) {
 
   return (
     <div className="p-4">
-      <Link to={`~/club/${club.id}`} className="text-sm text-muted-foreground">
+      <Link to={`~/club/${club.id}`} className="text-muted-foreground text-sm">
         <ArrowLeft className="mr-2 inline-block h-4 w-4 align-text-top" />
         Retour au match
       </Link>
 
-      <h2 className="mb-2 mt-6 scroll-m-20 text-center text-2xl font-semibold uppercase tracking-tight">
+      <h2 className="mt-6 mb-2 scroll-m-20 text-center text-2xl font-semibold tracking-tight uppercase">
         Créer un match
       </h2>
 
@@ -154,7 +150,7 @@ function GameForm({ club }: { club: Club }) {
         </div>
         <Link
           to={`~/club/${club.id}/edit#seasons`}
-          className="text-sm text-primary"
+          className="text-primary text-sm"
         >
           Ajouter une saison
         </Link>

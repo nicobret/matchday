@@ -16,13 +16,14 @@ import usePlayers from "@/scenes/game/lib/player/usePlayers";
 import useUpdatePlayer from "@/scenes/game/lib/player/useUpdatePlayer";
 import { Loader } from "lucide-react";
 import { useContext } from "react";
-import { Game, joinClub } from "../lib/club.service";
-import useClub from "../lib/useClub";
-import useGames from "../lib/useGames";
+import useGames from "../../game/lib/game/useGames";
+import { Game, joinClub } from "../lib/club/club.service";
+import useClub from "../lib/club/useClub";
+import { useMembers } from "../lib/member/useMembers";
 
 export default function UpcomingGamesTable({ clubId }: { clubId: number }) {
   const { data: games } = useGames(clubId, "next");
-  const { isMember } = useClub(clubId);
+  const { isMember } = useMembers(clubId);
 
   if (!games?.length) {
     return <p className="m-4 text-center">Aucun match prévu.</p>;
@@ -49,7 +50,7 @@ export default function UpcomingGamesTable({ clubId }: { clubId: number }) {
 function GameRow({ game }: { game: Game }) {
   const { session } = useContext(SessionContext);
   const [_location, navigate] = useLocation();
-  const { isMember } = useClub(Number(game?.club_id));
+  const { isMember } = useMembers(game.club_id);
   const { data: players, isPlayer } = usePlayers(Number(game.id));
   const { data: club } = useClub(Number(game?.club_id));
   const player = players?.find((p) => p.user_id === session?.user.id);

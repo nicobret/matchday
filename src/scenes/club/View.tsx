@@ -1,86 +1,33 @@
 import { SessionContext } from "@/components/auth-provider";
-import { Button, buttonVariants } from "@/components/ui/button";
+import { buttonVariants } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { queryClient } from "@/lib/react-query";
-import { useCopyToClipboard } from "@uidotdev/usehooks";
 import {
-  Ban,
   Book,
   Calendar,
   ClipboardSignature,
-  Copy,
   MapPin,
   Plus,
   Shield,
   Users,
 } from "lucide-react";
-import { useContext, useState } from "react";
+import { useContext } from "react";
 import { Link, useParams } from "wouter";
 import ClubHistory from "./components/ClubHistory";
 import ClubMembers from "./components/ClubMembers";
 import ClubStats from "./components/ClubStats";
+import CopyButton from "./components/CopyButton";
+import JoinButton from "./components/JoinButton";
+import LeaveButton from "./components/LeaveButton";
 import UpcomingGamesTable from "./components/UpcomingGamesTable";
-import { Club, joinClub, leaveClub } from "./lib/club.service";
-import useClub from "./lib/useClub";
+import useClub from "./lib/club/useClub";
+import { useMembers } from "./lib/member/useMembers";
 
 export default function View() {
   const { session } = useContext(SessionContext);
   const { id } = useParams();
-  const [loading, setLoading] = useState(false);
-  const [copiedText, copyToClipboard] = useCopyToClipboard();
-  const {
-    data: club,
-    isIdle,
-    isLoading,
-    isError,
-    isMember,
-    isAdmin,
-  } = useClub(Number(id));
-
-  async function handleJoin(club: Club) {
-    if (!session?.user) {
-      if (
-        window.confirm(
-          "Pour rejoindre un club, veuillez vous inscrire ou vous connecter.",
-        )
-      ) {
-        window.location.href = "/auth?redirectTo=" + window.location.pathname;
-      }
-      return;
-    }
-    if (isMember) {
-      throw new Error("User is already a member.");
-    }
-
-    setLoading(true);
-    try {
-      await joinClub(club.id, session.user.id);
-      queryClient.invalidateQueries(["club", club.id]);
-    } catch (error) {
-      window.alert("Une erreur est survenue.");
-      console.error(error);
-    }
-    setLoading(false);
-  }
-
-  async function handleLeave(club: Club) {
-    if (!session?.user) {
-      throw new Error("Vous n'êtes pas connecté.");
-    }
-    if (!window.confirm("Voulez-vous vraiment quitter ce club ?")) {
-      return;
-    }
-
-    setLoading(true);
-    try {
-      await leaveClub(club.id, session.user.id);
-      queryClient.invalidateQueries(["club", club.id]);
-    } catch (error) {
-      window.alert("Une erreur est survenue.");
-      console.error(error);
-    }
-    setLoading(false);
-  }
+  const clubId = Number(id);
+  const { data: club, isIdle, isLoading, isError, isAdmin } = useClub(clubId);
+  const { isMember } = useMembers(clubId);
 
   if (isIdle || isLoading) {
     return <p className="animate_pulse text-center">Chargement...</p>;
@@ -103,12 +50,12 @@ export default function View() {
         <header className="mx-auto flex max-w-lg gap-4">
           <div className="h-28 w-28 flex-none rounded-xl border-2 border-dashed"></div>
           <div>
-            <h1 className="text-3xl font-semibold uppercase leading-none tracking-tight">
+            <h1 className="text-3xl leading-none font-semibold tracking-tight uppercase">
               {club.name}
             </h1>
 
             <p
-              className={`mt-2 text-sm text-muted-foreground ${isMember ? "text-primary" : ""}`}
+              className={`text-muted-foreground mt-2 text-sm ${isMember ? "text-primary" : ""}`}
             >
               {userStatus}
             </p>
@@ -116,34 +63,13 @@ export default function View() {
         </header>
 
         <div className="mx-auto mt-6 grid max-w-lg grid-cols-2 gap-2">
-          {!isMember ? (
-            <Button
-              onClick={() => handleJoin(club)}
-              disabled={loading}
-              className="flex gap-2"
-            >
-              <ClipboardSignature className="h-5 w-5" />
-              Rejoindre
-            </Button>
+          {isMember ? (
+            <LeaveButton clubId={club.id} />
           ) : (
-            <Button
-              onClick={() => handleLeave(club)}
-              disabled={loading}
-              variant="secondary"
-              className="flex gap-2"
-            >
-              <Ban className="inline-block h-5 w-5" />
-              Quitter
-            </Button>
+            <JoinButton clubId={club.id} />
           )}
 
-          <Button
-            variant="secondary"
-            onClick={() => copyToClipboard(window.location.href)}
-          >
-            <Copy className="mr-2 inline-block h-5 w-5" />
-            {copiedText ? "Copié !" : "Copier le lien"}
-          </Button>
+          <CopyButton />
 
           {isAdmin && (
             <Link
@@ -156,7 +82,7 @@ export default function View() {
           )}
         </div>
 
-        <div className="mx-auto mt-6 max-w-lg rounded-sm border p-3 text-sm text-muted-foreground">
+        <div className="text-muted-foreground mx-auto mt-6 max-w-lg rounded-sm border p-3 text-sm">
           <p>
             <Shield className="mr-2 inline-block h-4 w-4 align-text-top" />
             Créé le{" "}

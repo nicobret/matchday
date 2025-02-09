@@ -18,8 +18,8 @@ import {
 import { ArrowRight } from "lucide-react";
 import { useState } from "react";
 import { Link } from "wouter";
-import { Club } from "../lib/club.service";
-import useGames from "../lib/useGames";
+import useGames from "../../game/lib/game/useGames";
+import { Club } from "../lib/club/club.service";
 
 export default function ClubHistory({ club }: { club: Club }) {
   const seasons = club.seasons || [];

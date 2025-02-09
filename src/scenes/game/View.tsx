@@ -16,7 +16,7 @@ import {
 } from "lucide-react";
 import { useContext, useEffect } from "react";
 import { Link, useLocation, useParams } from "wouter";
-import useClub from "../club/lib/useClub";
+import { useMembers } from "../club/lib/member/useMembers";
 import AddToCalendar from "./components/AddToCalendar";
 import GameStats from "./components/GameStats";
 import LineUp from "./components/LineUp";
@@ -36,7 +36,7 @@ export default function View() {
   const [copiedText, copyToClipboard] = useCopyToClipboard();
   const { data: game, hasEnded } = useGame(Number(id));
   const { data: players, isPlayer } = usePlayers(Number(id));
-  const { isMember } = useClub(Number(game?.club_id));
+  const { isMember } = useMembers(game?.club_id);
   const confirmedPlayers =
     players?.filter((p) => p.status === "confirmed") || [];
   const player = players?.find((p) => p.user_id === session?.user.id);
@@ -106,19 +106,19 @@ export default function View() {
     <div className="mx-auto max-w-5xl p-4">
       <Link
         to={`~/club/${game.club_id}`}
-        className="text-sm text-muted-foreground"
+        className="text-muted-foreground text-sm"
       >
         <ArrowLeft className="mr-2 inline-block h-4 w-4 align-text-top" />
         Retour au club
       </Link>
 
       <header className="mt-6 text-center">
-        <p className="text-xs font-bold uppercase tracking-tight text-muted-foreground">
+        <p className="text-muted-foreground text-xs font-bold tracking-tight uppercase">
           {game.club?.name}
           {game.season?.name ? ` • Saison ${game.season?.name}` : ""}
         </p>
 
-        <h1 className="text-4xl font-semibold uppercase tracking-tight">
+        <h1 className="text-4xl font-semibold tracking-tight uppercase">
           {new Date(game.date).toLocaleDateString("fr-FR", {
             weekday: "long",
             day: "numeric",

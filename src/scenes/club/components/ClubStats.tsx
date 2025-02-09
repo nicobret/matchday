@@ -16,7 +16,7 @@ import {
 } from "@/components/ui/table";
 import { Crown } from "lucide-react";
 import { useState } from "react";
-import useClubStats, { ClubStatsType } from "../lib/useClubStats";
+import useClubStats, { ClubStatsType } from "../lib/club/useClubStats";
 
 export default function ClubStats({ clubId }: { clubId: number }) {
   const { data, isError, isLoading, isIdle } = useClubStats(clubId);
@@ -46,7 +46,7 @@ function Wins({ data }: { data: ClubStatsType[] }) {
       <h3 className="scroll-m-20 text-2xl font-semibold tracking-tight">
         Victoires
       </h3>
-      <div className="mb-2 mt-4 flex gap-2">
+      <div className="mt-4 mb-2 flex gap-2">
         <div className="grid w-full max-w-36 items-center gap-1.5">
           <Label>Trier par</Label>
           <Select
@@ -88,7 +88,7 @@ function Wins({ data }: { data: ClubStatsType[] }) {
                 <TableRow key={row.user_id}>
                   <TableCell className="text-center">
                     {index + 1 === 1 ? (
-                      <Crown className="inline-block text-primary" />
+                      <Crown className="text-primary inline-block" />
                     ) : (
                       <span className="text-muted-foreground">{index + 1}</span>
                     )}
@@ -117,7 +117,7 @@ function Events({ data }: { data: ClubStatsType[] }) {
       <h3 className="scroll-m-20 text-2xl font-semibold tracking-tight">
         Actions
       </h3>
-      <div className="mb-2 mt-4 flex gap-2">
+      <div className="mt-4 mb-2 flex gap-2">
         <div className="grid w-full max-w-36 items-center gap-1.5">
           <Label>Trier par</Label>
           <Select
@@ -157,7 +157,7 @@ function Events({ data }: { data: ClubStatsType[] }) {
                 <TableRow key={row.user_id}>
                   <TableCell className="text-center">
                     {index + 1 === 1 ? (
-                      <Crown className="inline-block text-primary" />
+                      <Crown className="text-primary inline-block" />
                     ) : (
                       <span className="text-muted-foreground">{index + 1}</span>
                     )}

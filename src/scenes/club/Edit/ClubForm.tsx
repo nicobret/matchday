@@ -15,7 +15,7 @@ import { countryList } from "@/lib/utils";
 import { Save } from "lucide-react";
 import { useContext, useState } from "react";
 import { Link, useLocation } from "wouter";
-import { Club, updateClub } from "../lib/club.service";
+import { Club, updateClub } from "../lib/club/club.service";
 
 export default function ClubForm({ initialData }: { initialData: Club }) {
   const { session } = useContext(SessionContext);
