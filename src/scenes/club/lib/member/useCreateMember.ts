@@ -11,7 +11,7 @@ export default function useCreateMember(clubId: number) {
       if (!session?.user) {
         throw new Error("Vous n'êtes pas connecté.");
       }
-      await joinClub(clubId, session?.user?.id);
+      return await joinClub(clubId, session?.user?.id);
     },
     onSettled: (data) => {
       if (data) addMemberToCache(data);
