@@ -1,3 +1,4 @@
+import { NuqsAdapter } from "nuqs/adapters/react";
 import { Suspense, lazy, useContext } from "react";
 import { QueryClientProvider } from "react-query";
 import { Redirect, Route, Switch } from "wouter";
@@ -21,24 +22,26 @@ const Auth = lazy(() => import("./scenes/auth"));
 export default function App() {
   return (
     <ThemeProvider storageKey="vite-ui-theme">
-      <QueryClientProvider client={queryClient}>
-        <SessionProvider>
-          <Layout>
-            <Suspense fallback={<Fallback />}>
-              <RedirectIfProfileNotComplete />
-              <Switch>
-                <Route path="/auth" component={Auth} />
-                <Route path="/account" component={Account} />
-                <Route path="/club/:id" component={Club} nest />
-                <Route path="/game" component={Game} nest />
-                <Route path="/player/:id" component={Player} />
-                <Route path="/" component={Home} />
-                <Route component={NotFound} />
-              </Switch>
-            </Suspense>
-          </Layout>
-        </SessionProvider>
-      </QueryClientProvider>
+      <NuqsAdapter>
+        <QueryClientProvider client={queryClient}>
+          <SessionProvider>
+            <Layout>
+              <Suspense fallback={<Fallback />}>
+                <RedirectIfProfileNotComplete />
+                <Switch>
+                  <Route path="/auth" component={Auth} />
+                  <Route path="/account" component={Account} />
+                  <Route path="/club/:id" component={Club} nest />
+                  <Route path="/game" component={Game} nest />
+                  <Route path="/player/:id" component={Player} />
+                  <Route path="/" component={Home} />
+                  <Route component={NotFound} />
+                </Switch>
+              </Suspense>
+            </Layout>
+          </SessionProvider>
+        </QueryClientProvider>
+      </NuqsAdapter>
     </ThemeProvider>
   );
 }

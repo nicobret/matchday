@@ -15,7 +15,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Crown } from "lucide-react";
-import { useState } from "react";
+import { useQueryState } from "nuqs";
 import useClubStats, { ClubStatsType } from "../lib/club/useClubStats";
 
 export default function ClubStats({ clubId }: { clubId: number }) {
@@ -38,8 +38,14 @@ export default function ClubStats({ clubId }: { clubId: number }) {
   );
 }
 
+type SortWinsBy = "games" | "wins" | "winstreak" | "winrate";
+
 function Wins({ data }: { data: ClubStatsType[] }) {
-  const [sortBy, setSortBy] = useState<"games" | "wins" | "winstreak">("wins");
+  const [sortWinsBy, setSortWinsBy] = useQueryState<SortWinsBy>("sortWinsBy", {
+    defaultValue: "wins",
+    clearOnDefault: false,
+    parse: (value) => value as SortWinsBy,
+  });
 
   return (
     <div className="overflow-x-auto">
@@ -50,10 +56,10 @@ function Wins({ data }: { data: ClubStatsType[] }) {
         <div className="grid w-full max-w-36 items-center gap-1.5">
           <Label>Trier par</Label>
           <Select
-            name="sortby"
-            value={sortBy}
+            name="sortEventsBy"
+            value={sortWinsBy}
             onValueChange={(value: "games" | "wins" | "winstreak") =>
-              setSortBy(value)
+              setSortWinsBy(value)
             }
           >
             <SelectTrigger>
@@ -82,7 +88,10 @@ function Wins({ data }: { data: ClubStatsType[] }) {
         </TableHeader>
         <TableBody>
           {data
-            .sort((a, b) => b[sortBy] - a[sortBy])
+            .sort(
+              (a: ClubStatsType, b: ClubStatsType) =>
+                b[sortWinsBy] - a[sortWinsBy],
+            )
             .map((row, index) => {
               return (
                 <TableRow key={row.user_id}>
@@ -107,9 +116,16 @@ function Wins({ data }: { data: ClubStatsType[] }) {
   );
 }
 
+type SortEventsBy = "goals" | "assists" | "saves";
+
 function Events({ data }: { data: ClubStatsType[] }) {
-  const [sortby, setSortby] = useState<"games" | "goals" | "assists" | "saves">(
-    "goals",
+  const [sortEventsBy, setSortEventsBy] = useQueryState<SortEventsBy>(
+    "sortEventsBy",
+    {
+      defaultValue: "goals",
+      clearOnDefault: false,
+      parse: (value) => value as SortEventsBy,
+    },
   );
 
   return (
@@ -121,10 +137,10 @@ function Events({ data }: { data: ClubStatsType[] }) {
         <div className="grid w-full max-w-36 items-center gap-1.5">
           <Label>Trier par</Label>
           <Select
-            name="sortby"
-            value={sortby}
+            name="sortEventsBy"
+            value={sortEventsBy}
             onValueChange={(value: "goals" | "assists" | "saves") =>
-              setSortby(value)
+              setSortEventsBy(value)
             }
           >
             <SelectTrigger>
@@ -151,7 +167,7 @@ function Events({ data }: { data: ClubStatsType[] }) {
         </TableHeader>
         <TableBody>
           {data
-            .sort((a, b) => b[sortby] - a[sortby])
+            .sort((a, b) => b[sortEventsBy] - a[sortEventsBy])
             .map((row, index) => {
               return (
                 <TableRow key={row.user_id}>
