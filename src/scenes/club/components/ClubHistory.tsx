@@ -16,7 +16,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { ArrowRight } from "lucide-react";
-import { useState } from "react";
+import { useQueryState } from "nuqs";
 import { Link } from "wouter";
 import useGames from "../../game/lib/game/useGames";
 import { Club } from "../lib/club/club.service";
@@ -31,9 +31,10 @@ export default function ClubHistory({ club }: { club: Club }) {
     { label: "Hors saison", value: "none" },
   ];
 
-  const [selectedSeason, setSelectedSeason] = useState<string>(
-    seasonOptions[0].value,
-  );
+  const [selectedSeason, setSelectedSeason] = useQueryState("season", {
+    defaultValue: seasonOptions[0].value,
+    clearOnDefault: false,
+  });
 
   const { data: games, isLoading } = useGames(club.id, "past", selectedSeason);
 

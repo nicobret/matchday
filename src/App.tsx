@@ -1,5 +1,6 @@
 import { NuqsAdapter } from "nuqs/adapters/react";
 import { Suspense, lazy, useContext } from "react";
+import { ErrorBoundary } from "react-error-boundary";
 import { QueryClientProvider } from "react-query";
 import { Redirect, Route, Switch } from "wouter";
 import {
@@ -25,20 +26,22 @@ export default function App() {
       <NuqsAdapter>
         <QueryClientProvider client={queryClient}>
           <SessionProvider>
-            <Layout>
-              <Suspense fallback={<Fallback />}>
-                <RedirectIfProfileNotComplete />
-                <Switch>
-                  <Route path="/auth" component={Auth} />
-                  <Route path="/account" component={Account} />
-                  <Route path="/club/:id" component={Club} nest />
-                  <Route path="/game" component={Game} nest />
-                  <Route path="/player/:id" component={Player} />
-                  <Route path="/" component={Home} />
-                  <Route component={NotFound} />
-                </Switch>
-              </Suspense>
-            </Layout>
+            <ErrorBoundary FallbackComponent={Fallback}>
+              <Layout>
+                <Suspense fallback={<AppLoader />}>
+                  <RedirectIfProfileNotComplete />
+                  <Switch>
+                    <Route path="/auth" component={Auth} />
+                    <Route path="/account" component={Account} />
+                    <Route path="/club/:id" component={Club} nest />
+                    <Route path="/game" component={Game} nest />
+                    <Route path="/player/:id" component={Player} />
+                    <Route path="/" component={Home} />
+                    <Route component={NotFound} />
+                  </Switch>
+                </Suspense>
+              </Layout>
+            </ErrorBoundary>
           </SessionProvider>
         </QueryClientProvider>
       </NuqsAdapter>
@@ -50,10 +53,26 @@ function NotFound() {
   return <div className="text-center">404 - Page non trouvée</div>;
 }
 
-function Fallback() {
+function AppLoader() {
   return (
     <div className="animate-pulse text-center">
       Chargement de l'application...
+    </div>
+  );
+}
+
+function Fallback({
+  error,
+  resetErrorBoundary,
+}: {
+  error: Error;
+  resetErrorBoundary: () => void;
+}) {
+  return (
+    <div role="alert">
+      <p>Une erreur est survenue:</p>
+      <pre>{error.message}</pre>
+      <button onClick={resetErrorBoundary}>Réessayer</button>
     </div>
   );
 }
@@ -63,14 +82,10 @@ function RedirectIfProfileNotComplete() {
   const { data: profile } = useProfile({ session });
   const params = new URLSearchParams(window.location.search);
   const redirectTo = params.get("redirectTo");
+  const url = redirectTo ? `/account?redirectTo=${redirectTo}` : "/account";
 
   if (profile && !profile?.firstname) {
-    return (
-      <Redirect
-        to={redirectTo ? `/account?redirectTo=${redirectTo}` : "/account"}
-      />
-    );
+    return <Redirect to={url} />;
   }
-
   return null;
 }
