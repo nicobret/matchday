@@ -35,11 +35,7 @@ export default function JoinGameButton({ game }: { game: Game }) {
   }
 
   return (
-    <Button
-      onClick={handleClick}
-      disabled={isLoading}
-      className="w-full md:w-fit"
-    >
+    <Button onClick={handleClick} disabled={isLoading}>
       {isLoading ? (
         <Loader className="h-5 w-5 animate-spin" />
       ) : (

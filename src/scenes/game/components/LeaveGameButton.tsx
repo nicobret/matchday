@@ -11,7 +11,6 @@ export default function LeaveGameButton({ gameId }: { gameId: number }) {
       onClick={() => mutate({ status: "cancelled" })}
       disabled={isLoading}
       variant="secondary"
-      className="w-full md:w-fit"
     >
       {isLoading ? (
         <Loader className="h-5 w-5 animate-spin" />
