@@ -18,11 +18,6 @@ export default function EditClub() {
   if (!club || !seasons) {
     return <p className="animate_pulse text-center">Chargement...</p>;
   }
-
-  function handleCreateSeason() {
-    mutate("Nouvelle saison");
-  }
-
   return (
     <div className="mx-auto max-w-5xl p-4">
       <Link to={"/"} className="text-muted-foreground text-sm">
@@ -42,7 +37,7 @@ export default function EditClub() {
           Liste des saisons
         </h2>
         <Button
-          onClick={handleCreateSeason}
+          onClick={() => mutate("Nouvelle saison")}
           disabled={isLoading}
           variant="secondary"
         >

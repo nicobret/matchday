@@ -5,19 +5,15 @@ import { useContext } from "react";
 import { useLocation } from "wouter";
 import useCreateMember from "../lib/member/useCreateMember";
 
-export default function JoinButton({ clubId }: { clubId: number }) {
+export default function JoinClubButton({ clubId }: { clubId: number }) {
   const { session } = useContext(SessionContext);
   const { mutate, isLoading } = useCreateMember(clubId);
   const [_location, navigate] = useLocation();
 
   function handleClick() {
     if (!session?.user) {
-      if (
-        window.confirm(
-          "Pour rejoindre un club, veuillez vous inscrire ou vous connecter.",
-        )
-      ) {
-        navigate(`/auth?redirectTo=${window.location.pathname}`);
+      if (window.confirm("Pour vous inscrire, veuillez vous connecter.")) {
+        navigate("~/auth?redirectTo=" + window.location.pathname);
       }
       return;
     }

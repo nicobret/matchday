@@ -64,17 +64,6 @@ export async function deleteClub(club: Club) {
   return data;
 }
 
-// async function fetchMember(clubId: number, userId: string) {
-//   const { data } = await supabase
-//     .from("club_member")
-//     .select()
-//     .eq("club_id", clubId)
-//     .eq("user_id", userId)
-//     .single()
-//     .throwOnError();
-//   return data;
-// }
-
 export async function updateMember(memberId: number, payload: Partial<Member>) {
   const { data } = await supabase
     .from("club_member")

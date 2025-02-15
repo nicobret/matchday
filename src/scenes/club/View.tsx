@@ -16,8 +16,8 @@ import ClubHistory from "./components/ClubHistory";
 import ClubMembers from "./components/ClubMembers";
 import ClubStats from "./components/ClubStats";
 import CopyButton from "./components/CopyButton";
-import JoinButton from "./components/JoinButton";
-import LeaveButton from "./components/LeaveButton";
+import JoinClubButton from "./components/JoinClubButton";
+import LeaveClubButton from "./components/LeaveClubButton";
 import UpcomingGamesTable from "./components/UpcomingGamesTable";
 import useClub from "./lib/club/useClub";
 import { useMembers } from "./lib/member/useMembers";
@@ -64,9 +64,9 @@ export default function View() {
 
         <div className="mx-auto mt-6 grid max-w-lg grid-cols-2 gap-2">
           {isMember ? (
-            <LeaveButton clubId={club.id} />
+            <LeaveClubButton clubId={club.id} />
           ) : (
-            <JoinButton clubId={club.id} />
+            <JoinClubButton clubId={club.id} />
           )}
 
           <CopyButton />
@@ -143,7 +143,6 @@ export default function View() {
             <div className="mt-8 overflow-x-auto">
               <UpcomingGamesTable clubId={club.id} />
             </div>
-            {/* <UpcomingGames clubId={club.id} enableGameCreation={isMember} /> */}
           </section>
 
           <section id="history" className="mt-10">
