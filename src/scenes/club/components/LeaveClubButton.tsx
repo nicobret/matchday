@@ -4,7 +4,7 @@ import { Ban } from "lucide-react";
 import { useContext } from "react";
 import useDeleteMember from "../lib/member/useDeleteMember";
 
-export default function LeaveButton({ clubId }: { clubId: number }) {
+export default function LeaveClubButton({ clubId }: { clubId: number }) {
   const { session } = useContext(SessionContext);
   const { mutate, isLoading } = useDeleteMember(clubId);
 

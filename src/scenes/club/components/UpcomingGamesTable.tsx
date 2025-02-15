@@ -1,7 +1,5 @@
-import { Link, useLocation } from "wouter";
-
 import { SessionContext } from "@/components/auth-provider";
-import { Button, buttonVariants } from "@/components/ui/button";
+import { buttonVariants } from "@/components/ui/button";
 import {
   Table,
   TableBody,
@@ -10,25 +8,28 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { queryClient } from "@/lib/react-query";
-import useCreatePlayer from "@/scenes/game/lib/player/useCreatePlayer";
 import usePlayers from "@/scenes/game/lib/player/usePlayers";
-import useUpdatePlayer from "@/scenes/game/lib/player/useUpdatePlayer";
-import { Loader } from "lucide-react";
 import { useContext } from "react";
+import { Link } from "wouter";
+import JoinGameButton from "../../game/components/JoinGameButton";
+import LeaveGameButton from "../../game/components/LeaveGameButton";
 import useGames from "../../game/lib/game/useGames";
-import { Game, joinClub } from "../lib/club/club.service";
-import useClub from "../lib/club/useClub";
+import { Game } from "../lib/club/club.service";
 import { useMembers } from "../lib/member/useMembers";
 
 export default function UpcomingGamesTable({ clubId }: { clubId: number }) {
-  const { data: games } = useGames(clubId, "next");
+  const { data: games, isIdle, isLoading, isError } = useGames(clubId, "next");
   const { isMember } = useMembers(clubId);
 
-  if (!games?.length) {
+  if (isIdle || isLoading) {
+    return <p className="m-4 text-center">Chargement...</p>;
+  }
+  if (isError) {
+    return <p className="m-4 text-center">Une erreur s'est produite.</p>;
+  }
+  if (games.length === 0) {
     return <p className="m-4 text-center">Aucun match prévu.</p>;
   }
-
   return (
     <Table className="border">
       <TableHeader>
@@ -49,57 +50,16 @@ export default function UpcomingGamesTable({ clubId }: { clubId: number }) {
 
 function GameRow({ game }: { game: Game }) {
   const { session } = useContext(SessionContext);
-  const [_location, navigate] = useLocation();
   const { isMember } = useMembers(game.club_id);
-  const { data: players, isPlayer } = usePlayers(Number(game.id));
-  const { data: club } = useClub(Number(game?.club_id));
-  const player = players?.find((p) => p.user_id === session?.user.id);
-  const count = players?.filter((e) => e.status === "confirmed").length || 0;
+  const { isPlayer, count } = usePlayers(game.id);
   const isFull = count >= (game.total_players || 10);
-  const createPlayer = useCreatePlayer(Number(game.id));
-  const updatePlayer = useUpdatePlayer(player!);
-
-  async function handleJoin() {
-    if (!session?.user) {
-      if (window.confirm("Pour vous inscrire, veuillez vous connecter.")) {
-        navigate("~/auth?redirectTo=" + window.location.pathname);
-      }
-      return;
-    }
-    if (!isMember) {
-      if (
-        window.confirm(
-          "Vous n'êtes pas membre du club organisateur, souhaitez-vous le rejoindre ?",
-        )
-      ) {
-        await joinClub(club!.id, session.user.id);
-        queryClient.invalidateQueries(["club", club!.id]);
-      }
-    }
-    createPlayer.mutate(
-      { user_id: session.user.id },
-      {
-        onSuccess: () => {
-          queryClient.invalidateQueries(["players", game.id]);
-        },
-      },
-    );
-  }
-
-  async function handleLeave() {
-    if (!game || !player) {
-      console.error("Game or player not found");
-      return;
-    }
-    updatePlayer.mutate({ status: "cancelled" });
-  }
 
   return (
     <TableRow key={game.id}>
       <TableCell>
         {new Date(game.date).toLocaleDateString("fr-FR", {
           weekday: "long",
-          month: "short",
+          month: "long",
           day: "numeric",
         })}
       </TableCell>
@@ -110,34 +70,8 @@ function GameRow({ game }: { game: Game }) {
       )}
       <TableCell>
         <div className="flex flex-wrap gap-2">
-          {!isPlayer && (
-            <Button
-              onClick={handleJoin}
-              disabled={createPlayer.isLoading}
-              className="w-full md:w-fit"
-            >
-              {createPlayer.isLoading ? (
-                <Loader className="h-5 w-5 animate-spin" />
-              ) : (
-                <>M'inscrire</>
-              )}
-            </Button>
-          )}
-
-          {session && isPlayer && (
-            <Button
-              onClick={handleLeave}
-              disabled={updatePlayer.isLoading}
-              variant="secondary"
-              className="w-full md:w-fit"
-            >
-              {updatePlayer.isLoading ? (
-                <Loader className="h-5 w-5 animate-spin" />
-              ) : (
-                <>Me désinscrire</>
-              )}
-            </Button>
-          )}
+          {!isPlayer && <JoinGameButton game={game} />}
+          {session && isPlayer && <LeaveGameButton gameId={game.id} />}
           <Link
             to={`~/game/${game.id}`}
             className={`w-full md:w-fit ${buttonVariants({ variant: "secondary" })}`}

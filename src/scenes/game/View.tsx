@@ -4,34 +4,32 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useCopyToClipboard } from "@uidotdev/usehooks";
 import {
   ArrowLeft,
-  Ban,
   BarChart,
-  ClipboardSignature,
   Clock,
   Copy,
-  Loader,
+  Hourglass,
   MapPin,
   Pencil,
   Users,
 } from "lucide-react";
 import { useContext, useEffect } from "react";
-import { Link, useLocation, useParams } from "wouter";
+import { Link, useParams } from "wouter";
 import { useMembers } from "../club/lib/member/useMembers";
 import AddToCalendar from "./components/AddToCalendar";
 import GameStats from "./components/GameStats";
+import JoinGameButton from "./components/JoinGameButton";
+import LeaveGameButton from "./components/LeaveGameButton";
 import LineUp from "./components/LineUp";
 import MyEvents from "./components/MyEvents";
 import PlayerTable from "./components/PlayerTable";
 import Score from "./components/Score";
+import { getGameDurationInMinutes } from "./lib/game/game.service";
 import useGame from "./lib/game/useGame";
 import { getPlayerChannel } from "./lib/player/player.service";
-import useCreatePlayer from "./lib/player/useCreatePlayer";
 import usePlayers from "./lib/player/usePlayers";
-import useUpdatePlayer from "./lib/player/useUpdatePlayer";
 
 export default function View() {
   const { id } = useParams();
-  const [_location, navigate] = useLocation();
   const { session } = useContext(SessionContext);
   const [copiedText, copyToClipboard] = useCopyToClipboard();
   const { data: game, hasEnded } = useGame(Number(id));
@@ -40,8 +38,6 @@ export default function View() {
   const confirmedPlayers =
     players?.filter((p) => p.status === "confirmed") || [];
   const player = players?.find((p) => p.user_id === session?.user.id);
-  const createPlayer = useCreatePlayer(Number(id));
-  const updatePlayer = useUpdatePlayer(player!);
 
   useEffect(() => {
     if (!id) return;
@@ -63,36 +59,7 @@ export default function View() {
     );
   }
 
-  async function handleJoin() {
-    if (!session?.user) {
-      if (window.confirm("Pour vous inscrire, veuillez vous connecter.")) {
-        navigate("~/auth?redirectTo=" + window.location.pathname);
-      }
-      return;
-    }
-    if (!isMember) {
-      if (
-        window.confirm(
-          "Pour vous inscrire à un match, veuillez rejoindre le club organisateur.",
-        )
-      ) {
-        navigate(`~/club/${game?.club_id}`);
-      }
-      return;
-    }
-    createPlayer.mutate({ user_id: session.user.id });
-  }
-
-  async function handleLeave() {
-    if (!window.confirm("Voulez-vous vraiment vous désinscrire ?")) {
-      return;
-    }
-    if (!game || !player) {
-      console.error("Game or player not found");
-      return;
-    }
-    updatePlayer.mutate({ status: "cancelled" });
-  }
+  const durationInMinutes = getGameDurationInMinutes(game.duration as string);
 
   const userStatus = isPlayer
     ? "✓ Vous êtes inscrit(e)"
@@ -151,9 +118,10 @@ export default function View() {
             {game.location}
           </p>
 
-          {/* <p className="mt-1">
+          <p className="mt-1">
+            <Hourglass className="mr-2 inline-block h-4 w-4 align-text-top" />
             Durée : {durationInMinutes} minute{durationInMinutes > 1 ? "s" : ""}
-          </p> */}
+          </p>
 
           <p className="mt-1">
             <Users className="mr-2 inline-block h-4 w-4 align-text-top" />
@@ -162,42 +130,8 @@ export default function View() {
         </div>
 
         <div className="grid grid-cols-2 gap-2">
-          {!isPlayer && (
-            <Button
-              onClick={handleJoin}
-              disabled={createPlayer.isLoading}
-              className="flex gap-2"
-            >
-              {createPlayer.isLoading ? (
-                <Loader className="h-5 w-5 animate-spin" />
-              ) : (
-                <>
-                  <ClipboardSignature className="h-5 w-5" />
-                  <span>Inscription</span>
-                </>
-              )}
-            </Button>
-          )}
-
-          {session && isPlayer && (
-            <>
-              <Button
-                onClick={handleLeave}
-                disabled={updatePlayer.isLoading}
-                variant="secondary"
-              >
-                {updatePlayer.isLoading ? (
-                  <Loader className="h-5 w-5 animate-spin" />
-                ) : (
-                  <>
-                    <Ban className="mr-2 inline-block h-5 w-5" />
-                    <span>Désinscription</span>
-                  </>
-                )}
-              </Button>
-            </>
-          )}
-
+          {!isPlayer && <JoinGameButton game={game} />}
+          {session && isPlayer && <LeaveGameButton gameId={game.id} />}
           <AddToCalendar game={game} />
 
           {session && isMember && (
