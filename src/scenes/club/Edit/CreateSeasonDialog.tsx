@@ -8,25 +8,27 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
-import { queryClient } from "@/lib/react-query";
-import supabase from "@/utils/supabase";
 import { useState } from "react";
+import { useParams } from "wouter";
+import useCreateSeason from "../lib/season/useCreateSeason";
 
-export default function CreateSeasonDialog({ clubId }: { clubId: number }) {
+export default function CreateSeasonDialog() {
+  const { id } = useParams();
   const [name, setName] = useState("");
-  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
-    e.preventDefault();
-    try {
-      await supabase.from("season").insert({ name, club_id: clubId });
-      queryClient.invalidateQueries("seasons");
-    } catch (error) {
-      console.error(error);
-    }
+  const { mutate, isLoading } = useCreateSeason(Number(id));
+  function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
+    setName(e.target.value);
   }
+  function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    mutate(name);
+    setName("");
+  }
+
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button variant="secondary">Ajouter</Button>
+        <Button variant="secondary">Créer une saison</Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
@@ -37,12 +39,13 @@ export default function CreateSeasonDialog({ clubId }: { clubId: number }) {
             type="text"
             id="name"
             value={name}
-            onChange={(e) => setName(e.target.value)}
+            onChange={handleChange}
+            placeholder="Nom de la saison"
           />
         </form>
         <DialogFooter>
           <DialogTrigger asChild>
-            <Button type="submit" form="create-season">
+            <Button type="submit" form="create-season" disabled={isLoading}>
               Ajouter
             </Button>
           </DialogTrigger>

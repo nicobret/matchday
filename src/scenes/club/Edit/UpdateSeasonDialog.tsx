@@ -8,10 +8,9 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
-import { queryClient } from "@/lib/react-query";
-import supabase from "@/utils/supabase";
 import { useState } from "react";
 import { Tables } from "types/supabase";
+import useUpdateSeason from "../lib/season/useUpdateSeason";
 
 export default function UpdateSeasonDialog({
   season,
@@ -19,15 +18,13 @@ export default function UpdateSeasonDialog({
   season: Tables<"season">;
 }) {
   const [name, setName] = useState(season.name);
-  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+  const { mutate } = useUpdateSeason();
+
+  function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    try {
-      await supabase.from("season").update({ name }).eq("id", season.id);
-      queryClient.invalidateQueries("seasons");
-    } catch (error) {
-      console.error(error);
-    }
+    mutate({ id: season.id, name });
   }
+
   return (
     <Dialog>
       <DialogTrigger asChild>

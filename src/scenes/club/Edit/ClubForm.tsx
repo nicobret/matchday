@@ -1,4 +1,3 @@
-import { SessionContext } from "@/components/auth-provider";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -10,17 +9,15 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
-import { useToast } from "@/hooks/use-toast";
 import { countryList } from "@/lib/utils";
 import { Save } from "lucide-react";
-import { useContext, useState } from "react";
+import { useState } from "react";
 import { Link, useLocation } from "wouter";
-import { Club, updateClub } from "../lib/club/club.service";
+import { Club } from "../lib/club/club.service";
+import useUpdateClub from "../lib/club/useUpdateClub";
 
 export default function ClubForm({ initialData }: { initialData: Club }) {
-  const { session } = useContext(SessionContext);
   const [_location, navigate] = useLocation();
-  const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
     id: initialData.id || 0,
     name: initialData.name || "",
@@ -30,25 +27,13 @@ export default function ClubForm({ initialData }: { initialData: Club }) {
     city: initialData.city || "",
     country: initialData.country || "France",
   });
-  const { toast } = useToast();
+  const { mutate, isLoading } = useUpdateClub(initialData.id);
 
-  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+  function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    setLoading(true);
-    try {
-      if (!session?.user) {
-        throw new Error("Vous devez être connecté pour modifier un club.");
-      }
-      await updateClub(formData, initialData.id);
-      toast({ description: "Club modifié avec succès" });
-      navigate("/");
-    } catch (error) {
-      window.alert(error);
-      console.error(error);
-    } finally {
-      setLoading(false);
-    }
+    mutate(formData, { onSuccess: () => navigate("~/") });
   }
+
   return (
     <form onSubmit={handleSubmit} className="mt-6 grid gap-6 md:grid-cols-2">
       <div className="grid gap-6">
@@ -148,7 +133,7 @@ export default function ClubForm({ initialData }: { initialData: Club }) {
         </div>
       </div>
 
-      <Button type="submit" disabled={loading || !formData.name}>
+      <Button type="submit" disabled={isLoading || !formData.name}>
         <Save className="mr-2 h-5 w-5" />
         Enregistrer
       </Button>

@@ -1,3 +1,4 @@
+import { Tables } from "types/supabase";
 import supabase from "../utils/supabase";
 
 export async function fetchGameStats(game_id: number, sortby: string) {
@@ -10,13 +11,18 @@ export async function fetchGameStats(game_id: number, sortby: string) {
   return data || [];
 }
 
-export async function fetchClubStats(club_id: number) {
+export async function fetchClubStats(
+  club_id: number,
+): Promise<Tables<"game_report">[]> {
   const { data } = await supabase
     .from("game_report")
     .select()
     .eq("club_id", club_id)
     .throwOnError();
-  return data || [];
+  if (data === undefined || data === null) {
+    throw new Error("No data found");
+  }
+  return data;
 }
 
 export async function fetchPlayerStats(user_id: number) {

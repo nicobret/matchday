@@ -1,5 +1,6 @@
 import { fetchClubStats } from "@/lib/stats.service";
 import { useQuery } from "react-query";
+import { Tables } from "types/supabase";
 
 export type ClubStatsType = {
   user_id: string | null;
@@ -14,18 +15,10 @@ export type ClubStatsType = {
   saves: number;
 };
 
-export default function useClubStats(clubId: number) {
-  const { data, isError, isLoading, isIdle } = useQuery({
-    queryKey: ["club_stats", clubId],
-    queryFn: () => fetchClubStats(clubId),
-    enabled: !!clubId,
-  });
-  if (!data) {
-    return { data: [] as ClubStatsType[], isError, isLoading, isIdle };
-  }
-
+function formatClubStats(data?: Tables<"game_report">[]): ClubStatsType[] {
+  if (!data) return [];
   const uniqueUserIds = Array.from(new Set(data.map((r) => r.user_id)));
-  const formattedData: ClubStatsType[] = uniqueUserIds.map((userId) => {
+  return uniqueUserIds.map((userId) => {
     const userRows = data.filter((r) => r.user_id === userId);
     return {
       user_id: userId,
@@ -50,6 +43,13 @@ export default function useClubStats(clubId: number) {
       saves: userRows.reduce((acc, row) => acc + (row.saves || 0), 0),
     };
   });
+}
 
-  return { data: formattedData, isError, isLoading, isIdle };
+export default function useClubStats(clubId: number) {
+  const query = useQuery({
+    queryKey: ["club_stats", clubId],
+    queryFn: () => fetchClubStats(clubId),
+    enabled: !!clubId,
+  });
+  return { ...query, data: formatClubStats(query.data) };
 }

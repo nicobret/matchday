@@ -1,4 +1,3 @@
-import { Breadcrumbs } from "@/components/Breadcrumbs";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button, buttonVariants } from "@/components/ui/button";
 import {
@@ -11,6 +10,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
+import { ArrowLeft } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Tables } from "types/supabase";
 import { Link, useLocation } from "wouter";
@@ -57,7 +57,10 @@ export default function Account() {
   }
   return (
     <div className="p-4">
-      <Breadcrumbs links={[{ label: "Mon compte", link: "/account" }]} />
+      <Link to={"/"} className="text-muted-foreground text-sm">
+        <ArrowLeft className="mr-2 inline-block h-4 w-4 align-text-top" />
+        Retour au club
+      </Link>
 
       <h2 className="mt-6 scroll-m-20 text-3xl font-semibold tracking-tight">
         Mon compte

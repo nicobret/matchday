@@ -1,13 +1,16 @@
 import { SessionContext } from "@/components/auth-provider";
 import { useContext } from "react";
 import { useQuery } from "react-query";
-import { fetchClub } from "./club.service";
+import { getClub } from "./club.repository";
 
-export default function useClub(id: number) {
+export default function useClub(id?: number) {
+  if (!id) {
+    throw new Error("id is required");
+  }
   const { session } = useContext(SessionContext);
   const res = useQuery({
     queryKey: ["club", id],
-    queryFn: () => fetchClub(id),
+    queryFn: () => getClub(id),
     enabled: !!id,
   });
   const isAdmin =

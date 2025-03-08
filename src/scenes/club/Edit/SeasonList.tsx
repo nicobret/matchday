@@ -7,27 +7,27 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { queryClient } from "@/lib/react-query";
-import supabase from "@/utils/supabase";
+import { useParams } from "wouter";
+import useDeleteSeason from "../lib/season/useDeleteSeason";
+import useSeasons from "../lib/season/useSeasons";
 import UpdateSeasonDialog from "./UpdateSeasonDialog";
 
-export default function SeasonList({
-  clubId,
-  seasons,
-}: {
-  clubId: number;
-  seasons: any;
-}) {
-  async function handleDelete(seasonId: string) {
-    if (!window.confirm("Voulez-vous vraiment supprimer cette saison ?")) {
-      return;
+export default function SeasonList() {
+  const { id } = useParams();
+  const { data, isError, isLoading, isIdle } = useSeasons(Number(id));
+  const { mutate } = useDeleteSeason();
+
+  function handleDelete(seasonId: string) {
+    if (window.confirm("Voulez-vous supprimer cette saison ?")) {
+      mutate(seasonId);
     }
-    try {
-      await supabase.from("season").delete().eq("id", seasonId).throwOnError();
-      queryClient.invalidateQueries("seasons");
-    } catch (error) {
-      console.error(error);
-    }
+  }
+
+  if (isError) {
+    return <p>Erreur lors du chargement des saisons</p>;
+  }
+  if (isIdle || isLoading) {
+    return <p>Chargement...</p>;
   }
   return (
     <Table className="border">
@@ -38,7 +38,7 @@ export default function SeasonList({
         </TableRow>
       </TableHeader>
       <TableBody>
-        {seasons.map((season: any) => (
+        {data.map((season) => (
           <TableRow key={season.id}>
             <TableCell>{season.name}</TableCell>
             <TableCell className="flex gap-2">

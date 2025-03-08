@@ -1,10 +1,7 @@
 import { useMutation } from "react-query";
 import { TablesUpdate } from "types/supabase";
-import {
-  Member,
-  updateMember,
-  updateMemberInCache,
-} from "../club/club.service";
+import { Member, updateMemberInCache } from "../club/club.service";
+import { updateMember } from "./member.repository";
 
 export function useUpdateMember(member: Member) {
   const mutationFn = (payload: TablesUpdate<"club_member">) =>

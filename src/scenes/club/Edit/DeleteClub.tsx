@@ -1,43 +1,34 @@
 import { SessionContext } from "@/components/auth-provider";
 import { Button } from "@/components/ui/button";
-import { useToast } from "@/hooks/use-toast";
 import { Trash } from "lucide-react";
-import { useContext, useState } from "react";
+import { useContext } from "react";
 import { useLocation } from "wouter";
-import { Club, deleteClub } from "../lib/club/club.service";
+import { Club } from "../lib/club/club.service";
+import useDeleteClub from "../lib/club/useDeleteClub";
 
 export default function DeleteClub({ club }: { club: Club }) {
-  const [loading, setLoading] = useState(false);
   const { session } = useContext(SessionContext);
   const [_location, navigate] = useLocation();
-  const { toast } = useToast();
+  const { mutate, isLoading } = useDeleteClub(club.id);
+  const disabled =
+    isLoading || !session?.user || club.creator_id !== session?.user?.id;
 
-  async function handleDelete() {
-    setLoading(true);
-    try {
-      if (!session?.user) {
-        throw new Error("Vous devez être connecté pour supprimer un club.");
-      }
-      if (session.user?.id !== club.creator_id) {
-        throw new Error("Vous n'êtes pas autorisé à supprimer ce club.");
-      }
-      if (window.confirm("Voulez-vous vraiment supprimer ce club ?")) {
-        await deleteClub(club);
-        toast({ description: "Club supprimé avec succès" });
-        navigate("~/");
-      }
-    } catch (error) {
-      window.alert(error);
-    } finally {
-      setLoading(false);
+  function handleClick() {
+    if (window.confirm("Voulez-vous vraiment supprimer ce club ?")) {
+      mutate(undefined, {
+        onSuccess: () => {
+          navigate("~/");
+        },
+      });
     }
   }
+
   return (
     <Button
       type="button"
       variant="destructive"
-      disabled={loading || club.creator_id !== session?.user?.id}
-      onClick={handleDelete}
+      disabled={disabled}
+      onClick={handleClick}
     >
       <Trash className="mr-2 h-5 w-5" />
       Supprimer

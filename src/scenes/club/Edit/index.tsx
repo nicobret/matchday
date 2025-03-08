@@ -1,21 +1,19 @@
-import { Button } from "@/components/ui/button";
-import useSeasons from "@/scenes/club/lib/season/useSeasons";
 import { ArrowLeft } from "lucide-react";
 import { Link, useParams } from "wouter";
 import useClub from "../lib/club/useClub";
-import useCreateSeason from "../lib/season/useCreateSeason";
 import ClubForm from "./ClubForm";
+import CreateSeasonDialog from "./CreateSeasonDialog";
 import DeleteClub from "./DeleteClub";
 import SeasonList from "./SeasonList";
 
 export default function EditClub() {
   const { id } = useParams();
-  const clubId = Number(id);
-  const { data: club } = useClub(clubId);
-  const { data: seasons } = useSeasons(clubId);
-  const { mutate, isLoading } = useCreateSeason(clubId);
+  const { data: club, isError, isIdle, isLoading } = useClub(Number(id));
 
-  if (!club || !seasons) {
+  if (isError) {
+    return <p>Erreur lors du chargement du club</p>;
+  }
+  if (isIdle || isLoading) {
     return <p className="animate_pulse text-center">Chargement...</p>;
   }
   return (
@@ -36,16 +34,10 @@ export default function EditClub() {
         <h2 className="mb-4 text-2xl font-semibold tracking-tight uppercase">
           Liste des saisons
         </h2>
-        <Button
-          onClick={() => mutate("Nouvelle saison")}
-          disabled={isLoading}
-          variant="secondary"
-        >
-          Ajouter une saison
-        </Button>
+        <CreateSeasonDialog />
         <br />
         <br />
-        <SeasonList clubId={club.id} seasons={seasons} />
+        <SeasonList />
       </section>
 
       <section id="delete" className="mt-16">
