@@ -1,7 +1,7 @@
 import { SessionContext } from "@/components/auth-provider";
 import { useToast } from "@/hooks/use-toast";
+import { useMutation } from "@tanstack/react-query";
 import { useContext } from "react";
-import { useMutation } from "react-query";
 import { addMemberToCache } from "../club/club.service";
 import { createMember } from "./member.repository";
 

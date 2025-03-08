@@ -22,9 +22,9 @@ import useUpdateGame from "./lib/game/useUpdateGame";
 
 export default function EditGame() {
   const { id } = useParams();
-  const { data, isIdle, isLoading, isError } = useGame(Number(id));
+  const { data, isPending, isError } = useGame(Number(id));
 
-  if (isIdle || isLoading) {
+  if (isPending) {
     return <div>Chargement...</div>;
   }
   if (isError) {
@@ -53,7 +53,7 @@ function Editor({ game }: { game: Game }) {
   const [_location, navigate] = useLocation();
   const { data: seasons } = useSeasons(game.club_id);
   const [data, setData] = useState(getInitialFormData(game));
-  const { mutate, isLoading } = useUpdateGame(game.id);
+  const { mutate, isPending } = useUpdateGame(game.id);
   const { toast } = useToast();
 
   const zonedDateTime = fromZonedTime(
@@ -208,7 +208,7 @@ function Editor({ game }: { game: Game }) {
         <div className="mt-8 grid grid-cols-1 gap-4 md:grid-cols-2">
           <Button
             type="submit"
-            disabled={isLoading}
+            disabled={isPending}
             className="w-full md:order-2"
           >
             Enregistrer

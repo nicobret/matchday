@@ -16,7 +16,7 @@ export function RoleSelector({
   member: Member;
   enabled: boolean;
 }) {
-  const { mutate, isLoading } = useUpdateMember(member);
+  const { mutate, isPending } = useUpdateMember(member);
   const { toast } = useToast();
 
   const options = [
@@ -39,7 +39,7 @@ export function RoleSelector({
         )
       }
       value={selectedOption?.value}
-      disabled={!enabled || isLoading}
+      disabled={!enabled || isPending}
     >
       <SelectTrigger className="w-fit">
         <SelectValue />

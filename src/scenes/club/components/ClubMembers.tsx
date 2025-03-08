@@ -14,10 +14,10 @@ import { useMembers } from "../lib/member/useMembers";
 import { RoleSelector } from "./RoleSelector";
 
 export default function ClubMembers({ clubId }: { clubId: number }) {
-  const { data, isError, isLoading, isIdle } = useMembers(clubId);
+  const { data, isError, isPending } = useMembers(clubId);
   const { isAdmin } = useClub(clubId);
 
-  if (isIdle || isLoading) {
+  if (isPending) {
     return <p className="text-center">Chargement...</p>;
   }
   if (isError) {
@@ -30,7 +30,7 @@ export default function ClubMembers({ clubId }: { clubId: number }) {
           Inviter
         </Button>
       </div>
-      {isLoading ? (
+      {isPending ? (
         <p className="text-center">Chargement...</p>
       ) : data.length === 0 ? (
         <p className="text-center">Aucun joueur dans ce club.</p>

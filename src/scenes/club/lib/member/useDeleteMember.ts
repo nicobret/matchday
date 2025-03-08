@@ -1,6 +1,6 @@
 import { SessionContext } from "@/components/auth-provider";
+import { useMutation } from "@tanstack/react-query";
 import { useContext } from "react";
-import { useMutation } from "react-query";
 import { deleteMemberFromCache } from "../club/club.service";
 import { deleteMember } from "./member.repository";
 

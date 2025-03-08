@@ -13,7 +13,7 @@ import { Player } from "../lib/player/player.service";
 import useUpdatePlayer from "../lib/player/useUpdatePlayer";
 
 export default function MyEvents({ player }: { player: Player }) {
-  const { mutate, isLoading } = useUpdatePlayer(player);
+  const { mutate, isPending } = useUpdatePlayer(player);
 
   function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -25,7 +25,10 @@ export default function MyEvents({ player }: { player: Player }) {
 
     mutate(
       { goals, assists, saves },
-      { onSuccess: () => queryClient.invalidateQueries("game_stats") },
+      {
+        onSuccess: () =>
+          queryClient.invalidateQueries({ queryKey: ["game_stats"] }),
+      },
     );
   }
 
@@ -72,8 +75,8 @@ export default function MyEvents({ player }: { player: Player }) {
       </CardContent>
 
       <CardFooter>
-        <Button type="submit" disabled={isLoading} form="my-events">
-          {isLoading ? "En cours..." : "Enregistrer"}
+        <Button type="submit" disabled={isPending} form="my-events">
+          {isPending ? "En cours..." : "Enregistrer"}
         </Button>
       </CardFooter>
     </Card>

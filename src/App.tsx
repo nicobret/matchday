@@ -1,7 +1,7 @@
+import { QueryClientProvider } from "@tanstack/react-query";
 import { NuqsAdapter } from "nuqs/adapters/react";
 import { Suspense, lazy, useContext } from "react";
 import { ErrorBoundary } from "react-error-boundary";
-import { QueryClientProvider } from "react-query";
 import { Redirect, Route, Switch } from "wouter";
 import {
   SessionContext,

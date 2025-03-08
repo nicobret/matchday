@@ -10,8 +10,8 @@ import useProfile from "./useProfile";
 
 export default function Home() {
   const { session } = useContext(SessionContext);
-  const { data: profile, isLoading: loadingProfile } = useProfile({ session });
-  const { data: clubs, isError, isIdle, isLoading } = useClubs();
+  const { data: profile, isPending: loadingProfile } = useProfile({ session });
+  const { data: clubs, isError, isPending } = useClubs();
 
   if (loadingProfile) {
     return (
@@ -19,7 +19,7 @@ export default function Home() {
     );
   }
 
-  if (isLoading || isIdle) {
+  if (isPending) {
     return <p className="animate-pulse text-center">Chargement des clubs...</p>;
   }
   if (isError) {

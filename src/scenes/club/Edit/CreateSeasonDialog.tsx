@@ -15,7 +15,7 @@ import useCreateSeason from "../lib/season/useCreateSeason";
 export default function CreateSeasonDialog() {
   const { id } = useParams();
   const [name, setName] = useState("");
-  const { mutate, isLoading } = useCreateSeason(Number(id));
+  const { mutate, isPending } = useCreateSeason(Number(id));
   function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
     setName(e.target.value);
   }
@@ -45,7 +45,7 @@ export default function CreateSeasonDialog() {
         </form>
         <DialogFooter>
           <DialogTrigger asChild>
-            <Button type="submit" form="create-season" disabled={isLoading}>
+            <Button type="submit" form="create-season" disabled={isPending}>
               Ajouter
             </Button>
           </DialogTrigger>

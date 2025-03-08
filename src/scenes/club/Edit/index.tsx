@@ -8,12 +8,12 @@ import SeasonList from "./SeasonList";
 
 export default function EditClub() {
   const { id } = useParams();
-  const { data: club, isError, isIdle, isLoading } = useClub(Number(id));
+  const { data: club, isError, isPending } = useClub(Number(id));
 
   if (isError) {
     return <p>Erreur lors du chargement du club</p>;
   }
-  if (isIdle || isLoading) {
+  if (isPending) {
     return <p className="animate_pulse text-center">Chargement...</p>;
   }
   return (

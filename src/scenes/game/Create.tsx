@@ -32,13 +32,10 @@ type CreateGamePayload = {
 
 export default function CreateGame() {
   const clubId = new URLSearchParams(window.location.search).get("clubId");
-  const { data: club, isIdle, isLoading, isError } = useClub(Number(clubId));
+  const { data: club, isPending, isError } = useClub(Number(clubId));
   const { isMember } = useMembers(Number(clubId));
 
-  if (isIdle) {
-    return <p className="text-center">Sélectionnez un club</p>;
-  }
-  if (isLoading) {
+  if (isPending) {
     return <p className="text-center">Chargement des données...</p>;
   }
   if (isError) {
@@ -62,7 +59,7 @@ function GameForm({ club }: { club: Club }) {
   const [location, setLocation] = useState(
     `${club?.address}, ${club?.postcode} ${club?.city}`,
   );
-  const { mutate, isLoading } = useCreateGame(club.id);
+  const { mutate, isPending } = useCreateGame(club.id);
 
   const seasons = club.seasons || [];
   const seasonOptions = [
@@ -236,7 +233,7 @@ function GameForm({ club }: { club: Club }) {
           <Button type="button" asChild variant="secondary">
             <Link to={`~/club/${club.id}`}>Annuler</Link>
           </Button>
-          <Button type="submit" disabled={isLoading}>
+          <Button type="submit" disabled={isPending}>
             Créer
           </Button>
         </div>

@@ -3,12 +3,9 @@ import EventStats from "./EventStats";
 import WinStats from "./WinStats";
 
 export default function ClubStats({ clubId }: { clubId: number }) {
-  const { data, isError, isLoading, isIdle } = useClubStats(clubId);
+  const { data, isError, isPending } = useClubStats(clubId);
 
-  if (isIdle) {
-    return <div>Selectionnez un club</div>;
-  }
-  if (isLoading) {
+  if (isPending) {
     return <div>Chargement...</div>;
   }
   if (isError) {

@@ -1,5 +1,5 @@
 import { fetchGameStats } from "@/lib/stats.service";
-import { useQuery } from "react-query";
+import { useQuery } from "@tanstack/react-query";
 
 export default function useGameStats({
   gameId,

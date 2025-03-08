@@ -1,6 +1,6 @@
 import { SessionContext } from "@/components/auth-provider";
+import { useQuery } from "@tanstack/react-query";
 import { useContext } from "react";
-import { useQuery } from "react-query";
 import { fetchPlayers } from "./player.service";
 
 export default function usePlayers(gameId: number) {

@@ -1,4 +1,4 @@
-import { useMutation } from "react-query";
+import { useMutation } from "@tanstack/react-query";
 import { TablesUpdate } from "types/supabase";
 import { Member, updateMemberInCache } from "../club/club.service";
 import { updateMember } from "./member.repository";

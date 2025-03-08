@@ -1,5 +1,5 @@
 import { useToast } from "@/hooks/use-toast";
-import { useMutation } from "react-query";
+import { useMutation } from "@tanstack/react-query";
 import { deleteClub } from "./club.repository";
 
 export default function useDeleteClub(clubId: number) {

@@ -1,5 +1,5 @@
 import { useToast } from "@/hooks/use-toast";
-import { useMutation } from "react-query";
+import { useMutation } from "@tanstack/react-query";
 import { TablesUpdate } from "types/supabase";
 import { updateClub } from "./club.repository";
 

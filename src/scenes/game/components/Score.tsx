@@ -69,7 +69,7 @@ export default function Result({
             </div>
           </div>
         ) : (
-          <p className="text-center text-muted-foreground">Aucun résultat.</p>
+          <p className="text-muted-foreground text-center">Aucun résultat.</p>
         )}
       </CardContent>
       <CardFooter className="mt-auto">
@@ -82,7 +82,7 @@ export default function Result({
 function ScoreDialog({ game }: { game: Tables<"games"> }) {
   const [open, setOpen] = useState(false);
   const [score, setScore] = useState(game.score || [0, 0]);
-  const { mutate, isLoading } = useUpdateGame(game.id);
+  const { mutate, isPending } = useUpdateGame(game.id);
 
   function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -127,7 +127,7 @@ function ScoreDialog({ game }: { game: Tables<"games"> }) {
                   }
                 />
               </div>
-              <Button type="submit" disabled={isLoading} className="col-span-2">
+              <Button type="submit" disabled={isPending} className="col-span-2">
                 Enregistrer
               </Button>
             </form>

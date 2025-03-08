@@ -1,6 +1,6 @@
 import { SessionContext } from "@/components/auth-provider";
+import { useMutation } from "@tanstack/react-query";
 import { useContext } from "react";
-import { useMutation } from "react-query";
 import { createGame, createGamePayload } from "./game.service";
 
 export default function useCreateGame(clubId: number) {

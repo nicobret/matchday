@@ -7,7 +7,7 @@ import useCreateMember from "../lib/member/useCreateMember";
 
 export default function JoinClubButton({ clubId }: { clubId: number }) {
   const { session } = useContext(SessionContext);
-  const { mutate, isLoading } = useCreateMember(clubId);
+  const { mutate, isPending } = useCreateMember(clubId);
   const [_location, navigate] = useLocation();
 
   function handleClick() {
@@ -21,7 +21,7 @@ export default function JoinClubButton({ clubId }: { clubId: number }) {
   }
 
   return (
-    <Button onClick={handleClick} disabled={isLoading}>
+    <Button onClick={handleClick} disabled={isPending}>
       <ClipboardSignature className="mr-2 h-5 w-5" />
       Rejoindre
     </Button>

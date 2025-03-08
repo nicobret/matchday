@@ -9,9 +9,9 @@ import useDeleteClub from "../lib/club/useDeleteClub";
 export default function DeleteClub({ club }: { club: Club }) {
   const { session } = useContext(SessionContext);
   const [_location, navigate] = useLocation();
-  const { mutate, isLoading } = useDeleteClub(club.id);
+  const { mutate, isPending } = useDeleteClub(club.id);
   const disabled =
-    isLoading || !session?.user || club.creator_id !== session?.user?.id;
+    isPending || !session?.user || club.creator_id !== session?.user?.id;
 
   function handleClick() {
     if (window.confirm("Voulez-vous vraiment supprimer ce club ?")) {

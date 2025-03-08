@@ -1,5 +1,5 @@
 import { fetchClubStats } from "@/lib/stats.service";
-import { useQuery } from "react-query";
+import { useQuery } from "@tanstack/react-query";
 import { Tables } from "types/supabase";
 
 export type ClubStatsType = {

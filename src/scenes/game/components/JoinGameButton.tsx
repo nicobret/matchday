@@ -10,7 +10,7 @@ import { useMembers } from "../../club/lib/member/useMembers";
 
 export default function JoinGameButton({ game }: { game: Game }) {
   const { session } = useContext(SessionContext);
-  const { mutate: createPlayer, isLoading } = useCreatePlayer(game.id);
+  const { mutate: createPlayer, isPending } = useCreatePlayer(game.id);
   const [_location, navigate] = useLocation();
   const { isMember } = useMembers(game.club_id);
   const { mutate: createMember } = useCreateMember(game.club_id);
@@ -35,8 +35,8 @@ export default function JoinGameButton({ game }: { game: Game }) {
   }
 
   return (
-    <Button onClick={handleClick} disabled={isLoading}>
-      {isLoading ? (
+    <Button onClick={handleClick} disabled={isPending}>
+      {isPending ? (
         <Loader className="h-5 w-5 animate-spin" />
       ) : (
         <>

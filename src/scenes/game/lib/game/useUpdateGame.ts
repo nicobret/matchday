@@ -1,5 +1,5 @@
 import { queryClient } from "@/lib/react-query";
-import { useMutation } from "react-query";
+import { useMutation } from "@tanstack/react-query";
 import { updateGame, updateGamePayload } from "./game.service";
 
 export default function useUpdateGame(gameId: number) {

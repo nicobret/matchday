@@ -27,12 +27,9 @@ import useGameStats from "../lib/game/useGameStats";
 export default function Statistics({ gameId }: { gameId: number }) {
   const [team, setTeam] = useState("all");
   const [sortby, setSortby] = useState<"goals" | "assists" | "saves">("goals");
-  const { data, isError, isLoading, isIdle } = useGameStats({ gameId, sortby });
+  const { data, isError, isPending } = useGameStats({ gameId, sortby });
 
-  if (isIdle) {
-    return <div>Selectionnez un match</div>;
-  }
-  if (isLoading) {
+  if (isPending) {
     return <div>Chargement...</div>;
   }
   if (isError) {
@@ -119,7 +116,7 @@ export default function Statistics({ gameId }: { gameId: number }) {
             </Table>
           </>
         ) : (
-          <p className="text-center text-muted-foreground">
+          <p className="text-muted-foreground text-center">
             Afin d'afficher la liste des actions, saisissez un score pour le
             match.
           </p>

@@ -5,14 +5,14 @@ import { Ban, Loader } from "lucide-react";
 
 export default function LeaveGameButton({ gameId }: { gameId: number }) {
   const { myPlayer } = usePlayers(gameId);
-  const { mutate, isLoading } = useUpdatePlayer(myPlayer!);
+  const { mutate, isPending } = useUpdatePlayer(myPlayer!);
   return (
     <Button
       onClick={() => mutate({ status: "cancelled" })}
-      disabled={isLoading}
+      disabled={isPending}
       variant="secondary"
     >
-      {isLoading ? (
+      {isPending ? (
         <Loader className="h-5 w-5 animate-spin" />
       ) : (
         <>

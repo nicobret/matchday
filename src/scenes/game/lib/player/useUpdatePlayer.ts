@@ -1,5 +1,5 @@
 import { queryClient } from "@/lib/react-query";
-import { useMutation } from "react-query";
+import { useMutation } from "@tanstack/react-query";
 import { Player, updateCache, updatePlayer } from "./player.service";
 
 type payloadType = Partial<Player>;
@@ -20,7 +20,9 @@ export default function useUpdatePlayer(player: Player) {
       if (context?.backup) {
         queryClient.setQueryData(["players", player.game_id], context.backup);
       } else {
-        queryClient.invalidateQueries("players");
+        queryClient.invalidateQueries({
+          queryKey: ["players", player.game_id],
+        });
       }
     },
   });

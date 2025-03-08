@@ -6,7 +6,7 @@ import useDeleteMember from "../lib/member/useDeleteMember";
 
 export default function LeaveClubButton({ clubId }: { clubId: number }) {
   const { session } = useContext(SessionContext);
-  const { mutate, isLoading } = useDeleteMember(clubId);
+  const { mutate, isPending } = useDeleteMember(clubId);
 
   function handleClick() {
     if (!session?.user) {
@@ -18,7 +18,7 @@ export default function LeaveClubButton({ clubId }: { clubId: number }) {
   }
 
   return (
-    <Button onClick={handleClick} disabled={isLoading} variant="secondary">
+    <Button onClick={handleClick} disabled={isPending} variant="secondary">
       <Ban className="mr-2 inline-block h-5 w-5" />
       Quitter
     </Button>

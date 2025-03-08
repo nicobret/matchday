@@ -18,10 +18,10 @@ import { Game } from "../lib/club/club.service";
 import { useMembers } from "../lib/member/useMembers";
 
 export default function UpcomingGamesTable({ clubId }: { clubId: number }) {
-  const { data: games, isIdle, isLoading, isError } = useGames(clubId, "next");
+  const { data: games, isPending, isError } = useGames(clubId, "next");
   const { isMember } = useMembers(clubId);
 
-  if (isIdle || isLoading) {
+  if (isPending) {
     return <p className="m-4 text-center">Chargement...</p>;
   }
   if (isError) {

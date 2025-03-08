@@ -14,7 +14,7 @@ import UpdateSeasonDialog from "./UpdateSeasonDialog";
 
 export default function SeasonList() {
   const { id } = useParams();
-  const { data, isError, isLoading, isIdle } = useSeasons(Number(id));
+  const { data, isError, isPending } = useSeasons(Number(id));
   const { mutate } = useDeleteSeason();
 
   function handleDelete(seasonId: string) {
@@ -26,7 +26,7 @@ export default function SeasonList() {
   if (isError) {
     return <p>Erreur lors du chargement des saisons</p>;
   }
-  if (isIdle || isLoading) {
+  if (isPending) {
     return <p>Chargement...</p>;
   }
   return (

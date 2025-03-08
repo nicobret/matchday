@@ -2,6 +2,8 @@ import { useDroppable } from "@dnd-kit/core";
 import { Player as PlayerType } from "../../lib/player/player.service";
 import Player from "./Player";
 
+import type { JSX } from "react";
+
 export default function Team({
   label,
   id,

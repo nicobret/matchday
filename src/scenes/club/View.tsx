@@ -26,10 +26,10 @@ export default function View() {
   const { session } = useContext(SessionContext);
   const { id } = useParams();
   const clubId = Number(id);
-  const { data: club, isIdle, isLoading, isError, isAdmin } = useClub(clubId);
+  const { data: club, isPending, isError, isAdmin } = useClub(clubId);
   const { isMember } = useMembers(clubId);
 
-  if (isIdle || isLoading) {
+  if (isPending) {
     return <p className="animate_pulse text-center">Chargement...</p>;
   }
   if (isError) {

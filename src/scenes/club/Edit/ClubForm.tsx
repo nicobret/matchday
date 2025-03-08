@@ -27,7 +27,7 @@ export default function ClubForm({ initialData }: { initialData: Club }) {
     city: initialData.city || "",
     country: initialData.country || "France",
   });
-  const { mutate, isLoading } = useUpdateClub(initialData.id);
+  const { mutate, isPending } = useUpdateClub(initialData.id);
 
   function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -133,7 +133,7 @@ export default function ClubForm({ initialData }: { initialData: Club }) {
         </div>
       </div>
 
-      <Button type="submit" disabled={isLoading || !formData.name}>
+      <Button type="submit" disabled={isPending || !formData.name}>
         <Save className="mr-2 h-5 w-5" />
         Enregistrer
       </Button>

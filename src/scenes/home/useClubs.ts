@@ -1,5 +1,5 @@
 import supabase from "@/utils/supabase";
-import { useQuery } from "react-query";
+import { useQuery } from "@tanstack/react-query";
 
 async function getClubs() {
   const { data } = await supabase

@@ -36,9 +36,9 @@ export default function ClubHistory({ club }: { club: Club }) {
     clearOnDefault: false,
   });
 
-  const { data: games, isLoading } = useGames(club.id, "past", selectedSeason);
+  const { data: games, isPending } = useGames(club.id, "past", selectedSeason);
 
-  if (isLoading) {
+  if (isPending) {
     return <p className="text-center">Chargement...</p>;
   }
   return (
@@ -60,7 +60,7 @@ export default function ClubHistory({ club }: { club: Club }) {
         </SelectContent>
       </Select>
 
-      {isLoading ? (
+      {isPending ? (
         <p className="text-center">Chargement...</p>
       ) : games?.length ? (
         <Table className="mt-4 border">
