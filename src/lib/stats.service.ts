@@ -25,7 +25,7 @@ export async function fetchClubStats(
   return data;
 }
 
-export async function fetchPlayerStats(user_id: number) {
+export async function fetchPlayerStats(user_id: string) {
   const { data } = await supabase
     .from("game_report")
     .select()
