@@ -1,3 +1,4 @@
+import { SessionContext } from "@/components/auth-provider";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -12,16 +13,19 @@ import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { fromZonedTime } from "date-fns-tz";
 import { ArrowLeft } from "lucide-react";
-import { useState } from "react";
+import { useContext } from "react";
+import { useForm } from "react-hook-form";
+import { TablesInsert } from "types/supabase";
 import { Link, useLocation } from "wouter";
-import { Club } from "../club/lib/club/club.service";
 import useClub from "../club/lib/club/useClub";
 import { useMembers } from "../club/lib/member/useMembers";
 import { categories } from "./lib/game/game.service";
 import useCreateGame from "./lib/game/useCreateGame";
 
-type CreateGamePayload = {
+type Payload = TablesInsert<"games">;
+type FormValues = {
   date: string;
+  time: string;
   total_players: number;
   location: string;
   status: string;
@@ -34,6 +38,20 @@ export default function CreateGame() {
   const clubId = new URLSearchParams(window.location.search).get("clubId");
   const { data: club, isPending, isError } = useClub(Number(clubId));
   const { isMember } = useMembers(Number(clubId));
+  const [_location, navigate] = useLocation();
+  const { mutate, isPending: isCreationPending } = useCreateGame();
+  const { register, handleSubmit } = useForm<FormValues>();
+  const { session } = useContext(SessionContext);
+
+  const seasons = club?.seasons || [];
+  const seasonOptions = [
+    ...seasons
+      .sort((a, b) => b.name.localeCompare(a.name))
+      .map((season) => ({ label: season.name, value: season.id })),
+    { label: "Hors saison", value: "none" },
+  ];
+
+  const { toast } = useToast();
 
   if (isPending) {
     return <p className="text-center">Chargement des données...</p>;
@@ -46,70 +64,31 @@ export default function CreateGame() {
       <p className="text-center">Vous n&apos;êtes pas membre de ce club</p>
     );
   }
-  return <GameForm club={club} />;
-}
 
-function GameForm({ club }: { club: Club }) {
-  const [_location, navigate] = useLocation();
-  const [category, setCategory] = useState("football");
-  const [date, setDate] = useState("");
-  const [time, setTime] = useState("");
-  const [durationInMinutes, setDurationInMinutes] = useState(60);
-  const [playerCount, setPlayerCount] = useState(10);
-  const [location, setLocation] = useState(
-    `${club?.address}, ${club?.postcode} ${club?.city}`,
-  );
-  const { mutate, isPending } = useCreateGame(club.id);
+  function onSubmit(data: FormValues) {
+    if (!session?.user || !club) return;
 
-  const seasons = club.seasons || [];
-  const seasonOptions = [
-    ...seasons
-      .sort((a, b) => b.name.localeCompare(a.name))
-      .map((season) => ({ label: season.name, value: season.id })),
-    { label: "Hors saison", value: "none" },
-  ];
-  const [season, setSeason] = useState(seasonOptions[0].value);
+    const formattedDate = fromZonedTime(
+      `${data.date}T${data.time}`,
+      "Europe/Paris",
+    ).toISOString();
 
-  const { toast } = useToast();
-
-  function validateForm() {
-    return (
-      !!date &&
-      !!time &&
-      !!playerCount &&
-      !!location &&
-      !!durationInMinutes &&
-      !!category
-    );
-  }
-
-  function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
-    e.preventDefault();
-
-    if (!validateForm()) {
-      window.alert("Veuillez remplir tous les champs");
-      return;
-    }
-
-    const zonedDateTime = fromZonedTime(`${date}T${time}`, "Europe/Paris");
-
-    const newgame: CreateGamePayload = {
-      date: zonedDateTime.toISOString(),
-      total_players: playerCount,
-      location,
+    const payload: Payload = {
+      date: formattedDate,
+      total_players: data.total_players,
+      location: data.location,
       status: "published",
-      duration: durationInMinutes * 60,
-      category,
+      duration: data.duration * 60,
+      category: data.category || "",
+      season_id: data.season_id,
+      club_id: club.id,
+      creator_id: session?.user.id,
     };
 
-    if (season) {
-      newgame.season_id = season;
-    }
-
-    mutate(newgame, {
-      onSuccess: (data) => {
+    mutate(payload, {
+      onSuccess: (game) => {
         toast({ description: "Match créé avec succès" });
-        navigate(`~/game/${data?.id}`);
+        navigate(`~/game/${game?.id}`);
       },
     });
   }
@@ -125,13 +104,12 @@ function GameForm({ club }: { club: Club }) {
         Créer un match
       </h2>
 
-      <form onSubmit={handleSubmit} className="mx-auto max-w-lg">
+      <form onSubmit={handleSubmit(onSubmit)} className="mx-auto max-w-lg">
         <div className="mb-1 grid w-full items-center gap-2">
           <Label htmlFor="season">Saison</Label>
           <Select
-            name="season"
-            value={season}
-            onValueChange={(value) => setSeason(value)}
+            {...register("season_id")}
+            defaultValue={seasonOptions[0].value}
           >
             <SelectTrigger>
               <SelectValue />
@@ -156,9 +134,8 @@ function GameForm({ club }: { club: Club }) {
           <div className="grid w-full items-center gap-2">
             <Label htmlFor="category">Sport</Label>
             <Select
-              name="category"
-              value={category}
-              onValueChange={setCategory}
+              {...register("category")}
+              defaultValue="football"
               disabled={true}
             >
               <SelectTrigger>
@@ -178,10 +155,8 @@ function GameForm({ club }: { club: Club }) {
             <Label htmlFor="playerCount">Nombre de joueurs</Label>
             <Input
               type="number"
-              id="playerCount"
-              value={playerCount}
-              onChange={(e) => setPlayerCount(parseInt(e.target.value))}
-              className="text-base"
+              {...register("total_players", { required: true, min: 0 })}
+              defaultValue={10}
             />
           </div>
         </div>
@@ -189,22 +164,12 @@ function GameForm({ club }: { club: Club }) {
         <div className="my-6 grid w-full grid-cols-2 gap-3">
           <div className="grid w-full items-center gap-2">
             <Label htmlFor="date">Date du match</Label>
-            <Input
-              type="date"
-              id="date"
-              value={date}
-              onChange={(e) => setDate(e.target.value)}
-            />
+            <Input type="date" {...register("date", { required: true })} />
           </div>
 
           <div className="grid w-full items-center gap-2">
             <Label htmlFor="time">Heure du match</Label>
-            <Input
-              type="time"
-              id="time"
-              value={time}
-              onChange={(e) => setTime(e.target.value)}
-            />
+            <Input type="time" {...register("time", { required: true })} />
           </div>
         </div>
 
@@ -212,19 +177,17 @@ function GameForm({ club }: { club: Club }) {
           <Label htmlFor="duration">Durée en minutes</Label>
           <Input
             type="number"
-            id="duration"
-            value={durationInMinutes}
-            onChange={(e) => setDurationInMinutes(parseInt(e.target.value))}
+            {...register("duration", { required: true, min: 0 })}
+            defaultValue={60}
           />
         </div>
 
         <div className="my-6 grid w-full items-center gap-2">
           <Label htmlFor="location">Lieu</Label>
           <Textarea
-            id="location"
+            {...register("location", { required: true })}
+            defaultValue={club.address || undefined}
             placeholder="24, Rue Alexandre Guilmant, 92190 Meudon"
-            value={location}
-            onChange={(e) => setLocation(e.target.value)}
             className="text-base"
           />
         </div>
@@ -233,7 +196,7 @@ function GameForm({ club }: { club: Club }) {
           <Button type="button" asChild variant="secondary">
             <Link to={`~/club/${club.id}`}>Annuler</Link>
           </Button>
-          <Button type="submit" disabled={isPending}>
+          <Button type="submit" disabled={isCreationPending}>
             Créer
           </Button>
         </div>

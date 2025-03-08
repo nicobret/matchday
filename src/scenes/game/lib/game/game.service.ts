@@ -1,6 +1,6 @@
 import supabase from "@/utils/supabase";
 import { CalendarEvent } from "calendar-link";
-import { Tables } from "types/supabase";
+import { Tables, TablesInsert } from "types/supabase";
 
 // Types
 export type Game = Tables<"games"> & {
@@ -56,7 +56,7 @@ export async function fetchGames(
   return data;
 }
 
-export async function createGame(payload: createGamePayload) {
+export async function createGame(payload: TablesInsert<"games">) {
   const { data } = await supabase
     .from("games")
     .insert(payload)
