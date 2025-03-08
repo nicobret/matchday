@@ -9,7 +9,6 @@ import {
 import {
   Dialog,
   DialogContent,
-  DialogDescription,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
@@ -100,39 +99,30 @@ function ScoreDialog({ game }: { game: Tables<"games"> }) {
       <DialogContent className="w-96">
         <DialogHeader>
           <DialogTitle>Score</DialogTitle>
-          <DialogDescription>
-            <form
-              onSubmit={handleSubmit}
-              className="mt-2 grid grid-cols-2 gap-4"
-            >
-              <div>
-                <Label htmlFor="home">Domicile</Label>
-                <Input
-                  id="home"
-                  type="number"
-                  value={score[0]}
-                  onChange={(e) =>
-                    setScore([parseInt(e.target.value), score[1]])
-                  }
-                />
-              </div>
-              <div>
-                <Label htmlFor="away">Visiteurs</Label>
-                <Input
-                  id="away"
-                  type="number"
-                  value={score[1]}
-                  onChange={(e) =>
-                    setScore([score[0], parseInt(e.target.value)])
-                  }
-                />
-              </div>
-              <Button type="submit" disabled={isPending} className="col-span-2">
-                Enregistrer
-              </Button>
-            </form>
-          </DialogDescription>
         </DialogHeader>
+        <form onSubmit={handleSubmit} className="mt-2 grid grid-cols-2 gap-4">
+          <div className="grid gap-4">
+            <Label htmlFor="home">Domicile</Label>
+            <Input
+              id="home"
+              type="number"
+              value={score[0]}
+              onChange={(e) => setScore([parseInt(e.target.value), score[1]])}
+            />
+          </div>
+          <div className="grid gap-4">
+            <Label htmlFor="away">Visiteurs</Label>
+            <Input
+              id="away"
+              type="number"
+              value={score[1]}
+              onChange={(e) => setScore([score[0], parseInt(e.target.value)])}
+            />
+          </div>
+          <Button type="submit" disabled={isPending} className="col-span-2">
+            Enregistrer
+          </Button>
+        </form>
       </DialogContent>
     </Dialog>
   );
