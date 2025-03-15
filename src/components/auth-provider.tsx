@@ -47,9 +47,7 @@ function SessionProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   return (
-    <SessionContext.Provider value={{ session, setSession }}>
-      {children}
-    </SessionContext.Provider>
+    <SessionContext value={{ session, setSession }}>{children}</SessionContext>
   );
 }
 

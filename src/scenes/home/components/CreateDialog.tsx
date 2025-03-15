@@ -2,7 +2,6 @@ import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
-  DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogTitle,
@@ -18,72 +17,37 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
-import { useToast } from "@/hooks/use-toast";
+import useAuth from "@/lib/useAuth";
 import { countryList } from "@/lib/utils";
-import supabase from "@/utils/supabase";
+import { useCreateClub } from "@/scenes/club/lib/club/useCreateClub";
+import useCreateMember from "@/scenes/club/lib/member/useCreateMember";
 import { Plus } from "lucide-react";
-import { useState } from "react";
+import { useForm } from "react-hook-form";
+import { TablesInsert } from "types/supabase";
 import { useLocation } from "wouter";
 
+type FormValues = Omit<TablesInsert<"clubs">, "creator_id">;
+
 export default function CreateDialog() {
-  const [_location, navigate] = useLocation();
-  const [formData, setFormData] = useState({
-    name: "",
-    description: "",
-    address: "",
-    postcode: "",
-    city: "",
-    country: "France",
-  });
-  const [loading, setLoading] = useState(false);
-  const { toast } = useToast();
+  const [, navigate] = useLocation();
+  const { session } = useAuth();
+  const { register, handleSubmit } = useForm<FormValues>();
+  const { mutate: createClub, isPending } = useCreateClub();
+  const { mutate: createMember } = useCreateMember();
 
-  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
-    try {
-      e.preventDefault();
-      setLoading(true);
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
-      if (!user) {
-        throw new Error("Vous n'êtes pas connecté");
-      }
-
-      const { data: club, error: club_error } = await supabase
-        .from("clubs")
-        .insert({
-          creator_id: user.id,
-          name: formData.name,
-          description: formData.description,
-          address: formData.address,
-          postcode: formData.postcode,
-          city: formData.city,
-          country: formData.country,
-        })
-        .select();
-
-      if (club_error) {
-        throw new Error(club_error.message);
-      }
-
-      const { data: club_members, error: club_members_error } = await supabase
-        .from("club_member")
-        .insert({ club_id: club[0].id, user_id: user.id, role: "admin" })
-        .select("user_id");
-
-      if (club_members_error) {
-        throw new Error(club_members_error.message);
-      }
-
-      if (club_members) {
-        toast({ description: "Club créé avec succès !" });
-        navigate(`~/club/${club[0].id}`);
-      }
-    } catch (error) {
-      console.error(error);
-    } finally {
-      setLoading(false);
-    }
+  function onSubmit(data: FormValues) {
+    if (!session) return;
+    const payload = { ...data, creator_id: session.user.id };
+    createClub(payload, {
+      onSuccess(club) {
+        createMember({
+          club_id: club.id,
+          user_id: session.user.id,
+          role: "admin",
+        });
+        navigate(`~/club/${club.id}`);
+      },
+    });
   }
 
   return (
@@ -98,61 +62,50 @@ export default function CreateDialog() {
       <DialogContent>
         <DialogHeader>
           <DialogTitle>Créer un club</DialogTitle>
-          <DialogDescription></DialogDescription>
         </DialogHeader>
 
-        <form onSubmit={handleSubmit} id="create-club-form">
-          <Label htmlFor="clubname">Nom du club</Label>
-          <Input
-            type="text"
-            id="clubname"
-            placeholder="Le club des champions"
-            value={formData.name}
-            onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-          />
-
-          <Label htmlFor="clubdescription">Description</Label>
-          <Textarea
-            id="clubdescription"
-            placeholder="Le meilleur club de tous les temps."
-            value={formData.description}
-            onChange={(e) =>
-              setFormData({
-                ...formData,
-                description: e.target.value,
-              })
-            }
-            rows={5}
-          />
-
-          {/* <Label htmlFor="clubdescription">Logo</Label>
-            <Input type="file" id="clublogo" /> */}
-
-          <Label htmlFor="country">Pays</Label>
-          <Select
-            onValueChange={(value) =>
-              setFormData({ ...formData, country: value })
-            }
-            value={formData.country}
-            defaultValue="France"
-          >
-            <SelectTrigger>
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              {countryList.map((country) => (
-                <SelectItem key={country} value={country}>
-                  {country}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+        <form onSubmit={handleSubmit(onSubmit)} id="create-club-form">
+          <div className="grid gap-2">
+            <Label htmlFor="name">Nom du club</Label>
+            <Input
+              type="text"
+              placeholder="Le club des champions"
+              required
+              {...register("name")}
+            />
+          </div>
+          <br />
+          <div className="grid gap-2">
+            <Label htmlFor="description">Description</Label>
+            <Textarea
+              placeholder="Le meilleur club de tous les temps."
+              rows={5}
+              {...register("description")}
+            />
+          </div>
+          <br />
+          <div className="grid gap-2">
+            <Label htmlFor="country">Pays</Label>
+            <Select {...register("country")} defaultValue="France">
+              <SelectTrigger>
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {countryList.map((country) => (
+                  <SelectItem key={country} value={country}>
+                    {country}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
         </form>
+
         <DialogFooter>
           <Button
             type="submit"
             form="create-club-form"
-            disabled={loading || !formData.name}
+            disabled={isPending}
             className="w-full"
           >
             Créer

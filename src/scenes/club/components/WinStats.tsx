@@ -64,7 +64,7 @@ export default function WinStats({ data }: { data: ClubStatsType[] }) {
       <Table className="border">
         <TableHeader>
           <TableRow>
-            <TableRow></TableRow>
+            <TableHead></TableHead>
             <TableHead>Prénom</TableHead>
             <TableHead>Matchs</TableHead>
             <TableHead>Victoires</TableHead>

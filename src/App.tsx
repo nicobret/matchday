@@ -72,6 +72,7 @@ function Fallback({
     <div role="alert">
       <p>Une erreur est survenue:</p>
       <pre>{error.message}</pre>
+      <pre>{JSON.stringify(error)}</pre>
       <button onClick={resetErrorBoundary}>Réessayer</button>
     </div>
   );

@@ -66,7 +66,7 @@ export default function EventStats({ data }: { data: ClubStatsType[] }) {
       <Table className="border">
         <TableHeader>
           <TableRow>
-            <TableRow></TableRow>
+            <TableHead></TableHead>
             <TableHead>Prénom</TableHead>
             <TableHead>Buts</TableHead>
             <TableHead>Passes décisives</TableHead>

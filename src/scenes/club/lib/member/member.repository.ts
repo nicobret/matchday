@@ -1,10 +1,11 @@
 import supabase from "@/utils/supabase";
+import { TablesInsert } from "types/supabase";
 import { Member } from "../club/club.service";
 
-export async function createMember(clubId: number, userId: string) {
+export async function createMember(payload: TablesInsert<"club_member">) {
   const { data } = await supabase
     .from("club_member")
-    .insert({ club_id: clubId, user_id: userId })
+    .insert(payload)
     .select()
     .single()
     .throwOnError();

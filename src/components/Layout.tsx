@@ -1,8 +1,6 @@
-import supabase from "@/utils/supabase";
+import useAuth from "@/lib/useAuth";
 import { UserCircle } from "lucide-react";
-import { useContext } from "react";
-import { Link, useLocation } from "wouter";
-import { SessionContext } from "./auth-provider";
+import { Link } from "wouter";
 import Logo from "./Logo";
 import { ModeToggle } from "./mode-toggle";
 import { Button, buttonVariants } from "./ui/button";
@@ -15,18 +13,12 @@ import {
 import { Toaster } from "./ui/toaster";
 
 export default function Layout({ children }: { children: React.ReactNode }) {
-  const { session, setSession } = useContext(SessionContext);
-  const [, navigate] = useLocation();
+  const { session, logout } = useAuth();
 
-  async function logout() {
-    await supabase.auth.signOut();
-    setSession(null);
-    navigate("/");
-  }
   return (
     <div className="relative">
       <div className="fixed top-0 z-10 w-full backdrop-blur-sm">
-        <nav className="mx-auto flex items-center gap-2 pl-1 pr-2">
+        <nav className="mx-auto flex items-center gap-2 pr-2 pl-1">
           <Link to="/">
             <Logo />
           </Link>
@@ -63,7 +55,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
         </nav>
       </div>
 
-      <div className="min-h-screens mx-auto mb-20 mt-12">{children}</div>
+      <div className="min-h-screens mx-auto mt-12 mb-20">{children}</div>
       <Toaster />
 
       {/* <footer className="flex justify-center bg-muted p-6 text-muted-foreground">

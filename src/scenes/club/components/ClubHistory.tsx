@@ -43,22 +43,24 @@ export default function ClubHistory({ club }: { club: Club }) {
   }
   return (
     <div className="mt-2">
-      <Label>Saison</Label>
-      <Select
-        onValueChange={(value) => setSelectedSeason(value as string)}
-        defaultValue={selectedSeason}
-      >
-        <SelectTrigger className="w-fit">
-          <SelectValue />
-        </SelectTrigger>
-        <SelectContent>
-          {seasonOptions.map((option) => (
-            <SelectItem key={option.value} value={option.value}>
-              {option.label}
-            </SelectItem>
-          ))}
-        </SelectContent>
-      </Select>
+      <div className="grid gap-2">
+        <Label>Saison</Label>
+        <Select
+          onValueChange={(value) => setSelectedSeason(value as string)}
+          defaultValue={selectedSeason}
+        >
+          <SelectTrigger className="w-fit">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            {seasonOptions.map((option) => (
+              <SelectItem key={option.value} value={option.value}>
+                {option.label}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      </div>
 
       {isPending ? (
         <p className="text-center">Chargement...</p>
