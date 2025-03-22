@@ -1,24 +1,12 @@
 import { ArrowLeft, TrafficCone } from "lucide-react";
-import { useEffect, useState } from "react";
-import { Tables } from "types/supabase";
 import { Link, useParams } from "wouter";
-import { fetchPlayer } from "./player.service";
+import useProfile from "../home/useProfile";
 
 export default function Player() {
   const { id } = useParams();
-  const [player, setPlayer] = useState<Tables<"users"> | null>(null);
-  const [loading, setLoading] = useState(false);
+  const { data: player, isPending: loading } = useProfile(id);
   const params = new URLSearchParams(window.location.search);
   const fromClub = params.get("fromClub");
-
-  useEffect(() => {
-    if (!id) return;
-    setLoading(true);
-    fetchPlayer(id)
-      .then((data) => setPlayer(data))
-      .catch(console.error)
-      .finally(() => setLoading(false));
-  }, [id]);
 
   if (loading) {
     return <div>Loading...</div>;
@@ -31,13 +19,13 @@ export default function Player() {
       {fromClub ? (
         <Link
           to={`/club/${fromClub}`}
-          className="text-sm text-muted-foreground"
+          className="text-muted-foreground text-sm"
         >
           <ArrowLeft className="mr-2 inline-block h-4 w-4 align-text-top" />
           Retour au club
         </Link>
       ) : (
-        <Link to="~/" className="text-sm text-muted-foreground">
+        <Link to="~/" className="text-muted-foreground text-sm">
           <ArrowLeft className="mr-2 inline-block h-4 w-4 align-text-top" />
           Retour à l'accueil
         </Link>

@@ -11,59 +11,49 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 import { countryList } from "@/lib/utils";
 import { Save } from "lucide-react";
-import { useState } from "react";
+import { useForm } from "react-hook-form";
+import { TablesUpdate } from "types/supabase";
 import { Link, useLocation } from "wouter";
 import { Club } from "../lib/club/club.service";
 import useUpdateClub from "../lib/club/useUpdateClub";
 
+type FormValues = TablesUpdate<"clubs">;
+
 export default function ClubForm({ initialData }: { initialData: Club }) {
   const [_location, navigate] = useLocation();
-  const [formData, setFormData] = useState({
-    id: initialData.id || 0,
-    name: initialData.name || "",
-    description: initialData.description || "",
-    address: initialData.address || "",
-    postcode: initialData.postcode || "",
-    city: initialData.city || "",
-    country: initialData.country || "France",
-  });
+  const { register, handleSubmit } = useForm();
   const { mutate, isPending } = useUpdateClub(initialData.id);
 
-  function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
-    e.preventDefault();
-    mutate(formData, { onSuccess: () => navigate("~/") });
+  function onSubmit(data: FormValues) {
+    mutate(data, { onSuccess: () => navigate("/") });
   }
 
   return (
-    <form onSubmit={handleSubmit} className="mt-6 grid gap-6 md:grid-cols-2">
+    <form
+      onSubmit={handleSubmit(onSubmit)}
+      className="mt-6 grid gap-6 md:grid-cols-2"
+    >
       <div className="grid gap-6">
         <div className="grid gap-2">
           <Label htmlFor="clubname">Nom du club</Label>
           <Input
             type="text"
-            id="clubname"
             placeholder="Le club des champions"
-            value={formData.name}
-            onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+            {...register("name")}
+            defaultValue={initialData.name || undefined}
+            required
           />
         </div>
 
         <div className="grid gap-2">
-          <Label htmlFor="clubdescription">Description</Label>
+          <Label htmlFor="description">Description</Label>
           <Textarea
-            id="clubdescription"
             placeholder="Le meilleur club de tous les temps."
-            value={formData.description}
-            onChange={(e) =>
-              setFormData({ ...formData, description: e.target.value })
-            }
             rows={5}
+            {...register("description")}
+            defaultValue={initialData.description || undefined}
           />
         </div>
-        {/* <div className="mt-4 grid w-full items-center gap-2">
-          <Label htmlFor="clublogo">Logo</Label>
-          <Input type="file" id="clublogo" />
-        </div> */}
       </div>
 
       <div>
@@ -71,11 +61,8 @@ export default function ClubForm({ initialData }: { initialData: Club }) {
           <div className="grid gap-2">
             <Label htmlFor="country">Pays</Label>
             <Select
-              onValueChange={(value) =>
-                setFormData({ ...formData, country: value })
-              }
-              value={formData.country}
-              defaultValue="France"
+              {...register("country")}
+              defaultValue={initialData.country || "France"}
             >
               <SelectTrigger>
                 <SelectValue placeholder="Belgique" />
@@ -94,12 +81,9 @@ export default function ClubForm({ initialData }: { initialData: Club }) {
             <Label htmlFor="address">Numéro et rue</Label>
             <Input
               type="text"
-              id="address"
               placeholder="Rue du club 1, 1000 Bruxelles"
-              value={formData.address}
-              onChange={(e) =>
-                setFormData({ ...formData, address: e.target.value })
-              }
+              {...register("address")}
+              defaultValue={initialData.address || undefined}
             />
           </div>
 
@@ -108,12 +92,9 @@ export default function ClubForm({ initialData }: { initialData: Club }) {
               <Label htmlFor="postcode">Code Postal</Label>
               <Input
                 type="text"
-                id="postcode"
                 placeholder="10 000"
-                value={formData.postcode}
-                onChange={(e) =>
-                  setFormData({ ...formData, postcode: e.target.value })
-                }
+                {...register("postcode")}
+                defaultValue={initialData.postcode || undefined}
               />
             </div>
 
@@ -121,19 +102,17 @@ export default function ClubForm({ initialData }: { initialData: Club }) {
               <Label htmlFor="city">Ville</Label>
               <Input
                 type="text"
-                id="city"
                 placeholder="Bruxelles"
-                value={formData.city}
-                onChange={(e) =>
-                  setFormData({ ...formData, city: e.target.value })
-                }
+                id="city"
+                {...register("city")}
+                defaultValue={initialData.city || undefined}
               />
             </div>
           </div>
         </div>
       </div>
 
-      <Button type="submit" disabled={isPending || !formData.name}>
+      <Button type="submit" disabled={isPending}>
         <Save className="mr-2 h-5 w-5" />
         Enregistrer
       </Button>

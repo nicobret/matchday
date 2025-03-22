@@ -1,4 +1,5 @@
 import { useToast } from "@/hooks/use-toast";
+import { queryClient } from "@/lib/react-query";
 import { useMutation } from "@tanstack/react-query";
 import { TablesUpdate } from "types/supabase";
 import { updateClub } from "./club.repository";
@@ -8,7 +9,8 @@ export default function useUpdateClub(clubId: number) {
   return useMutation({
     mutationFn: (data: TablesUpdate<"clubs">) =>
       updateClub({ ...data, id: clubId }),
-    onSuccess: () => {
+    onSuccess: (data) => {
+      queryClient.invalidateQueries({ queryKey: ["club", data.id] });
       toast({ description: "Club modifié avec succès" });
     },
     onError: (error: Error) => {

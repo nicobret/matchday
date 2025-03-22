@@ -1,7 +1,6 @@
-import { SessionContext } from "@/components/auth-provider";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import useAuth from "@/lib/useAuth";
 import { Search, Shield } from "lucide-react";
-import { useContext } from "react";
 import ClubCard from "./components/ClubCard";
 import CreateDialog from "./components/CreateDialog";
 import Guide from "./components/Guide";
@@ -9,8 +8,10 @@ import useClubs from "./useClubs";
 import useProfile from "./useProfile";
 
 export default function Home() {
-  const { session } = useContext(SessionContext);
-  const { data: profile, isPending: loadingProfile } = useProfile({ session });
+  const { session } = useAuth();
+  const { data: profile, isPending: loadingProfile } = useProfile(
+    session?.user?.id,
+  );
   const { data: clubs, isError, isPending } = useClubs();
 
   if (loadingProfile) {

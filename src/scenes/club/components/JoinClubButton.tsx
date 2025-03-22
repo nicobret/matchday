@@ -1,13 +1,12 @@
-import { SessionContext } from "@/components/auth-provider";
 import { Button } from "@/components/ui/button";
+import useAuth from "@/lib/useAuth";
 import { ClipboardSignature } from "lucide-react";
-import { useContext } from "react";
 import { useLocation } from "wouter";
 import useCreateMember from "../lib/member/useCreateMember";
 
 export default function JoinClubButton({ clubId }: { clubId: number }) {
-  const { session } = useContext(SessionContext);
-  const { mutate, isPending } = useCreateMember(clubId);
+  const { session } = useAuth();
+  const { mutate, isPending } = useCreateMember();
   const [_location, navigate] = useLocation();
 
   function handleClick() {
@@ -17,7 +16,7 @@ export default function JoinClubButton({ clubId }: { clubId: number }) {
       }
       return;
     }
-    mutate();
+    mutate({ club_id: clubId, user_id: session.user.id });
   }
 
   return (

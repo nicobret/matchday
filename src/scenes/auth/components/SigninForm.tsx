@@ -1,38 +1,23 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { useToast } from "@/hooks/use-toast";
-import supabase from "@/utils/supabase";
+import useAuth from "@/lib/useAuth";
 import { useForm } from "react-hook-form";
 import { useLocation } from "wouter";
 
-type SigninFormValues = {
-  email: string;
-  password: string;
-};
+type SigninFormValues = { email: string; password: string };
 
 export default function SigninForm() {
   const params = new URLSearchParams(window.location.search);
   const redirectTo = params.get("redirectTo");
   const { handleSubmit, register } = useForm<SigninFormValues>();
-  const [_, navigate] = useLocation();
-  const { toast } = useToast();
+  const [, navigate] = useLocation();
   const url = redirectTo ? `~/${redirectTo}` : "~/";
+  const { login } = useAuth();
 
   async function onSubmit(data: SigninFormValues) {
-    const { error } = await supabase.auth.signInWithPassword({
-      email: data.email,
-      password: data.password,
-    });
-    if (error) {
-      toast({
-        title: "Erreur",
-        description: error.message,
-        variant: "destructive",
-      });
-      return;
-    }
-    navigate(url);
+    const res = await login(data);
+    if (res && !res.error) navigate(url);
   }
 
   return (

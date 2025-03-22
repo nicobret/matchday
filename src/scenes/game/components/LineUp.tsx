@@ -8,8 +8,9 @@ import {
 } from "@/components/ui/card";
 import { Game } from "../lib/game/game.service";
 import { Player } from "../lib/player/player.service";
+import InviteExternalDialog from "./InviteExternalDialog";
+import InviteMemberDialog from "./InviteMemberDialog";
 import LineupEditor from "./LineupEditor";
-import InviteDialog from "./LineupEditor/InviteDialog";
 
 export default function LineUp({
   game,
@@ -31,8 +32,13 @@ export default function LineUp({
       <CardContent>
         <LineupEditor players={players} disabled={disabled} />
       </CardContent>
-      <CardFooter>
-        <InviteDialog gameId={game.id} disabled={disabled} />
+      <CardFooter className="flex gap-2">
+        <InviteMemberDialog
+          gameId={game.id}
+          clubId={game.club_id}
+          disabled={disabled}
+        />
+        <InviteExternalDialog gameId={game.id} disabled={disabled} />
       </CardFooter>
     </Card>
   );

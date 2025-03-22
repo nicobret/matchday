@@ -12,13 +12,24 @@ import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { fromZonedTime } from "date-fns-tz";
 import { ArrowLeft } from "lucide-react";
-import { useState } from "react";
+import { useForm } from "react-hook-form";
+import { TablesUpdate } from "types/supabase";
 import { Link, useLocation, useParams } from "wouter";
 import { Game } from "../club/lib/club/club.service";
 import useSeasons from "../club/lib/season/useSeasons";
 import { categories, getGameDurationInMinutes } from "./lib/game/game.service";
 import useGame from "./lib/game/useGame";
 import useUpdateGame from "./lib/game/useUpdateGame";
+
+type FormValues = {
+  date: string;
+  time: string;
+  total_players: number;
+  location: string;
+  durationInMinutes: number;
+  category: string;
+  season_id?: number;
+};
 
 export default function EditGame() {
   const { id } = useParams();
@@ -33,7 +44,7 @@ export default function EditGame() {
   return <Editor game={data} />;
 }
 
-function getInitialFormData(game: Game) {
+function getFormValuesFromData(game: Game) {
   return {
     date: game.date.split("T")[0] || "",
     time: new Date(game.date).toLocaleTimeString("fr-FR", {
@@ -49,29 +60,31 @@ function getInitialFormData(game: Game) {
   };
 }
 
+function getPayloadFromFormValues(data: FormValues): TablesUpdate<"games"> {
+  return {
+    date: fromZonedTime(
+      `${data.date}T${data.time}`,
+      "Europe/Paris",
+    ).toISOString(),
+    duration: data.durationInMinutes * 60,
+    location: data.location,
+    total_players: data.total_players,
+    category: data.category,
+    season_id: data.season_id?.toString(),
+  };
+}
+
 function Editor({ game }: { game: Game }) {
   const [_location, navigate] = useLocation();
   const { data: seasons } = useSeasons(game.club_id);
-  const [data, setData] = useState(getInitialFormData(game));
+  const initialValues = getFormValuesFromData(game);
   const { mutate, isPending } = useUpdateGame(game.id);
   const { toast } = useToast();
+  const { register, handleSubmit } = useForm<FormValues>();
 
-  const zonedDateTime = fromZonedTime(
-    `${data.date}T${data.time}`,
-    "Europe/Paris",
-  );
-
-  function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-    const updatedGame = {
-      date: zonedDateTime.toISOString(),
-      duration: data.durationInMinutes * 60,
-      location: data.location,
-      total_players: data.total_players,
-      category: data.category,
-      season_id: data.season_id,
-    };
-    mutate(updatedGame, {
+  function onSubmit(data: FormValues) {
+    const payload = getPayloadFromFormValues(data);
+    mutate(payload, {
       onSuccess: () => {
         toast({ description: "Match mis à jour" });
         navigate(`~/game/${game.id}`);
@@ -99,24 +112,24 @@ function Editor({ game }: { game: Game }) {
         Modifier un match
       </h1>
 
-      <form onSubmit={handleSubmit} className="mt-6">
+      <form onSubmit={handleSubmit(onSubmit)} className="mt-6">
         <div className="grid grid-cols-2 gap-4">
           <div>
             <Label htmlFor="date">Date</Label>
             <Input
-              name="date"
               type="date"
-              value={data.date}
-              onChange={(e) => setData({ ...data, date: e.target.value })}
+              {...register("date")}
+              defaultValue={initialValues.date}
+              required
             />
           </div>
           <div>
             <Label htmlFor="time">Heure</Label>
             <Input
-              name="time"
               type="time"
-              value={data.time}
-              onChange={(e) => setData({ ...data, time: e.target.value })}
+              {...register("time")}
+              defaultValue={initialValues.time}
+              required
             />
           </div>
         </div>
@@ -124,10 +137,8 @@ function Editor({ game }: { game: Game }) {
         <div className="mt-4">
           <Label htmlFor="season">Saison</Label>
           <Select
-            name="season"
-            value={data.season_id}
-            onValueChange={(season_id) => setData({ ...data, season_id })}
-            defaultValue={data.season_id}
+            {...register("season_id")}
+            defaultValue={initialValues.season_id}
           >
             <SelectTrigger>
               <SelectValue placeholder="Choisir une saison" />
@@ -147,21 +158,18 @@ function Editor({ game }: { game: Game }) {
             Adresse
           </Label>
           <Textarea
-            name="location"
-            value={data.location}
-            onChange={(e) => setData({ ...data, location: e.target.value })}
+            {...register("location")}
+            defaultValue={initialValues.location}
+            required
           />
         </div>
 
         <div className="mt-4">
           <Label htmlFor="duration">Durée en minutes</Label>
           <Input
-            name="duration"
             type="number"
-            value={data.durationInMinutes}
-            onChange={(e) =>
-              setData({ ...data, durationInMinutes: parseInt(e.target.value) })
-            }
+            {...register("durationInMinutes")}
+            defaultValue={initialValues.durationInMinutes}
           />
         </div>
 
@@ -169,11 +177,10 @@ function Editor({ game }: { game: Game }) {
           <div>
             <Label htmlFor="category">Sport</Label>
             <Select
-              name="category"
-              value={data.category}
-              onValueChange={(v) => setData({ ...data, category: v })}
+              {...register("category")}
               defaultValue={
-                categories.find((c) => c.value === data.category)?.value
+                categories.find((c) => c.value === initialValues.category)
+                  ?.value
               }
             >
               <SelectTrigger>
@@ -191,17 +198,7 @@ function Editor({ game }: { game: Game }) {
 
           <div>
             <Label htmlFor="total_players">Nombre de joueurs</Label>
-            <Input
-              name="total_players"
-              type="number"
-              value={data.total_players}
-              onChange={(e) =>
-                setData({
-                  ...data,
-                  total_players: parseInt(e.target.value),
-                })
-              }
-            />
+            <Input type="number" {...register("total_players")} />
           </div>
         </div>
 

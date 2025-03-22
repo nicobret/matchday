@@ -1,19 +1,26 @@
-import { SessionContext } from "@/components/auth-provider";
 import { Button } from "@/components/ui/button";
+import useAuth from "@/lib/useAuth";
 import useCreatePlayer from "@/scenes/game/lib/player/useCreatePlayer";
 import { ClipboardSignature, Loader } from "lucide-react";
-import { useContext } from "react";
 import { useLocation } from "wouter";
 import { Game } from "../../club/lib/club/club.service";
 import useCreateMember from "../../club/lib/member/useCreateMember";
 import { useMembers } from "../../club/lib/member/useMembers";
+import usePlayers from "../lib/player/usePlayers";
 
-export default function JoinGameButton({ game }: { game: Game }) {
-  const { session } = useContext(SessionContext);
+export default function JoinGameButton({
+  game,
+  className = "",
+}: {
+  game: Game;
+  className?: string;
+}) {
+  const { session } = useAuth();
   const { mutate: createPlayer, isPending } = useCreatePlayer(game.id);
   const [_location, navigate] = useLocation();
   const { isMember } = useMembers(game.club_id);
-  const { mutate: createMember } = useCreateMember(game.club_id);
+  const { mutate: createMember } = useCreateMember();
+  const { isInvited } = usePlayers(game.id);
 
   function handleClick() {
     if (!session?.user) {
@@ -28,20 +35,22 @@ export default function JoinGameButton({ game }: { game: Game }) {
           "Vous n'êtes pas membre du club organisateur, souhaitez-vous le rejoindre ?",
         )
       ) {
-        createMember();
+        createMember({ club_id: game.club_id, user_id: session.user.id });
+      } else {
+        return;
       }
     }
     createPlayer({ user_id: session.user.id });
   }
 
   return (
-    <Button onClick={handleClick} disabled={isPending}>
+    <Button onClick={handleClick} disabled={isPending} className={className}>
       {isPending ? (
         <Loader className="h-5 w-5 animate-spin" />
       ) : (
         <>
-          <ClipboardSignature className="mr-1 inline-block h-4 w-4" />
-          <span>Inscription</span>
+          <ClipboardSignature className="inline-block h-4 w-4" />
+          {isInvited ? "Accepter" : "Inscription"}
         </>
       )}
     </Button>

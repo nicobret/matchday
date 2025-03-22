@@ -97,10 +97,10 @@ export default function CreateGame() {
     <div className="p-4">
       <Link to={`~/club/${club.id}`} className="text-muted-foreground text-sm">
         <ArrowLeft className="mr-2 inline-block h-4 w-4 align-text-top" />
-        Retour au match
+        Retour au club
       </Link>
 
-      <h2 className="mt-6 mb-2 scroll-m-20 text-center text-2xl font-semibold tracking-tight uppercase">
+      <h2 className="font-new-amsterdam mt-6 mb-2 scroll-m-20 text-center text-4xl">
         Créer un match
       </h2>
 

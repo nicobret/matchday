@@ -3,6 +3,7 @@ import { UserCircle } from "lucide-react";
 import { Link } from "wouter";
 import Logo from "./Logo";
 import { ModeToggle } from "./mode-toggle";
+import Notifications from "./Notifications";
 import { Button, buttonVariants } from "./ui/button";
 import {
   DropdownMenu,
@@ -26,6 +27,8 @@ export default function Layout({ children }: { children: React.ReactNode }) {
           <div className="ml-auto">
             <ModeToggle />
           </div>
+
+          <Notifications />
 
           {session ? (
             <DropdownMenu>

@@ -10,17 +10,19 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
+import useAuth from "@/lib/useAuth";
 import { ArrowLeft } from "lucide-react";
 import { useEffect, useState } from "react";
 import { Tables } from "types/supabase";
 import { Link, useLocation } from "wouter";
-import { fetchProfile, updateProfile } from "./account.service";
+import { getProfile, updateProfile } from "./account.service";
 
 export default function Account() {
   const [loading, setLoading] = useState(true);
   const [profile, setProfile] = useState<Tables<"users">>();
   const [_location, navigate] = useLocation();
   const { toast } = useToast();
+  const { session } = useAuth();
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -43,7 +45,7 @@ export default function Account() {
 
   useEffect(() => {
     setLoading(true);
-    fetchProfile()
+    getProfile(session?.user.id!)
       .then((data) => setProfile(data))
       .catch(console.error)
       .finally(() => setLoading(false));

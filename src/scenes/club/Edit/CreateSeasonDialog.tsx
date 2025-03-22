@@ -8,21 +8,19 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
-import { useState } from "react";
+import { useForm } from "react-hook-form";
 import { useParams } from "wouter";
 import useCreateSeason from "../lib/season/useCreateSeason";
 
+type FormValues = { name: string };
+
 export default function CreateSeasonDialog() {
   const { id } = useParams();
-  const [name, setName] = useState("");
   const { mutate, isPending } = useCreateSeason(Number(id));
-  function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
-    setName(e.target.value);
-  }
-  function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
-    e.preventDefault();
-    mutate(name);
-    setName("");
+  const { register, handleSubmit } = useForm<FormValues>();
+
+  function onSubmit(data: FormValues) {
+    mutate(data.name);
   }
 
   return (
@@ -34,12 +32,11 @@ export default function CreateSeasonDialog() {
         <DialogHeader>
           <DialogTitle>Ajouter une saison</DialogTitle>
         </DialogHeader>
-        <form id="create-season" onSubmit={handleSubmit}>
+        <form id="create-season" onSubmit={handleSubmit(onSubmit)}>
           <Input
             type="text"
-            id="name"
-            value={name}
-            onChange={handleChange}
+            {...register("name")}
+            required
             placeholder="Nom de la saison"
           />
         </form>
