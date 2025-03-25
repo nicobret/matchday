@@ -1,12 +1,9 @@
 import { QueryClientProvider } from "@tanstack/react-query";
 import { NuqsAdapter } from "nuqs/adapters/react";
-import { Suspense, lazy, useContext } from "react";
+import { Suspense, lazy } from "react";
 import { ErrorBoundary } from "react-error-boundary";
 import { Redirect, Route, Switch } from "wouter";
-import {
-  SessionContext,
-  SessionProvider,
-} from "./components/auth-provider.tsx";
+import { SessionProvider } from "./components/auth-provider.tsx";
 import Layout from "./components/Layout.tsx";
 import { ThemeProvider } from "./components/theme-provider.tsx";
 import "./index.css";
@@ -15,7 +12,7 @@ import useProfile from "./scenes/home/useProfile.ts";
 
 const Account = lazy(() => import("./scenes/account"));
 const Club = lazy(() => import("./scenes/club/Club.tsx"));
-const Game = lazy(() => import("./scenes/game/Game..tsx"));
+const Game = lazy(() => import("./scenes/game/Game.tsx"));
 const Home = lazy(() => import("./scenes/home"));
 const Player = lazy(() => import("./scenes/player"));
 const Auth = lazy(() => import("./scenes/auth"));
@@ -72,14 +69,14 @@ function Fallback({
     <div role="alert">
       <p>Une erreur est survenue:</p>
       <pre>{error.message}</pre>
+      <pre>{JSON.stringify(error)}</pre>
       <button onClick={resetErrorBoundary}>Réessayer</button>
     </div>
   );
 }
 
 function RedirectIfProfileNotComplete() {
-  const { session } = useContext(SessionContext);
-  const { data: profile } = useProfile({ session });
+  const { data: profile } = useProfile();
   const params = new URLSearchParams(window.location.search);
   const redirectTo = params.get("redirectTo");
   const url = redirectTo ? `/account?redirectTo=${redirectTo}` : "/account";

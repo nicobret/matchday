@@ -6,10 +6,7 @@ import { useLocation } from "wouter";
 const SessionContext = createContext<{
   session: Session | null;
   setSession: (session: Session | null) => void;
-}>({
-  session: null,
-  setSession: () => {},
-});
+}>({ session: null, setSession: () => {} });
 
 async function fetchSession() {
   const { error } = await supabase.auth.getSession();
@@ -47,9 +44,7 @@ function SessionProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   return (
-    <SessionContext.Provider value={{ session, setSession }}>
-      {children}
-    </SessionContext.Provider>
+    <SessionContext value={{ session, setSession }}>{children}</SessionContext>
   );
 }
 

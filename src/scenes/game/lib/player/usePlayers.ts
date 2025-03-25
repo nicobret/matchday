@@ -13,7 +13,10 @@ export default function usePlayers(gameId: number) {
   const isPlayer = res.data?.some(
     (p) => p.profile?.id === session?.user.id && p.status === "confirmed",
   );
+  const isInvited = res.data?.some(
+    (p) => p.profile?.id === session?.user.id && p.status === "pending",
+  );
   const myPlayer = res.data?.find((p) => p.user_id === session?.user.id);
   const count = res.data?.filter((e) => e.status === "confirmed").length || 0;
-  return { ...res, isPlayer, count, myPlayer };
+  return { ...res, isPlayer, isInvited, count, myPlayer };
 }

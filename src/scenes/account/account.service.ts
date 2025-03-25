@@ -1,4 +1,5 @@
 import supabase from "@/utils/supabase";
+import { Tables } from "types/supabase";
 
 async function fetchUser() {
   const {
@@ -10,12 +11,11 @@ async function fetchUser() {
   return user;
 }
 
-export async function fetchProfile() {
-  const user = await fetchUser();
+export async function getProfile(userId: string): Promise<Tables<"users">> {
   const { data } = await supabase
     .from("users")
     .select()
-    .eq("id", user.id)
+    .eq("id", userId)
     .single()
     .throwOnError();
   if (!data) throw new Error("Profil non trouvé");

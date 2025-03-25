@@ -1,4 +1,4 @@
-import { Button } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
@@ -9,32 +9,33 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
-import { useState } from "react";
-import useCreatePlayer from "../../lib/player/useCreatePlayer";
+import { useForm } from "react-hook-form";
+import useCreatePlayer from "../lib/player/useCreatePlayer";
 
-export default function InviteDialog({
+type FormValues = { name: string };
+
+export default function InviteExternalDialog({
   gameId,
   disabled,
 }: {
   gameId: number;
   disabled: boolean;
 }) {
-  const [name, setName] = useState("");
+  const { register, handleSubmit } = useForm<FormValues>();
   const { mutate } = useCreatePlayer(gameId);
 
-  function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
-    e.preventDefault();
-    if (!name) {
-      window.alert("Veuillez renseigner un nom.");
-    }
-    mutate({ name });
+  function onSubmit(data: FormValues) {
+    mutate({ name: data.name });
   }
 
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button onClick={() => {}} disabled={disabled}>
-          Ajouter un invité
+        <Button
+          disabled={disabled}
+          className={buttonVariants({ variant: "secondary" })}
+        >
+          Ajouter un joueur extérieur à la plateforme
         </Button>
       </DialogTrigger>
       <DialogContent>
@@ -45,13 +46,11 @@ export default function InviteDialog({
             ce match.
           </DialogDescription>
         </DialogHeader>
-        <form id="invite-form" onSubmit={handleSubmit}>
+        <form id="invite-form" onSubmit={handleSubmit(onSubmit)}>
           <Input
             type="text"
-            id="name"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
             placeholder="Nom du joueur"
+            {...register("name", { required: true })}
           />
         </form>
         <DialogFooter>

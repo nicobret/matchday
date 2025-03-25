@@ -77,6 +77,7 @@ function Row({ player }: { player: Player }) {
           <SelectContent>
             <SelectItem value="confirmed">Confirmé</SelectItem>
             <SelectItem value="cancelled">Annulé</SelectItem>
+            <SelectItem value="pending">En attente</SelectItem>
           </SelectContent>
         </Select>
       </TableCell>

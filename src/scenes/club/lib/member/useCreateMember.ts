@@ -1,17 +1,13 @@
-import { SessionContext } from "@/components/auth-provider";
 import { useToast } from "@/hooks/use-toast";
 import { useMutation } from "@tanstack/react-query";
-import { useContext } from "react";
+import { TablesInsert } from "types/supabase";
 import { addMemberToCache } from "../club/club.service";
 import { createMember } from "./member.repository";
 
-export default function useCreateMember(clubId: number) {
-  const { session } = useContext(SessionContext);
+export default function useCreateMember() {
   const { toast } = useToast();
-  const mutationFn = () => {
-    if (!session?.user) throw new Error("user not authenticated");
-    return createMember(clubId, session.user.id);
-  };
+  const mutationFn = (payload: TablesInsert<"club_member">) =>
+    createMember(payload);
   const onError = (error: Error) => {
     toast({ description: error.message, variant: "destructive" });
   };

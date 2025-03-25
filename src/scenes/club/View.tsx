@@ -128,25 +128,25 @@ export default function View() {
 
         <TabsContent value="schedule">
           <section id="schedule" className="mt-8">
-            <h2 className="scroll-m-20 border-b pb-2 text-3xl font-semibold tracking-tight">
+            <h2 className="font-new-amsterdam scroll-m-20 text-4xl">
               Calendrier
             </h2>
             {isMember && (
               <Link
                 to={`~/game/create?clubId=${club.id}`}
-                className={`mt-4 ${buttonVariants({ variant: "secondary" })}`}
+                className={`mt-2 ${buttonVariants({ variant: "secondary" })}`}
               >
                 <Plus className="mr-2 h-5 w-5" />
                 Créer un match
               </Link>
             )}
-            <div className="mt-8 overflow-x-auto">
+            <div className="mt-4 overflow-x-auto">
               <UpcomingGamesTable clubId={club.id} />
             </div>
           </section>
 
           <section id="history" className="mt-10">
-            <h2 className="scroll-m-20 border-b pb-2 text-3xl font-semibold tracking-tight">
+            <h2 className="font-new-amsterdam scroll-m-20 text-4xl">
               Historique
             </h2>
             <ClubHistory club={club} />
@@ -155,14 +155,14 @@ export default function View() {
 
         <TabsContent value="members">
           <section id="stats" className="mt-8">
-            <h2 className="scroll-m-20 border-b pb-2 text-3xl font-semibold tracking-tight">
+            <h2 className="font-new-amsterdam scroll-m-20 text-4xl">
               Statistiques
             </h2>
             <ClubStats clubId={club.id} />
           </section>
 
           <section id="members" className="mt-8">
-            <h2 className="scroll-m-20 border-b pb-2 text-3xl font-semibold tracking-tight">
+            <h2 className="font-new-amsterdam scroll-m-20 text-4xl">
               Liste des membres
             </h2>
             <ClubMembers clubId={club.id} />

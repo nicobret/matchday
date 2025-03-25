@@ -8,21 +8,22 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
-import { useState } from "react";
+import { useForm } from "react-hook-form";
 import { Tables } from "types/supabase";
 import useUpdateSeason from "../lib/season/useUpdateSeason";
+
+type FormValues = { name: string };
 
 export default function UpdateSeasonDialog({
   season,
 }: {
   season: Tables<"season">;
 }) {
-  const [name, setName] = useState(season.name);
   const { mutate } = useUpdateSeason();
+  const { register, handleSubmit } = useForm<FormValues>();
 
-  function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
-    e.preventDefault();
-    mutate({ id: season.id, name });
+  function onSubmit(data: FormValues) {
+    mutate({ id: season.id, name: data.name });
   }
 
   return (
@@ -34,12 +35,13 @@ export default function UpdateSeasonDialog({
         <DialogHeader>
           <DialogTitle>Modifier une saison</DialogTitle>
         </DialogHeader>
-        <form id="update-season" onSubmit={handleSubmit}>
+        <form id="update-season" onSubmit={handleSubmit(onSubmit)}>
           <Input
             type="text"
-            id="name"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
+            {...register("name")}
+            required
+            placeholder="Nom de la saison"
+            defaultValue={season.name}
           />
         </form>
         <DialogFooter>

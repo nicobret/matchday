@@ -9,6 +9,7 @@ import { Tables } from "types/supabase";
 const statusTranslation: { [key: string]: string } = {
   confirmed: "Confirmé",
   cancelled: "Annulé",
+  pending: "En attente",
 };
 
 export function translateStatus(status?: string) {
@@ -45,6 +46,7 @@ export async function createPlayer(
   game_id: number,
   user_id?: string,
   name?: string,
+  status = "confirmed",
 ) {
   if (!user_id && !name) {
     throw new Error("user_id or name is required");
@@ -52,12 +54,7 @@ export async function createPlayer(
   const { data } = await supabase
     .from("game_player")
     .upsert(
-      {
-        game_id,
-        user_id,
-        name,
-        status: "confirmed",
-      },
+      { game_id, user_id, name, status },
       { onConflict: "game_id, user_id" },
     )
     .select()

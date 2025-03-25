@@ -1,11 +1,10 @@
-import { Session } from "@supabase/supabase-js";
 import { useQuery } from "@tanstack/react-query";
-import { fetchProfile } from "../account/account.service";
+import { getProfile } from "../account/account.service";
 
-export default function useProfile({ session }: { session: Session | null }) {
+export default function useProfile(userId?: string) {
   return useQuery({
-    queryKey: ["profile"],
-    queryFn: fetchProfile,
-    enabled: !!session,
+    queryKey: ["profile", userId],
+    queryFn: () => getProfile(userId!),
+    enabled: !!userId,
   });
 }

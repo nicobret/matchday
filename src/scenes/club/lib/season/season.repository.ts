@@ -1,16 +1,15 @@
 import supabase from "@/utils/supabase";
-import { Tables, TablesUpdate } from "types/supabase";
+import { Tables, TablesInsert, TablesUpdate } from "types/supabase";
 
 export async function createSeason(
-  clubId: number,
-  name: string,
+  payload: TablesInsert<"season">,
 ): Promise<Tables<"season">> {
-  const { data, error } = await supabase
+  const { data } = await supabase
     .from("season")
-    .insert({ club_id: clubId, name })
+    .insert(payload)
     .select()
-    .single();
-  if (error) throw new Error(error.message);
+    .single()
+    .throwOnError();
   return data;
 }
 
@@ -35,6 +34,8 @@ export async function updateSeason(
     .from("season")
     .update({ name: payload.name })
     .eq("id", payload.id)
+    .select()
+    .single()
     .throwOnError();
   if (!data) throw new Error("No data found.");
   return data;

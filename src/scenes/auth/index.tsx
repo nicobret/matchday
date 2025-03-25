@@ -1,42 +1,52 @@
-import supabase from "@/utils/supabase";
-import { Auth as SupabaseAuth } from "@supabase/auth-ui-react";
+import { Button, buttonVariants } from "@/components/ui/button";
+import useAuth from "@/lib/useAuth";
+import { useState } from "react";
+import { Link } from "wouter";
+import SigninForm from "./components/SigninForm";
+import SignupForm from "./components/SignupForm";
 
 export default function Auth() {
-  const params = new URLSearchParams(window.location.search);
-  const redirectTo = params.get("redirectTo");
+  const [displaySignup, setDisplaySignup] = useState(false);
+  const { session, logout } = useAuth();
 
   return (
     <div className="mx-auto max-w-lg p-4">
-      <SupabaseAuth
-        supabaseClient={supabase}
-        providers={[]}
-        localization={{
-          variables: {
-            sign_in: {
-              button_label: "Connexion",
-              email_input_placeholder: "Votre email",
-              password_input_placeholder: "Votre mot de passe",
-              email_label: "Email",
-              password_label: "Mot de passe",
-              loading_button_label: "Chargement...",
-              link_text: "Vous avez déjà un compte ? Se connecter",
-            },
-            sign_up: {
-              button_label: "Inscription",
-              email_input_placeholder: "Votre email",
-              password_input_placeholder: "Votre mot de passe",
-              email_label: "Email",
-              password_label: "Mot de passe",
-              loading_button_label: "Chargement...",
-              link_text: "Vous n'avez pas de compte ? S'inscrire",
-            },
-            forgotten_password: {
-              link_text: "Mot de passe oublié ?",
-            },
-          },
-        }}
-        redirectTo={redirectTo || "/"}
-      />
+      {session ? (
+        <>
+          <p>Vous êtes déjà connecté(e).</p>
+          <br />
+          <div className="flex gap-2">
+            <Link to="/" className={buttonVariants()}>
+              Retour à l'accueil
+            </Link>
+            <Button variant="outline" onClick={logout}>
+              Se déconnecter
+            </Button>
+          </div>
+        </>
+      ) : displaySignup ? (
+        <>
+          <SignupForm />
+          <br />
+          <Button
+            variant="outline"
+            onClick={() => setDisplaySignup(!displaySignup)}
+          >
+            J'ai déjà un compte
+          </Button>
+        </>
+      ) : (
+        <>
+          <SigninForm />
+          <br />
+          <Button
+            variant="outline"
+            onClick={() => setDisplaySignup(!displaySignup)}
+          >
+            Créer un compte
+          </Button>
+        </>
+      )}
     </div>
   );
 }

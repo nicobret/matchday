@@ -1,7 +1,29 @@
 import supabase from "@/utils/supabase";
-import { Tables, TablesUpdate } from "types/supabase";
+import { Tables, TablesInsert, TablesUpdate } from "types/supabase";
 
-export async function getClub(id: number) {
+export async function createClub(
+  payload: TablesInsert<"clubs">,
+): Promise<Tables<"clubs">> {
+  const { data } = await supabase
+    .from("clubs")
+    .insert(payload)
+    .select()
+    .single()
+    .throwOnError();
+  if (!data) {
+    throw new Error("Impossible de créer le club.");
+  }
+  return data;
+}
+
+export async function getClub(
+  id: number,
+): Promise<
+  Tables<"clubs"> & {
+    members: Tables<"club_member">[];
+    seasons: Tables<"season">[];
+  }
+> {
   const { data } = await supabase
     .from("clubs")
     .select("*, members: club_member (*), seasons: season (*)")

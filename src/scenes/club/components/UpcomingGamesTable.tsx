@@ -70,8 +70,10 @@ function GameRow({ game }: { game: Game }) {
       )}
       <TableCell>
         <div className="flex flex-wrap gap-2">
-          {!isPlayer && <JoinGameButton game={game} />}
-          {session && isPlayer && <LeaveGameButton gameId={game.id} />}
+          {!isPlayer && <JoinGameButton game={game} className="w-full" />}
+          {session && isPlayer && (
+            <LeaveGameButton gameId={game.id} className="w-full" />
+          )}
           <Link
             to={`~/game/${game.id}`}
             className={`w-full md:w-fit ${buttonVariants({ variant: "secondary" })}`}
