@@ -9,6 +9,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import usePlayers from "@/scenes/game/lib/player/usePlayers";
+import { Eye } from "lucide-react";
 import { useContext } from "react";
 import { Link } from "wouter";
 import JoinGameButton from "../../game/components/JoinGameButton";
@@ -69,15 +70,14 @@ function GameRow({ game }: { game: Game }) {
         </TableCell>
       )}
       <TableCell>
-        <div className="flex flex-wrap gap-2">
-          {!isPlayer && <JoinGameButton game={game} className="w-full" />}
-          {session && isPlayer && (
-            <LeaveGameButton gameId={game.id} className="w-full" />
-          )}
+        <div className="grid gap-2 md:grid-cols-2">
+          {!isPlayer && <JoinGameButton game={game} />}
+          {session && isPlayer && <LeaveGameButton gameId={game.id} />}
           <Link
             to={`~/game/${game.id}`}
-            className={`w-full md:w-fit ${buttonVariants({ variant: "secondary" })}`}
+            className={buttonVariants({ variant: "secondary" })}
           >
+            <Eye />
             Voir la page
           </Link>
         </div>

@@ -44,45 +44,30 @@ export default function View() {
         ? "Vous n'êtes pas membre."
         : "Vous n'êtes pas connecté(e)";
 
+  const address =
+    club.address && club.postcode && club.city
+      ? `${club.address}, ${club.postcode} ${club.city}`
+      : "Adresse non renseignée.";
+
   return (
-    <div className="mx-auto max-w-[100rem] gap-8 p-2 md:flex">
+    <div className="mx-auto max-w-[100rem] gap-4 p-2 md:flex">
       <div className="flex-none md:w-96 md:pr-4">
         <header className="mx-auto flex max-w-lg gap-4">
           <div className="h-28 w-28 flex-none rounded-xl border-2 border-dashed"></div>
           <div>
-            <h1 className="text-3xl leading-none font-semibold tracking-tight uppercase">
+            <h1 className="font-new-amsterdam scroll-m-20 text-4xl">
               {club.name}
             </h1>
-
             <p
-              className={`text-muted-foreground mt-2 text-sm ${isMember ? "text-primary" : ""}`}
+              className={`text-muted-foreground mb-2 text-sm ${isMember ? "text-primary" : ""}`}
             >
               {userStatus}
             </p>
+            {isMember ? <CopyButton /> : <JoinClubButton clubId={club.id} />}
           </div>
         </header>
 
-        <div className="mx-auto mt-6 grid max-w-lg grid-cols-2 gap-2">
-          {isMember ? (
-            <LeaveClubButton clubId={club.id} />
-          ) : (
-            <JoinClubButton clubId={club.id} />
-          )}
-
-          <CopyButton />
-
-          {isAdmin && (
-            <Link
-              to="/edit"
-              className={buttonVariants({ variant: "secondary" })}
-            >
-              <ClipboardSignature className="mr-2 inline-block h-5 w-5" />
-              Modifier
-            </Link>
-          )}
-        </div>
-
-        <div className="text-muted-foreground mx-auto mt-6 max-w-lg rounded-sm border p-3 text-sm">
+        <div className="text-muted-foreground mx-auto mt-4 max-w-lg rounded-lg border p-3 text-sm leading-loose">
           <p>
             <Shield className="mr-2 inline-block h-4 w-4 align-text-top" />
             Créé le{" "}
@@ -98,29 +83,33 @@ export default function View() {
             </p>
           )}
 
-          <div className="mt-1 flex gap-2">
-            <MapPin className="inline-block h-4 w-4" />
-            {club.address && club.postcode && club.city ? (
-              <div>
-                <p>{club.address}</p>
-                <p>
-                  {club.postcode} {club.city}
-                </p>
-              </div>
-            ) : (
-              <p className="leading-relaxed">Adresse non renseignée.</p>
+          <p>
+            <MapPin className="mr-2 inline-block h-4 w-4 align-text-top" />
+            {address}
+          </p>
+
+          <div className="mx-auto mt-2 grid max-w-lg grid-cols-2 gap-2">
+            {isAdmin && (
+              <Link
+                to="/edit"
+                className={buttonVariants({ variant: "outline" })}
+              >
+                <ClipboardSignature />
+                Modifier
+              </Link>
             )}
+            {isMember && <LeaveClubButton clubId={club.id} />}
           </div>
         </div>
       </div>
 
       <Tabs defaultValue="schedule" className="mt-8 w-full md:mt-0">
-        <TabsList>
-          <TabsTrigger value="schedule" className="w-32">
+        <TabsList className="w-full">
+          <TabsTrigger value="schedule" className="w-1/2">
             <Calendar className="mr-2 inline-block h-4 w-4" />
             Matches
           </TabsTrigger>
-          <TabsTrigger value="members" className="w-32">
+          <TabsTrigger value="members" className="w-1/2">
             <Users className="mr-2 inline-block h-4 w-4" />
             Membres
           </TabsTrigger>
@@ -136,7 +125,7 @@ export default function View() {
                 to={`~/game/create?clubId=${club.id}`}
                 className={`mt-2 ${buttonVariants({ variant: "secondary" })}`}
               >
-                <Plus className="mr-2 h-5 w-5" />
+                <Plus />
                 Créer un match
               </Link>
             )}

@@ -67,7 +67,7 @@ export default function SignupForm() {
         />
       </div>
       <br />
-      <Button type="submit">Valider</Button>
+      <Button type="submit">Créer mon compte</Button>
     </form>
   );
 }
