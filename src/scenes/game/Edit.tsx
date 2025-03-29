@@ -28,7 +28,7 @@ type FormValues = {
   location: string;
   durationInMinutes: number;
   category: string;
-  season_id?: number;
+  season_id?: string;
 };
 
 export default function EditGame() {
@@ -80,7 +80,7 @@ function Editor({ game }: { game: Game }) {
   const initialValues = getFormValuesFromData(game);
   const { mutate, isPending } = useUpdateGame(game.id);
   const { toast } = useToast();
-  const { register, handleSubmit } = useForm<FormValues>();
+  const { register, handleSubmit, setValue } = useForm<FormValues>();
 
   function onSubmit(data: FormValues) {
     const payload = getPayloadFromFormValues(data);
@@ -137,7 +137,7 @@ function Editor({ game }: { game: Game }) {
         <div className="mt-4">
           <Label htmlFor="season">Saison</Label>
           <Select
-            {...register("season_id")}
+            onValueChange={(value) => setValue("season_id", value)}
             defaultValue={initialValues.season_id}
           >
             <SelectTrigger>
@@ -198,7 +198,11 @@ function Editor({ game }: { game: Game }) {
 
           <div>
             <Label htmlFor="total_players">Nombre de joueurs</Label>
-            <Input type="number" {...register("total_players")} />
+            <Input
+              type="number"
+              {...register("total_players")}
+              defaultValue={initialValues.total_players}
+            />
           </div>
         </div>
 
