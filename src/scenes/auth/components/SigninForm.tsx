@@ -33,7 +33,7 @@ export default function SigninForm() {
         <Input {...register("password")} type="password" required />
       </div>
       <br />
-      <Button type="submit">Valider</Button>
+      <Button type="submit">Me connecter</Button>
     </form>
   );
 }

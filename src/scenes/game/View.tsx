@@ -32,7 +32,7 @@ export default function View() {
   const { id } = useParams();
   const { session } = useContext(SessionContext);
   const [copiedText, copyToClipboard] = useCopyToClipboard();
-  const { data: game, hasEnded } = useGame(Number(id));
+  const { data: game, hasStarted, hasEnded } = useGame(Number(id));
   const { data: players, isPlayer } = usePlayers(Number(id));
   const { isMember } = useMembers(game?.club_id);
   const confirmedPlayers =
@@ -60,6 +60,18 @@ export default function View() {
   }
 
   const durationInMinutes = getGameDurationInMinutes(game.duration as string);
+
+  const gameStatus =
+    game.status === "deleted"
+      ? "Match supprimé"
+      : hasEnded
+        ? `Match terminé${game.score ? ` • ${game.score[0]} - ${game.score[1]}` : ""}`
+        : hasStarted
+          ? "Match en cours"
+          : `Le match commence dans ${Math.floor(
+              (new Date(game.date).getTime() - new Date().getTime()) /
+                (1000 * 60 * 60 * 24),
+            )} jours.`;
 
   const userStatus = isPlayer
     ? "✓ Vous êtes inscrit(e)"
@@ -93,15 +105,16 @@ export default function View() {
           })}
         </h1>
 
-        <p
-          className={`mt-1 line-clamp-1 text-sm ${isPlayer ? "text-primary" : ""}`}
-        >
-          {game.status === "deleted"
-            ? "Match supprimé"
-            : hasEnded
-              ? `Match terminé${game.score ? ` • ${game.score[0]} - ${game.score[1]}` : ""}`
-              : userStatus}
+        <p className="text-muted-foreground text-center text-sm">
+          {gameStatus}
         </p>
+        {!hasEnded && (
+          <p
+            className={`text-sm ${isPlayer ? "text-primary" : "text-muted-foreground"}`}
+          >
+            {userStatus}
+          </p>
+        )}
       </header>
 
       <div className="mx-auto mt-8 grid gap-2 md:w-1/2">
@@ -179,22 +192,11 @@ export default function View() {
         </TabsContent>
 
         <TabsContent value="stats" className="mt-4">
-          {/* {hasStarted ? ( */}
           <div className="grid grid-cols-2 gap-4">
             <Score game={game} players={confirmedPlayers} />
             {!!player && <MyEvents player={player} />}
             <GameStats gameId={Number(id)} />
           </div>
-          {/* ) : (
-            <p className="mt-4   text-center text-muted-foreground">
-              Le match commence dans{" "}
-              {Math.floor(
-                (new Date(game.date).getTime() - new Date().getTime()) /
-                  (1000 * 60 * 60 * 24),
-              )}{" "}
-              jours.
-            </p>
-          )} */}
         </TabsContent>
       </Tabs>
     </div>

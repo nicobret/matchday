@@ -9,7 +9,7 @@ import useProfile from "./useProfile";
 
 export default function Home() {
   const { session } = useAuth();
-  const { data: profile, isPending: loadingProfile } = useProfile(
+  const { data: profile, isLoading: loadingProfile } = useProfile(
     session?.user?.id,
   );
   const { data: clubs, isError, isPending } = useClubs();
