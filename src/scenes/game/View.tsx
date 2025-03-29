@@ -95,7 +95,7 @@ export default function View() {
           {game.season?.name ? ` • Saison ${game.season?.name}` : ""}
         </p>
 
-        <h1 className="font-new-amsterdam text-6xl leading-12">
+        <h1 className="font-new-amsterdam text-5xl leading-12">
           {new Date(game.date).toLocaleDateString("fr-FR", {
             weekday: "long",
             day: "numeric",
@@ -103,26 +103,28 @@ export default function View() {
           })}
         </h1>
 
-        <p className="text-muted-foreground text-center text-sm">
-          {gameStatus}
-        </p>
-        {!hasEnded && (
-          <p
-            className={`text-sm ${isPlayer ? "text-primary" : "text-muted-foreground"}`}
-          >
-            {userStatus}
+        <div className="mt-4">
+          <p className="text-muted-foreground text-center text-sm">
+            {gameStatus}
           </p>
-        )}
-
-        <div className="mt-2 flex items-center justify-center gap-2">
-          {!isPlayer && <JoinGameButton game={game} />}
-          {!hasStarted && (
-            <InviteMenu
-              gameId={game.id}
-              clubId={game.club_id}
-              disabled={!isMember}
-            />
+          {!hasEnded && (
+            <p
+              className={`text-sm ${isPlayer ? "text-primary" : "text-muted-foreground"}`}
+            >
+              {userStatus}
+            </p>
           )}
+
+          <div className="mt-2 flex items-center justify-center gap-2">
+            {!isPlayer && <JoinGameButton game={game} />}
+            {!hasStarted && (
+              <InviteMenu
+                gameId={game.id}
+                clubId={game.club_id}
+                disabled={!isMember}
+              />
+            )}
+          </div>
         </div>
       </header>
 
