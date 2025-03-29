@@ -18,8 +18,8 @@ export default function LeaveClubButton({ clubId }: { clubId: number }) {
   }
 
   return (
-    <Button onClick={handleClick} disabled={isPending} variant="secondary">
-      <Ban className="mr-2 inline-block h-5 w-5" />
+    <Button onClick={handleClick} disabled={isPending} variant="outline">
+      <Ban />
       Quitter
     </Button>
   );

@@ -21,7 +21,7 @@ export default function JoinClubButton({ clubId }: { clubId: number }) {
 
   return (
     <Button onClick={handleClick} disabled={isPending}>
-      <ClipboardSignature className="mr-2 h-5 w-5" />
+      <ClipboardSignature />
       Rejoindre
     </Button>
   );
