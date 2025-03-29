@@ -70,7 +70,7 @@ function GameRow({ game }: { game: Game }) {
         </TableCell>
       )}
       <TableCell>
-        <div className="grid gap-2 md:grid-cols-2">
+        <div className="grid max-w-xl gap-2 md:grid-cols-2">
           {!isPlayer && <JoinGameButton game={game} />}
           {session && isPlayer && <LeaveGameButton gameId={game.id} />}
           <Link

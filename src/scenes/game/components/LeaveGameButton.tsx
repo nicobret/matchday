@@ -16,7 +16,7 @@ export default function LeaveGameButton({
     <Button
       onClick={() => mutate({ status: "cancelled" })}
       disabled={isPending}
-      variant="secondary"
+      variant="outline"
       className={className}
     >
       {isPending ? (

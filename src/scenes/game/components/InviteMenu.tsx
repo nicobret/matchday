@@ -9,20 +9,31 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { useToast } from "@/hooks/use-toast";
 import { useMembers } from "@/scenes/club/lib/member/useMembers";
+import { useCopyToClipboard } from "@uidotdev/usehooks";
+import { Send } from "lucide-react";
 import { useForm } from "react-hook-form";
 import useCreatePlayer from "../lib/player/useCreatePlayer";
 import usePlayers from "../lib/player/usePlayers";
 
 type FormValues = { userId: string };
 
-export default function InviteMemberDialog({
+export default function InviteMenu({
   gameId,
   clubId,
   disabled,
@@ -31,6 +42,8 @@ export default function InviteMemberDialog({
   clubId: number;
   disabled: boolean;
 }) {
+  const { toast } = useToast();
+  const [, copyToClipboard] = useCopyToClipboard();
   const { mutate: createPlayer } = useCreatePlayer(gameId);
   const { data: members, isPending } = useMembers(clubId);
   const { data: players } = usePlayers(gameId);
@@ -41,15 +54,42 @@ export default function InviteMemberDialog({
   );
 
   function onSubmit(data: FormValues) {
-    console.log("🚀 ~ onSubmit ~ data:", data);
     createPlayer({ user_id: data.userId, status: "pending" });
+    toast({
+      title: "Invitation envoyée",
+      description: "Le joueur a été invité avec succès.",
+    });
+    setValue("userId", "");
+  }
+
+  function handleCopyLink() {
+    copyToClipboard(window.location.href);
+    toast({
+      title: "Lien copié",
+      description: "Le lien a été copié dans le presse-papiers.",
+    });
   }
 
   return (
     <Dialog>
-      <DialogTrigger asChild>
-        <Button disabled={disabled}>Inviter un membre du club</Button>
-      </DialogTrigger>
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button disabled={disabled} variant="secondary">
+            <Send />
+            Inviter
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent>
+          <DropdownMenuLabel>Inviter un joueur</DropdownMenuLabel>
+          <DropdownMenuSeparator />
+          <DialogTrigger asChild>
+            <DropdownMenuItem>Inviter un membre du club</DropdownMenuItem>
+          </DialogTrigger>
+          <DropdownMenuItem onClick={handleCopyLink}>
+            Copier le lien
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
       <DialogContent>
         <DialogHeader>
           <DialogTitle>Inviter un membre du club</DialogTitle>
@@ -81,7 +121,7 @@ export default function InviteMemberDialog({
         <DialogFooter>
           <DialogTrigger asChild>
             <Button type="submit" form="invite-member-form">
-              Inviter
+              Envoyer
             </Button>
           </DialogTrigger>
         </DialogFooter>

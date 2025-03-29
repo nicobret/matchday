@@ -1,12 +1,10 @@
 import { SessionContext } from "@/components/auth-provider";
-import { Button, buttonVariants } from "@/components/ui/button";
+import { buttonVariants } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { useCopyToClipboard } from "@uidotdev/usehooks";
 import {
   ArrowLeft,
   BarChart,
   Clock,
-  Copy,
   Hourglass,
   MapPin,
   Pencil,
@@ -17,6 +15,7 @@ import { Link, useParams } from "wouter";
 import { useMembers } from "../club/lib/member/useMembers";
 import AddToCalendar from "./components/AddToCalendar";
 import GameStats from "./components/GameStats";
+import InviteMenu from "./components/InviteMenu";
 import JoinGameButton from "./components/JoinGameButton";
 import LeaveGameButton from "./components/LeaveGameButton";
 import LineUp from "./components/LineUp";
@@ -31,7 +30,6 @@ import usePlayers from "./lib/player/usePlayers";
 export default function View() {
   const { id } = useParams();
   const { session } = useContext(SessionContext);
-  const [copiedText, copyToClipboard] = useCopyToClipboard();
   const { data: game, hasStarted, hasEnded } = useGame(Number(id));
   const { data: players, isPlayer } = usePlayers(Number(id));
   const { isMember } = useMembers(game?.club_id);
@@ -97,7 +95,7 @@ export default function View() {
           {game.season?.name ? ` • Saison ${game.season?.name}` : ""}
         </p>
 
-        <h1 className="text-4xl font-semibold tracking-tight uppercase">
+        <h1 className="font-new-amsterdam text-6xl leading-12">
           {new Date(game.date).toLocaleDateString("fr-FR", {
             weekday: "long",
             day: "numeric",
@@ -115,66 +113,72 @@ export default function View() {
             {userStatus}
           </p>
         )}
+
+        <div className="mt-2 flex items-center justify-center gap-2">
+          {!isPlayer && <JoinGameButton game={game} />}
+          {!hasStarted && (
+            <InviteMenu
+              gameId={game.id}
+              clubId={game.club_id}
+              disabled={!isMember}
+            />
+          )}
+        </div>
       </header>
 
-      <div className="mx-auto mt-8 grid gap-2 md:w-1/2">
-        <div className="rounded-xl border p-4 text-left text-sm">
-          <p>
-            <Clock className="mr-2 inline-block h-4 w-4 align-text-top" />
-            {new Date(game.date).toLocaleTimeString("fr-FR", {
-              timeStyle: "short",
-            })}
-          </p>
+      <div className="mx-auto mt-8 max-w-xl">
+        <div className="rounded-xl border p-4">
+          <div className="text-sm leading-relaxed">
+            <p>
+              <Clock className="mr-2 inline-block h-4 w-4 align-text-top" />
+              {new Date(game.date).toLocaleTimeString("fr-FR", {
+                timeStyle: "short",
+              })}
+            </p>
 
-          <p className="mt-1">
-            <MapPin className="mr-2 inline-block h-4 w-4 align-text-top" />
-            {game.location}
-          </p>
+            <p>
+              <MapPin className="mr-2 inline-block h-4 w-4 align-text-top" />
+              {game.location}
+            </p>
 
-          <p className="mt-1">
-            <Hourglass className="mr-2 inline-block h-4 w-4 align-text-top" />
-            Durée : {durationInMinutes} minute{durationInMinutes > 1 ? "s" : ""}
-          </p>
+            <p>
+              <Hourglass className="mr-2 inline-block h-4 w-4 align-text-top" />
+              Durée : {durationInMinutes} minute
+              {durationInMinutes > 1 ? "s" : ""}
+            </p>
 
-          <p className="mt-1">
-            <Users className="mr-2 inline-block h-4 w-4 align-text-top" />
-            {confirmedPlayers.length} / {game.total_players} joueurs inscrits.
-          </p>
-        </div>
+            <p>
+              <Users className="mr-2 inline-block h-4 w-4 align-text-top" />
+              {confirmedPlayers.length} / {game.total_players} joueurs inscrits.
+            </p>
+          </div>
 
-        <div className="grid grid-cols-2 gap-2">
-          {!isPlayer && <JoinGameButton game={game} />}
-          {session && isPlayer && <LeaveGameButton gameId={game.id} />}
-          <AddToCalendar game={game} />
+          <div className="mt-2 grid grid-cols-2 gap-2">
+            <AddToCalendar game={game} />
 
-          {session && isMember && (
-            <Link
-              to="/edit"
-              className={buttonVariants({ variant: "secondary" })}
-            >
-              <Pencil className="mr-2 h-4 w-4" />
-              Modifier
-            </Link>
-          )}
+            {session && isMember && (
+              <Link
+                to="/edit"
+                className={buttonVariants({ variant: "outline" })}
+              >
+                <Pencil />
+                Modifier
+              </Link>
+            )}
 
-          <Button
-            onClick={() => copyToClipboard(window.location.href)}
-            variant="secondary"
-          >
-            <Copy className="mr-2 inline-block h-5 w-5" />
-            {copiedText ? "Copié !" : "Copier le lien"}
-          </Button>
+            {session && isPlayer && <LeaveGameButton gameId={game.id} />}
+          </div>
         </div>
       </div>
 
       <Tabs defaultValue={hasEnded ? "stats" : "players"} className="mt-8">
-        <TabsList className="mx-auto">
-          <TabsTrigger value="players" disabled={!isMember} className="w-32">
+        <TabsList className="mx-auto w-full md:w-auto">
+          <TabsTrigger value="players" disabled={!isMember} className="w-1/2">
             <Users className="mr-2 inline-block h-4 w-4" />
             Joueurs
           </TabsTrigger>
 
-          <TabsTrigger value="stats" className="w-32">
+          <TabsTrigger value="stats" className="w-1/2">
             <BarChart className="mr-2 inline-block h-4 w-4" />
             Data
           </TabsTrigger>
