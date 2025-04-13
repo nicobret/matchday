@@ -1,17 +1,17 @@
 export default function Logo() {
   return (
     <div className="relative flex items-center gap-4 p-2">
-      <p className="font-new-amsterdam text-3xl text-secondary-foreground">
+      <p className="font-new-amsterdam text-secondary-foreground text-3xl">
         Match
       </p>
-      <p className="font-new-amsterdam text-3xl text-secondary-foreground">
+      <p className="font-new-amsterdam text-secondary-foreground text-3xl">
         day
       </p>
       <svg
         viewBox="0 0 94.415428 123.00688"
         version="1.1"
         id="svg125"
-        className="absolute right-9 h-8 w-8 text-primary"
+        className="text-primary absolute right-9 h-8 w-8"
       >
         <g id="layer1" transform="translate(-39.123776,-65.510006)">
           <path

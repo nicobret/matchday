@@ -1,6 +1,7 @@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import useAuth from "@/lib/useAuth";
 import { Search, Shield } from "lucide-react";
+import { useQueryState } from "nuqs";
 import ClubCard from "./components/ClubCard";
 import CreateDialog from "./components/CreateDialog";
 import Guide from "./components/Guide";
@@ -13,29 +14,31 @@ export default function Home() {
     session?.user?.id,
   );
   const { data: clubs, isError, isPending } = useClubs();
+  const myClubs =
+    clubs?.filter((c) =>
+      c.members?.some((m) => m.user_id === session?.user?.id),
+    ) ?? [];
+  const notMyClubs =
+    clubs?.filter(
+      (c) => !c.members?.some((m) => m.user_id === session?.user?.id),
+    ) ?? [];
+  const defaultTab = myClubs.length > 0 ? "club-list" : "search";
+  const [tab, setTab] = useQueryState("tab", {
+    defaultValue: defaultTab,
+    clearOnDefault: false,
+  });
 
   if (loadingProfile) {
     return (
       <p className="animate-pulse text-center">Chargement des données...</p>
     );
   }
-
   if (isPending) {
     return <p className="animate-pulse text-center">Chargement des clubs...</p>;
   }
   if (isError) {
     return <p className="text-center">Une erreur est survenue.</p>;
   }
-
-  const myClubs = clubs.filter((c) =>
-    c.members?.some((m) => m.user_id === session?.user?.id),
-  );
-  const notMyClubs = clubs.filter(
-    (c) => !c.members?.some((m) => m.user_id === session?.user?.id),
-  );
-
-  const defaultTab = myClubs.length > 0 ? "club-list" : "search";
-
   return (
     <div className="mx-auto max-w-5xl p-4">
       <Guide profile={profile} />
@@ -45,7 +48,7 @@ export default function Home() {
           Clubs
         </h2>
 
-        <Tabs defaultValue={defaultTab} className="mt-4">
+        <Tabs value={tab} onValueChange={setTab} className="mt-4">
           <div className="my-4 flex gap-4">
             <TabsList>
               <TabsTrigger value="search" className="w-44">

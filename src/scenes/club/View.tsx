@@ -4,12 +4,14 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   Book,
   Calendar,
+  ChartLine,
   ClipboardSignature,
   MapPin,
   Plus,
   Shield,
   Users,
 } from "lucide-react";
+import { useQueryState } from "nuqs";
 import { useContext } from "react";
 import { Link, useParams } from "wouter";
 import ClubHistory from "./components/ClubHistory";
@@ -28,6 +30,10 @@ export default function View() {
   const clubId = Number(id);
   const { data: club, isPending, isError, isAdmin } = useClub(clubId);
   const { isMember } = useMembers(clubId);
+  const [tab, setTab] = useQueryState("tab", {
+    defaultValue: "schedule",
+    clearOnDefault: false,
+  });
 
   if (isPending) {
     return <p className="animate_pulse text-center">Chargement...</p>;
@@ -50,7 +56,7 @@ export default function View() {
       : "Adresse non renseignée.";
 
   return (
-    <div className="mx-auto max-w-[100rem] gap-4 p-2 md:flex">
+    <div className="mx-auto max-w-6xl p-4">
       <div className="flex-none md:w-96 md:pr-4">
         <header className="mx-auto flex max-w-lg gap-4">
           <div className="h-28 w-28 flex-none rounded-xl border-2 border-dashed"></div>
@@ -103,15 +109,19 @@ export default function View() {
         </div>
       </div>
 
-      <Tabs defaultValue="schedule" className="mt-8 w-full md:mt-0">
+      <Tabs value={tab} onValueChange={setTab} className="mt-8 w-full">
         <TabsList className="w-full md:w-auto">
-          <TabsTrigger value="schedule" className="w-1/2">
+          <TabsTrigger value="schedule" className="w-1/3">
             <Calendar className="mr-2 h-4 w-4" />
             Matches
           </TabsTrigger>
-          <TabsTrigger value="members" className="w-1/2">
+          <TabsTrigger value="members" className="w-1/3">
             <Users className="mr-2 h-4 w-4" />
             Membres
+          </TabsTrigger>
+          <TabsTrigger value="stats" className="w-1/3">
+            <ChartLine className="mr-2 h-4 w-4" />
+            Stats
           </TabsTrigger>
         </TabsList>
 
@@ -143,18 +153,20 @@ export default function View() {
         </TabsContent>
 
         <TabsContent value="members">
-          <section id="stats" className="mt-8">
-            <h2 className="font-new-amsterdam scroll-m-20 text-4xl">
-              Statistiques
-            </h2>
-            <ClubStats clubId={club.id} />
-          </section>
-
           <section id="members" className="mt-8">
             <h2 className="font-new-amsterdam scroll-m-20 text-4xl">
               Liste des membres
             </h2>
             <ClubMembers clubId={club.id} />
+          </section>
+        </TabsContent>
+
+        <TabsContent value="stats">
+          <section id="stats" className="mt-8">
+            <h2 className="font-new-amsterdam scroll-m-20 text-4xl">
+              Statistiques
+            </h2>
+            <ClubStats clubId={club.id} />
           </section>
         </TabsContent>
       </Tabs>
