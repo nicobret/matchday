@@ -36,7 +36,11 @@ export default function ClubHistory({ club }: { club: Club }) {
     clearOnDefault: false,
   });
 
-  const { data: games, isPending } = useGames(club.id, "past", selectedSeason);
+  const { data: games, isPending } = useGames({
+    clubId: club.id,
+    filter: "past",
+    seasonId: selectedSeason,
+  });
 
   if (isPending) {
     return <p className="text-center">Chargement...</p>;

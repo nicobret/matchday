@@ -1,4 +1,5 @@
 import { QueryClientProvider } from "@tanstack/react-query";
+import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { NuqsAdapter } from "nuqs/adapters/react";
 import { Suspense, lazy } from "react";
 import { ErrorBoundary } from "react-error-boundary";
@@ -8,6 +9,7 @@ import Layout from "./components/Layout.tsx";
 import { ThemeProvider } from "./components/theme-provider.tsx";
 import "./index.css";
 import { queryClient } from "./lib/react-query.ts";
+import useAuth from "./lib/useAuth.ts";
 import useProfile from "./scenes/home/useProfile.ts";
 
 const Account = lazy(() => import("./scenes/account"));
@@ -28,7 +30,7 @@ export default function App() {
                 <Suspense fallback={<AppLoader />}>
                   <RedirectIfProfileNotComplete />
                   <Switch>
-                    <Route path="/auth" component={Auth} />
+                    <Route path="/auth/*" component={Auth} />
                     <Route path="/account" component={Account} />
                     <Route path="/club/:id" component={Club} nest />
                     <Route path="/game" component={Game} nest />
@@ -40,6 +42,7 @@ export default function App() {
               </Layout>
             </ErrorBoundary>
           </SessionProvider>
+          <ReactQueryDevtools initialIsOpen={false} />
         </QueryClientProvider>
       </NuqsAdapter>
     </ThemeProvider>
@@ -76,7 +79,8 @@ function Fallback({
 }
 
 function RedirectIfProfileNotComplete() {
-  const { data: profile } = useProfile();
+  const { session } = useAuth();
+  const { data: profile } = useProfile(session?.user?.id);
   const params = new URLSearchParams(window.location.search);
   const redirectTo = params.get("redirectTo");
   const url = redirectTo ? `/account?redirectTo=${redirectTo}` : "/account";

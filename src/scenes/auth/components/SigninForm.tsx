@@ -15,9 +15,8 @@ export default function SigninForm() {
   const url = redirectTo ? `~/${redirectTo}` : "~/";
   const { login } = useAuth();
 
-  async function onSubmit(data: SigninFormValues) {
-    const res = await login(data);
-    if (res && !res.error) navigate(url);
+  function onSubmit(payload: SigninFormValues) {
+    login(payload, { onSuccess: () => navigate(url) });
   }
 
   return (
@@ -33,7 +32,9 @@ export default function SigninForm() {
         <Input {...register("password")} type="password" required />
       </div>
       <br />
-      <Button type="submit">Me connecter</Button>
+      <Button type="submit" className="w-full">
+        Me connecter
+      </Button>
     </form>
   );
 }

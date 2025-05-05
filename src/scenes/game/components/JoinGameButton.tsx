@@ -25,7 +25,7 @@ export default function JoinGameButton({
   function handleClick() {
     if (!session?.user) {
       if (window.confirm("Pour vous inscrire, veuillez vous connecter.")) {
-        navigate("~/auth?redirectTo=" + window.location.pathname);
+        navigate("~/auth/login?redirectTo=" + window.location.pathname);
       }
       return;
     }

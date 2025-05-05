@@ -1,16 +1,17 @@
 import { Button, buttonVariants } from "@/components/ui/button";
 import useAuth from "@/lib/useAuth";
-import { useState } from "react";
-import { Link } from "wouter";
+import { Link, Route, Switch } from "wouter";
 import SigninForm from "./components/SigninForm";
 import SignupForm from "./components/SignupForm";
 
 export default function Auth() {
-  const [displaySignup, setDisplaySignup] = useState(false);
   const { session, logout } = useAuth();
+  const redirectTo = new URLSearchParams(window.location.search).get(
+    "redirectTo",
+  );
 
   return (
-    <div className="mx-auto max-w-lg p-4">
+    <div className="mx-auto mt-16 max-w-sm rounded border p-4">
       {session ? (
         <>
           <p>Vous êtes déjà connecté(e).</p>
@@ -24,28 +25,29 @@ export default function Auth() {
             </Button>
           </div>
         </>
-      ) : displaySignup ? (
-        <>
-          <SignupForm />
-          <br />
-          <Button
-            variant="outline"
-            onClick={() => setDisplaySignup(!displaySignup)}
-          >
-            J'ai déjà un compte
-          </Button>
-        </>
       ) : (
-        <>
-          <SigninForm />
-          <br />
-          <Button
-            variant="outline"
-            onClick={() => setDisplaySignup(!displaySignup)}
-          >
-            Créer un compte
-          </Button>
-        </>
+        <Switch>
+          <Route path="/auth/login">
+            <SigninForm />
+            <br />
+            <Link
+              to={`~/auth/signup?redirectTo=${redirectTo}`}
+              className="text-muted-foreground text-center text-sm"
+            >
+              Créer un compte
+            </Link>
+          </Route>
+          <Route path="/auth/signup">
+            <SignupForm />
+            <br />
+            <Link
+              to={`~/auth/login?redirectTo=${redirectTo}`}
+              className="text-muted-foreground text-center text-sm"
+            >
+              J'ai déjà un compte
+            </Link>
+          </Route>
+        </Switch>
       )}
     </div>
   );
