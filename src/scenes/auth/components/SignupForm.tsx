@@ -24,12 +24,12 @@ export default function SignupForm() {
     const { error } = await supabase.auth.signUp({
       email: data.email,
       password: data.password,
-      options: {
-        data: {
-          firstname: "John",
-          lastname: "Doe",
-        },
-      },
+      // options: {
+      //   data: {
+      //     firstname: "John",
+      //     lastname: "Doe",
+      //   },
+      // },
     });
     if (error) {
       toast({
@@ -67,7 +67,9 @@ export default function SignupForm() {
         />
       </div>
       <br />
-      <Button type="submit">Créer mon compte</Button>
+      <Button type="submit" className="w-full">
+        Créer mon compte
+      </Button>
     </form>
   );
 }

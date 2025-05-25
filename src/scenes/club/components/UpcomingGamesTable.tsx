@@ -19,7 +19,11 @@ import { Game } from "../lib/club/club.service";
 import { useMembers } from "../lib/member/useMembers";
 
 export default function UpcomingGamesTable({ clubId }: { clubId: number }) {
-  const { data: games, isPending, isError } = useGames(clubId, "next");
+  const {
+    data: games,
+    isPending,
+    isError,
+  } = useGames({ clubId, filter: "next" });
   const { isMember } = useMembers(clubId);
 
   if (isPending) {

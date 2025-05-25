@@ -49,7 +49,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
             </DropdownMenu>
           ) : (
             <Link
-              to={`/auth?redirectTo=${window.location.pathname}`}
+              to={`/auth/login?redirectTo=${window.location.pathname}`}
               className={buttonVariants()}
             >
               Connexion
