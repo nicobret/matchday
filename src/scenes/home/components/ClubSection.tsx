@@ -22,8 +22,9 @@ export default function ClubSection() {
     defaultValue: defaultTab,
     clearOnDefault: false,
   });
+
   return (
-    <section id="clubs" className="mt-8">
+    <section id="clubs">
       <h2 className="scroll-m-20 text-3xl font-semibold tracking-tight">
         Clubs
       </h2>

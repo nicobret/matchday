@@ -4,7 +4,7 @@ import useGames from "@/scenes/game/lib/game/useGames";
 export default function GameSection() {
   const { data: games, isPending, isError } = useGames({ filter: "next" });
   return (
-    <section id="games" className="mt-8">
+    <section id="games">
       <h2 className="scroll-m-20 text-3xl font-semibold tracking-tight">
         Matches
       </h2>

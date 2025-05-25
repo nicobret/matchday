@@ -1,6 +1,6 @@
 import supabase from "@/utils/supabase";
 import { CalendarEvent } from "calendar-link";
-import { Tables, TablesInsert } from "types/supabase";
+import { Tables, TablesInsert, TablesUpdate } from "types/supabase";
 
 // Types
 export type Game = Tables<"games"> & {
@@ -8,25 +8,6 @@ export type Game = Tables<"games"> & {
   players?: Tables<"game_player">[];
   season?: Tables<"season"> | null;
 };
-
-export type createGamePayload = {
-  creator_id: string;
-  club_id: number;
-  season_id?: string;
-  date: string;
-  total_players: number;
-  location: string;
-  status: string;
-  duration: number;
-  category: string;
-};
-
-export type updateGamePayload = Partial<
-  Omit<
-    Tables<"games">,
-    "id" | "club_id" | "creator_id" | "created_at" | "edited_at"
-  >
->;
 
 const selectQuery =
   "*, club: clubs!games_club_id_fkey (*), players: game_player (*), season: season (*)";
@@ -66,7 +47,7 @@ export async function createGame(payload: TablesInsert<"games">) {
   return data;
 }
 
-export async function updateGame(id: number, payload: updateGamePayload) {
+export async function updateGame(id: number, payload: TablesUpdate<"games">) {
   const { data } = await supabase
     .from("games")
     .update(payload)
