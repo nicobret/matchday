@@ -331,6 +331,54 @@ export type Database = {
         };
         Relationships: [];
       };
+      notifications: {
+        Row: {
+          id: string;
+          author_id: string | null;
+          recipient_id: string;
+          title: string;
+          description: string;
+          url: string | null;
+          created_at: string;
+          status: "read" | "unread";
+        };
+        Insert: {
+          id?: string;
+          author_id?: string | null;
+          recipient_id: string;
+          title: string;
+          description: string;
+          url?: string | null;
+          created_at?: string;
+          status?: "read" | "unread";
+        };
+        Update: {
+          id?: string;
+          author_id?: string | null;
+          recipient_id?: string;
+          title?: string;
+          description?: string;
+          url?: string | null;
+          created_at?: string;
+          status?: "read" | "unread";
+        };
+        Relationships: [
+          {
+            foreignKeyName: "notifications_author_id_fkey";
+            columns: ["author_id"];
+            isOneToOne: false;
+            referencedRelation: "users";
+            referencedColumns: ["id"];
+          },
+          {
+            foreignKeyName: "notifications_recipient_id_fkey";
+            columns: ["recipient_id"];
+            isOneToOne: false;
+            referencedRelation: "users";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
     };
     Views: {
       game_report: {

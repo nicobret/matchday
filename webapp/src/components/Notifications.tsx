@@ -7,38 +7,19 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import useNotifications from "@/scenes/notifications/useNotifications";
+import { formatDistanceToNow } from "date-fns";
+import { fr } from "date-fns/locale";
 import { Bell } from "lucide-react";
-import { useState } from "react";
-
-type Notification = {
-  id: string;
-  author_id?: string;
-  // recipient_id: string,
-  title: string;
-  description: string;
-  url: string;
-  time: string;
-  status: "read" | "unread";
-};
-
-const data: Notification[] = [
-  {
-    id: "1",
-    title: "New message",
-    description: "You have 1 unread message",
-    url: "/blabla",
-    time: "2m ago",
-    status: "unread",
-  },
-];
 
 export default function Notifications() {
-  const [notifications, setNotifications] = useState<Notification[]>(data);
+  const { notifications, markAsRead } = useNotifications();
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Button variant="secondary" size="icon">
-          <Bell className="h-[1.2rem] w-[1.2rem] scale-100 rotate-0 transition-all" />
+          <Bell className="h-[1.2rem] w-[1.2rem] rotate-0 scale-100 transition-all" />
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
@@ -48,13 +29,7 @@ export default function Notifications() {
           <Notification
             key={notification.id}
             notification={notification}
-            setNotification={(notification) => {
-              setNotifications(
-                notifications.map((n) =>
-                  n.id === notification.id ? notification : n,
-                ),
-              );
-            }}
+            onRead={() => markAsRead(notification.id)}
           />
         ))}
         <DropdownMenuItem className="p-4">View all</DropdownMenuItem>
@@ -65,16 +40,20 @@ export default function Notifications() {
 
 function Notification({
   notification,
-  setNotification,
+  onRead,
 }: {
-  notification: Notification;
-  setNotification: (notification: Notification) => void;
+  notification: {
+    id: string;
+    title: string;
+    description: string;
+    url: string | null;
+    created_at: string;
+    status: "read" | "unread";
+  };
+  onRead: () => void;
 }) {
-  function handleClick() {
-    setNotification({ ...notification, status: "read" });
-  }
   return (
-    <DropdownMenuItem onClick={handleClick} className="p-4">
+    <DropdownMenuItem onClick={onRead} className="p-4">
       <div className="flex items-center justify-between gap-8">
         <div>
           <h3 className="text-lg font-semibold">{notification.title}</h3>
@@ -83,7 +62,10 @@ function Notification({
           </p>
         </div>
         <span className="text-muted-foreground text-sm">
-          {notification.time}
+          {formatDistanceToNow(new Date(notification.created_at), {
+            addSuffix: true,
+            locale: fr,
+          })}
         </span>
       </div>
     </DropdownMenuItem>
