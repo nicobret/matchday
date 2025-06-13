@@ -9,10 +9,11 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { useForm } from "react-hook-form";
+import { TablesInsert } from "shared/types/supabase";
 import { useParams } from "wouter";
 import useCreateSeason from "../lib/season/useCreateSeason";
 
-type FormValues = { name: string };
+type FormValues = TablesInsert<"season">;
 
 export default function CreateSeasonDialog() {
   const { id } = useParams();

@@ -1,4 +1,4 @@
-import { queryClient } from "@/lib/react-query";
+import { useQueryClient } from "@tanstack/react-query";
 import { Tables } from "shared/types/supabase";
 
 // Types
@@ -31,24 +31,39 @@ export function getUsername(member: Member) {
 
 // Cache
 
-export function addMemberToCache(payload: Tables<"club_member">) {
-  queryClient.setQueryData(["members", payload.club_id], (cache?: Member[]) => {
-    return cache
-      ? [...cache, { ...payload, profile: null }]
-      : [{ ...payload, profile: null }];
-  });
-}
+export function useClubCache() {
+  const queryClient = useQueryClient();
 
-export function updateMemberInCache(payload: Tables<"club_member">) {
-  queryClient.setQueryData(["members", payload.club_id], (cache?: Member[]) => {
-    return cache
-      ? cache.map((m) => (m.id === payload.id ? { ...m, ...payload } : m))
-      : [];
-  });
-}
+  return {
+    addMemberToCache: (payload: Tables<"club_member">) => {
+      queryClient.setQueryData(
+        ["members", payload.club_id],
+        (cache?: Member[]) => {
+          return cache
+            ? [...cache, { ...payload, profile: null }]
+            : [{ ...payload, profile: null }];
+        },
+      );
+    },
 
-export function deleteMemberFromCache(payload: Tables<"club_member">) {
-  queryClient.setQueryData(["members", payload.club_id], (cache?: Member[]) => {
-    return cache ? cache.filter((m) => m.id !== payload.id) : [];
-  });
+    updateMemberInCache: (payload: Tables<"club_member">) => {
+      queryClient.setQueryData(
+        ["members", payload.club_id],
+        (cache?: Member[]) => {
+          return cache
+            ? cache.map((m) => (m.id === payload.id ? { ...m, ...payload } : m))
+            : [];
+        },
+      );
+    },
+
+    deleteMemberFromCache: (payload: Tables<"club_member">) => {
+      queryClient.setQueryData(
+        ["members", payload.club_id],
+        (cache?: Member[]) => {
+          return cache ? cache.filter((m) => m.id !== payload.id) : [];
+        },
+      );
+    },
+  };
 }

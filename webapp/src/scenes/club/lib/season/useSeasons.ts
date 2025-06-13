@@ -1,10 +1,10 @@
 import { useQuery } from "@tanstack/react-query";
-import { getSeasonsByClubId } from "./season.repository";
+import seasonService from "../../../../lib/seasonService";
 
 export default function useSeasons(clubId: number) {
   return useQuery({
     queryKey: ["seasons", clubId],
-    queryFn: () => getSeasonsByClubId(clubId),
+    queryFn: () => seasonService.getByClubId(clubId),
     enabled: !!clubId,
   });
 }

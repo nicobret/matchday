@@ -4,7 +4,7 @@ import { fetchGame, getGameDurationInMinutes } from "./game.service";
 export default function useGame(id: number) {
   const res = useQuery({
     queryKey: ["game", id],
-    queryFn: async () => await fetchGame(id),
+    queryFn: () => fetchGame(id),
     enabled: !!id,
   });
   const hasStarted = new Date(String(res.data?.date)) < new Date();

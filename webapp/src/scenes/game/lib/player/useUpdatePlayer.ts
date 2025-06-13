@@ -1,29 +1,22 @@
-import { queryClient } from "@/lib/react-query";
-import { useMutation } from "@tanstack/react-query";
-import { Player, updateCache, updatePlayer } from "./player.service";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { TablesUpdate } from "shared/types/supabase";
+import { Player, updatePlayer } from "./player.service";
 
-type payloadType = Partial<Player>;
+type Payload = TablesUpdate<"game_player">;
 
 export default function useUpdatePlayer(player: Player) {
+  const client = useQueryClient();
+
   return useMutation({
-    mutationFn: async (payload: payloadType) =>
-      await updatePlayer(player.id, payload),
-    onMutate: async (payload: payloadType) => {
-      const backup = queryClient.getQueryData([
-        "players",
-        player.game_id,
-      ]) as Player[];
-      await updateCache({ id: player.id, game_id: player.game_id, ...payload });
-      return { backup };
+    mutationFn: (payload: Payload) => updatePlayer(player.id, payload),
+
+    onMutate: (payload: Payload) => {
+      client.setQueryData(["players", player.game_id], (cache: Player[] = []) =>
+        cache.map((p) => (p.id === player.id ? { ...p, ...payload } : p)),
+      );
     },
-    onError: (_error, data, context) => {
-      if (context?.backup) {
-        queryClient.setQueryData(["players", player.game_id], context.backup);
-      } else {
-        queryClient.invalidateQueries({
-          queryKey: ["players", player.game_id],
-        });
-      }
-    },
+
+    onSettled: () =>
+      client.invalidateQueries({ queryKey: ["players", player.game_id] }),
   });
 }

@@ -1,4 +1,4 @@
-import { fetchGameStats } from "@/lib/stats.service";
+import { fetchGameStats } from "@/lib/statsService";
 import { useQuery } from "@tanstack/react-query";
 
 export default function useGameStats({
