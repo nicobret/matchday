@@ -1,10 +1,10 @@
-import { queryClient } from "@/lib/react-query";
-import { useMutation } from "@tanstack/react-query";
-import { deleteSeason } from "./season.repository";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import seasonService from "../../../../lib/seasonService";
 
 export default function useDeleteSeason() {
+  const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: deleteSeason,
+    mutationFn: seasonService.delete,
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ["seasons"] }),
   });
 }

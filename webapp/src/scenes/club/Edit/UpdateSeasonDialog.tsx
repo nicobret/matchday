@@ -9,10 +9,10 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { useForm } from "react-hook-form";
-import { Tables } from "shared/types/supabase";
+import { Tables, TablesUpdate } from "shared/types/supabase";
 import useUpdateSeason from "../lib/season/useUpdateSeason";
 
-type FormValues = { name: string };
+type FormValues = TablesUpdate<"season">;
 
 export default function UpdateSeasonDialog({
   season,

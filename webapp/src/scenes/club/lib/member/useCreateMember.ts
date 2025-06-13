@@ -1,15 +1,17 @@
 import { useToast } from "@/hooks/use-toast";
 import { useMutation } from "@tanstack/react-query";
-import { TablesInsert } from "shared/types/supabase";
-import { addMemberToCache } from "../club/club.service";
-import { createMember } from "./member.repository";
+import { useClubCache } from "../club/club.service";
+import { memberService } from "./member.repository";
 
 export default function useCreateMember() {
   const { toast } = useToast();
-  const mutationFn = (payload: TablesInsert<"club_member">) =>
-    createMember(payload);
+  const { addMemberToCache } = useClubCache();
   const onError = (error: Error) => {
     toast({ description: error.message, variant: "destructive" });
   };
-  return useMutation({ mutationFn, onSuccess: addMemberToCache, onError });
+  return useMutation({
+    mutationFn: memberService.create,
+    onSuccess: addMemberToCache,
+    onError,
+  });
 }
