@@ -19,7 +19,7 @@ import { TablesInsert } from "shared/types/supabase";
 import { Link, useLocation } from "wouter";
 import useClub from "../club/lib/club/useClub";
 import { useMembers } from "../club/lib/member/useMembers";
-import { categories } from "./lib/game/game.service";
+import { categories } from "./lib/game/gameService";
 import useCreateGame from "./lib/game/useCreateGame";
 
 type Payload = TablesInsert<"games">;
@@ -100,7 +100,7 @@ export default function CreateGame() {
         Retour au club
       </Link>
 
-      <h2 className="font-new-amsterdam mt-6 mb-2 scroll-m-20 text-center text-4xl">
+      <h2 className="font-new-amsterdam mb-2 mt-6 scroll-m-20 text-center text-4xl">
         Créer un match
       </h2>
 

@@ -18,7 +18,7 @@ export function translateStatus(status?: string) {
 }
 
 export type Player = Tables<"game_player"> & {
-  profile: Tables<"users"> | null;
+  profile?: Tables<"users"> | null;
 };
 
 const selectQuery = "*, profile: users (*)";
@@ -78,48 +78,41 @@ export async function updatePlayer(id: string, payload: Partial<Player>) {
   }
 }
 
-export async function updateCache(data: Partial<Player>) {
-  if (!data.game_id) {
-    console.error("game_id is required to update cache");
-    return;
-  }
-  if (!data.id) {
-    console.error("player id is required to update cache");
-    return;
-  }
-
-  const cacheData: Player[] =
-    queryClient.getQueryData(["players", data.game_id]) ?? [];
-
-  if (cacheData.some((p: Player) => p.id === data.id)) {
-    // update
-    queryClient.setQueryData(
-      ["players", data.game_id],
-      (cache?: Player[]) =>
-        cache?.map((p) => (p.id === data.id ? { ...p, ...data } : p)) ?? [],
-    );
-  } else {
-    // create
-    const player = await fetchPlayer(data.id);
-    if (!player) return;
-    queryClient.setQueryData(["players", data.game_id], (cache?: Player[]) => [
-      ...(cache || []),
-      player,
-    ]);
-  }
-
-  return queryClient.getQueryData(["players", data.game_id]) as Player[];
-}
-
 export function getPlayerChannel(gameId: number) {
-  return supabase.channel("game_player").on(
-    REALTIME_LISTEN_TYPES.POSTGRES_CHANGES,
-    {
-      event: REALTIME_POSTGRES_CHANGES_LISTEN_EVENT.ALL, // Does not listen to DELETE events because of the filter.
-      schema: "public",
-      table: "game_player",
-      filter: `game_id=eq.${gameId}`,
-    },
-    async (payload) => await updateCache(payload.new),
-  );
+  return supabase
+    .channel("game_player")
+    .on(
+      REALTIME_LISTEN_TYPES.POSTGRES_CHANGES,
+      {
+        event: REALTIME_POSTGRES_CHANGES_LISTEN_EVENT.UPDATE,
+        schema: "public",
+        table: "game_player",
+        filter: `game_id=eq.${gameId}`,
+      },
+      (payload) => {
+        const data = payload.new as Tables<"game_player">;
+        queryClient.setQueryData(["players", gameId], (cache: Player[] = []) =>
+          cache.map((p) => (p.id === data.id ? { ...p, ...data } : p)),
+        );
+      },
+    )
+    .on(
+      REALTIME_LISTEN_TYPES.POSTGRES_CHANGES,
+      {
+        event: REALTIME_POSTGRES_CHANGES_LISTEN_EVENT.INSERT,
+        schema: "public",
+        table: "game_player",
+        filter: `game_id=eq.${gameId}`,
+      },
+      async (payload) => {
+        const data = payload.new as Tables<"game_player">;
+        const playerWithProfile = await fetchPlayer(data.id);
+        if (!playerWithProfile) throw new Error("Player not found");
+        queryClient.setQueryData(
+          ["players", gameId],
+          (cache: Player[] = []) => [...cache, playerWithProfile],
+        );
+      },
+    );
+  // Impossible to listen to DELETE events because of the filter.
 }

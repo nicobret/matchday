@@ -1,10 +1,10 @@
 import { useToast } from "@/hooks/use-toast";
-import { queryClient } from "@/lib/react-query";
-import { useMutation } from "@tanstack/react-query";
-import { updateSeason } from "./season.repository";
+import { updateSeason } from "@/lib/seasonService";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 export default function useUpdateSeason() {
   const { toast } = useToast();
+  const queryClient = useQueryClient();
   return useMutation({
     mutationFn: updateSeason,
     onSuccess: (data) => {

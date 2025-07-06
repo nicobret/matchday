@@ -41,6 +41,6 @@ export async function updateSeason(
   return data;
 }
 
-export async function deleteSeason(seasonId: string) {
+export async function deleteSeasonById(seasonId: string) {
   await supabase.from("season").delete().eq("id", seasonId).throwOnError();
 }

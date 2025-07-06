@@ -1,10 +1,10 @@
 import { useQuery } from "@tanstack/react-query";
-import { fetchGame, getGameDurationInMinutes } from "./game.service";
+import { fetchGame, getGameDurationInMinutes } from "./gameService";
 
 export default function useGame(id: number) {
   const res = useQuery({
     queryKey: ["game", id],
-    queryFn: async () => await fetchGame(id),
+    queryFn: () => fetchGame(id),
     enabled: !!id,
   });
   const hasStarted = new Date(String(res.data?.date)) < new Date();

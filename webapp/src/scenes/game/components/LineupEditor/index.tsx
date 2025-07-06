@@ -19,21 +19,21 @@ export default function LineupEditor({
 }) {
   const { toast } = useToast();
 
-  function handleDrop(event: DragEndEvent) {
+  function handleDrop({ active, over }: DragEndEvent) {
     if (disabled) {
       window.alert("Vous n'avez pas la permission de modifier l'équipe.");
       return;
     }
-
-    if (!event.over) return;
-
-    const team = teams[event.over.id];
+    if (over === null || active.data.current === null) {
+      console.error("Invalid drop event");
+      return;
+    }
+    const team = teams[over.id];
     if (team === undefined) {
       console.error("Team not found");
       return;
     }
-
-    event.active.data.current?.mutate({ team });
+    active.data.current?.mutate({ team });
     toast({ description: "Modification enregistrée" });
   }
 

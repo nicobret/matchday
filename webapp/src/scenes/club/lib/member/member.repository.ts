@@ -28,7 +28,7 @@ export async function getMemberById(memberId: number) {
   return data;
 }
 
-export async function getMembers(clubId: number) {
+export async function getMembersByClubId(clubId: number) {
   const { data } = await supabase
     .from("club_member")
     .select("*, profile: users(*)")
