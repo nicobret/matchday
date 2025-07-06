@@ -22,7 +22,7 @@ import LineUp from "./components/LineUp";
 import MyEvents from "./components/MyEvents";
 import PlayerTable from "./components/PlayerTable";
 import Score from "./components/Score";
-import { getGameDurationInMinutes } from "./lib/game/game.service";
+import { getGameDurationInMinutes } from "./lib/game/gameService";
 import useGame from "./lib/game/useGame";
 import { getPlayerChannel } from "./lib/player/player.service";
 import usePlayers from "./lib/player/usePlayers";
@@ -90,12 +90,12 @@ export default function View() {
       </Link>
 
       <header className="mt-6 text-center">
-        <p className="text-muted-foreground text-xs font-bold tracking-tight uppercase">
+        <p className="text-muted-foreground text-xs font-bold uppercase tracking-tight">
           {game.club?.name}
           {game.season?.name ? ` • Saison ${game.season?.name}` : ""}
         </p>
 
-        <h1 className="font-new-amsterdam text-5xl leading-12">
+        <h1 className="font-new-amsterdam leading-12 text-5xl">
           {new Date(game.date).toLocaleDateString("fr-FR", {
             weekday: "long",
             day: "numeric",

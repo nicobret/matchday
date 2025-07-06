@@ -1,12 +1,12 @@
 import { useToast } from "@/hooks/use-toast";
+import { updateSeason } from "@/lib/seasonService";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import seasonService from "../../../../lib/seasonService";
 
 export default function useUpdateSeason() {
   const { toast } = useToast();
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: seasonService.update,
+    mutationFn: updateSeason,
     onSuccess: (data) => {
       toast({ title: "Succès", description: "La saison a été modifiée." });
       queryClient.invalidateQueries({ queryKey: ["seasons", data.club_id] });

@@ -1,7 +1,7 @@
 import { useToast } from "@/hooks/use-toast";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { TablesUpdate } from "shared/types/supabase";
-import { updateGame } from "./game.service";
+import { updateGame } from "./gameService";
 
 export default function useUpdateGame(gameId: number) {
   const { toast } = useToast();

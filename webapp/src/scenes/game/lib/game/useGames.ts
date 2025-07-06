@@ -1,4 +1,4 @@
-import { fetchGames } from "@/scenes/game/lib/game/game.service";
+import { fetchGames } from "@/scenes/game/lib/game/gameService";
 import { useQuery } from "@tanstack/react-query";
 
 export default function useGames({

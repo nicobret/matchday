@@ -1,13 +1,12 @@
 import { useToast } from "@/hooks/use-toast";
+import { createSeason } from "@/lib/seasonService";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import seasonService from "../../../../lib/seasonService";
 
 export default function useCreateSeason(clubId: number) {
   const { toast } = useToast();
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: (name: string) =>
-      seasonService.create({ club_id: clubId, name }),
+    mutationFn: (name: string) => createSeason({ club_id: clubId, name }),
     onError: (error) => {
       toast({
         title: "Erreur",

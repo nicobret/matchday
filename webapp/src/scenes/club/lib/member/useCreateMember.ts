@@ -1,7 +1,7 @@
 import { useToast } from "@/hooks/use-toast";
 import { useMutation } from "@tanstack/react-query";
 import { useClubCache } from "../club/club.service";
-import { memberService } from "./member.repository";
+import { createMember } from "./member.repository";
 
 export default function useCreateMember() {
   const { toast } = useToast();
@@ -10,7 +10,7 @@ export default function useCreateMember() {
     toast({ description: error.message, variant: "destructive" });
   };
   return useMutation({
-    mutationFn: memberService.create,
+    mutationFn: createMember,
     onSuccess: addMemberToCache,
     onError,
   });

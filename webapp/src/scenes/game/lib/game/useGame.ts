@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { fetchGame, getGameDurationInMinutes } from "./game.service";
+import { fetchGame, getGameDurationInMinutes } from "./gameService";
 
 export default function useGame(id: number) {
   const res = useQuery({

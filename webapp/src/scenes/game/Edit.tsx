@@ -17,7 +17,7 @@ import { TablesUpdate } from "shared/types/supabase";
 import { Link, useLocation, useParams } from "wouter";
 import { Game } from "../club/lib/club/club.service";
 import useSeasons from "../club/lib/season/useSeasons";
-import { categories, getGameDurationInMinutes } from "./lib/game/game.service";
+import { categories, getGameDurationInMinutes } from "./lib/game/gameService";
 import useGame from "./lib/game/useGame";
 import useUpdateGame from "./lib/game/useUpdateGame";
 
@@ -108,7 +108,7 @@ function Editor({ game }: { game: Game }) {
         Retour au match
       </Link>
 
-      <h1 className="mt-6 scroll-m-20 text-2xl font-semibold tracking-tight uppercase">
+      <h1 className="mt-6 scroll-m-20 text-2xl font-semibold uppercase tracking-tight">
         Modifier un match
       </h1>
 
@@ -223,7 +223,7 @@ function Editor({ game }: { game: Game }) {
         </div>
       </form>
 
-      <h1 className="mt-12 scroll-m-20 text-2xl font-semibold tracking-tight uppercase">
+      <h1 className="mt-12 scroll-m-20 text-2xl font-semibold uppercase tracking-tight">
         Supprimer le match
       </h1>
 
