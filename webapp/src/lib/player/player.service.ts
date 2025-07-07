@@ -1,4 +1,4 @@
-import { queryClient } from "@/lib/react-query";
+import { queryClient } from "@/utils/react-query";
 import supabase from "@/utils/supabase";
 import {
   REALTIME_LISTEN_TYPES,

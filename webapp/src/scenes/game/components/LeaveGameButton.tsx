@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
-import usePlayers from "@/scenes/game/lib/player/usePlayers";
-import useUpdatePlayer from "@/scenes/game/lib/player/useUpdatePlayer";
+import usePlayers from "@/lib/player/usePlayers";
+import useUpdatePlayer from "@/lib/player/useUpdatePlayer";
 import { Ban, Loader } from "lucide-react";
 
 export default function LeaveGameButton({

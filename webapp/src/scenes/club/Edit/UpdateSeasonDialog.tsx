@@ -8,9 +8,9 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
+import useUpdateSeason from "@/lib/season/useUpdateSeason";
 import { useForm } from "react-hook-form";
 import { Tables, TablesUpdate } from "shared/types/supabase";
-import useUpdateSeason from "../lib/season/useUpdateSeason";
 
 type FormValues = TablesUpdate<"season">;
 

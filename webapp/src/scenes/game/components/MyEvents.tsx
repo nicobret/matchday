@@ -8,9 +8,9 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Player } from "@/lib/player/player.service";
+import useUpdatePlayer from "@/lib/player/useUpdatePlayer";
 import { useQueryClient } from "@tanstack/react-query";
-import { Player } from "../lib/player/player.service";
-import useUpdatePlayer from "../lib/player/useUpdatePlayer";
 
 export default function MyEvents({ player }: { player: Player }) {
   const { mutate, isPending } = useUpdatePlayer(player);

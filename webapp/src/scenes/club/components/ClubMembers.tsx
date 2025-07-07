@@ -7,10 +7,10 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { getUsername } from "@/lib/club/club.service";
+import useClub from "@/lib/club/useClub";
+import { useMembers } from "@/lib/member/useMembers";
 import { Link } from "wouter";
-import { getUsername } from "../lib/club/club.service";
-import useClub from "../lib/club/useClub";
-import { useMembers } from "../lib/member/useMembers";
 import { RoleSelector } from "./RoleSelector";
 
 export default function ClubMembers({ clubId }: { clubId: number }) {
@@ -35,7 +35,7 @@ export default function ClubMembers({ clubId }: { clubId: number }) {
       ) : data.length === 0 ? (
         <p className="text-center">Aucun joueur dans ce club.</p>
       ) : (
-        <Table className="mt-4 mb-24 border">
+        <Table className="mb-24 mt-4 border">
           <TableHeader>
             <TableRow>
               <TableHead>Nom</TableHead>

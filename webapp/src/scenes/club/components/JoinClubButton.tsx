@@ -1,8 +1,8 @@
 import { Button } from "@/components/ui/button";
-import useAuth from "@/lib/useAuth";
+import useAuth from "@/lib/auth/useAuth";
+import useCreateMember from "@/lib/member/useCreateMember";
 import { ClipboardSignature } from "lucide-react";
 import { useLocation } from "wouter";
-import useCreateMember from "../lib/member/useCreateMember";
 
 export default function JoinClubButton({ clubId }: { clubId: number }) {
   const { session } = useAuth();

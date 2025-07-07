@@ -1,10 +1,10 @@
 import { SessionContext } from "@/components/auth-provider";
 import { Button } from "@/components/ui/button";
+import { Club } from "@/lib/club/club.service";
+import useDeleteClub from "@/lib/club/useDeleteClub";
 import { Trash } from "lucide-react";
 import { useContext } from "react";
 import { useLocation } from "wouter";
-import { Club } from "../lib/club/club.service";
-import useDeleteClub from "../lib/club/useDeleteClub";
 
 export default function DeleteClub({ club }: { club: Club }) {
   const { session } = useContext(SessionContext);

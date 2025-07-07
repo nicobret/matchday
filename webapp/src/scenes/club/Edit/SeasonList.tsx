@@ -7,9 +7,9 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import useDeleteSeason from "@/lib/season/useDeleteSeason";
+import useSeasons from "@/lib/season/useSeasons";
 import { useParams } from "wouter";
-import useDeleteSeason from "../lib/season/useDeleteSeason";
-import useSeasons from "../lib/season/useSeasons";
 import UpdateSeasonDialog from "./UpdateSeasonDialog";
 
 export default function SeasonList() {

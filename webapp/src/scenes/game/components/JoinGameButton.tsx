@@ -1,12 +1,12 @@
 import { Button } from "@/components/ui/button";
-import useAuth from "@/lib/useAuth";
-import useCreatePlayer from "@/scenes/game/lib/player/useCreatePlayer";
+import useAuth from "@/lib/auth/useAuth";
+import { Game } from "@/lib/club/club.service";
+import useCreateMember from "@/lib/member/useCreateMember";
+import { useMembers } from "@/lib/member/useMembers";
+import useCreatePlayer from "@/lib/player/useCreatePlayer";
+import usePlayers from "@/lib/player/usePlayers";
 import { ClipboardSignature, Loader } from "lucide-react";
 import { useLocation } from "wouter";
-import { Game } from "../../club/lib/club/club.service";
-import useCreateMember from "../../club/lib/member/useCreateMember";
-import { useMembers } from "../../club/lib/member/useMembers";
-import usePlayers from "../lib/player/usePlayers";
 
 export default function JoinGameButton({
   game,

@@ -9,13 +9,13 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
+import { Club } from "@/lib/club/club.service";
+import useUpdateClub from "@/lib/club/useUpdateClub";
 import { countryList } from "@/lib/utils";
 import { Save } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { TablesUpdate } from "shared/types/supabase";
 import { Link, useLocation } from "wouter";
-import { Club } from "../lib/club/club.service";
-import useUpdateClub from "../lib/club/useUpdateClub";
 
 type FormValues = TablesUpdate<"clubs">;
 

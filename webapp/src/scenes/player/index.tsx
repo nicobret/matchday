@@ -1,6 +1,6 @@
+import useProfile from "@/lib/profile/useProfile";
 import { ArrowLeft, TrafficCone } from "lucide-react";
 import { Link, useParams } from "wouter";
-import useProfile from "../home/useProfile";
 
 export default function Player() {
   const { id } = useParams();

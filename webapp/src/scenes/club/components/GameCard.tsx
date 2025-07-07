@@ -6,9 +6,9 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { Game } from "@/lib/club/club.service";
 import { ArrowRight, CheckCircle, Hourglass, Users } from "lucide-react";
 import { Link } from "wouter";
-import { Game } from "../lib/club/club.service";
 
 export default function GameCard({ game }: { game: Game }) {
   const count = game.players.filter((e) => e.status === "confirmed").length;

@@ -8,15 +8,15 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import usePlayers from "@/scenes/game/lib/player/usePlayers";
+import { Game } from "@/lib/club/club.service";
+import useGames from "@/lib/game/useGames";
+import { useMembers } from "@/lib/member/useMembers";
+import usePlayers from "@/lib/player/usePlayers";
 import { Eye } from "lucide-react";
 import { useContext } from "react";
 import { Link } from "wouter";
 import JoinGameButton from "../../game/components/JoinGameButton";
 import LeaveGameButton from "../../game/components/LeaveGameButton";
-import useGames from "../../game/lib/game/useGames";
-import { Game } from "../lib/club/club.service";
-import { useMembers } from "../lib/member/useMembers";
 
 export default function UpcomingGamesTable({ clubId }: { clubId: number }) {
   const {

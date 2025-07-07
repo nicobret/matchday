@@ -15,10 +15,10 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import useUpdateGame from "@/lib/game/useUpdateGame";
+import { Player } from "@/lib/player/player.service";
 import { useState } from "react";
 import { Tables } from "shared/types/supabase";
-import useUpdateGame from "../lib/game/useUpdateGame";
-import { Player } from "../lib/player/player.service";
 
 export default function Result({
   game,

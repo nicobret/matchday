@@ -6,8 +6,8 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Game } from "../lib/game/gameService";
-import { Player } from "../lib/player/player.service";
+import { Game } from "@/lib/game/gameService";
+import { Player } from "@/lib/player/player.service";
 import InviteExternalDialog from "./InviteExternalDialog";
 import LineupEditor from "./LineupEditor";
 

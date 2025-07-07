@@ -1,6 +1,8 @@
 import { SessionContext } from "@/components/auth-provider";
 import { buttonVariants } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import useClub from "@/lib/club/useClub";
+import { useMembers } from "@/lib/member/useMembers";
 import {
   Book,
   Calendar,
@@ -21,8 +23,6 @@ import CopyButton from "./components/CopyButton";
 import JoinClubButton from "./components/JoinClubButton";
 import LeaveClubButton from "./components/LeaveClubButton";
 import UpcomingGamesTable from "./components/UpcomingGamesTable";
-import useClub from "./lib/club/useClub";
-import { useMembers } from "./lib/member/useMembers";
 
 export default function View() {
   const { session } = useContext(SessionContext);

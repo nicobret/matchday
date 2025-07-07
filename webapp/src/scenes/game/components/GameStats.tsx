@@ -21,8 +21,8 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import useGameStats from "@/lib/game/useGameStats";
 import { useState } from "react";
-import useGameStats from "../lib/game/useGameStats";
 
 export default function Statistics({ gameId }: { gameId: number }) {
   const [team, setTeam] = useState("all");

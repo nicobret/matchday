@@ -10,16 +10,16 @@ import {
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
+import { Game } from "@/lib/club/club.service";
+import { categories, getGameDurationInMinutes } from "@/lib/game/gameService";
+import useGame from "@/lib/game/useGame";
+import useUpdateGame from "@/lib/game/useUpdateGame";
+import useSeasons from "@/lib/season/useSeasons";
 import { fromZonedTime } from "date-fns-tz";
 import { ArrowLeft } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { TablesUpdate } from "shared/types/supabase";
 import { Link, useLocation, useParams } from "wouter";
-import { Game } from "../club/lib/club/club.service";
-import useSeasons from "../club/lib/season/useSeasons";
-import { categories, getGameDurationInMinutes } from "./lib/game/gameService";
-import useGame from "./lib/game/useGame";
-import useUpdateGame from "./lib/game/useUpdateGame";
 
 type FormValues = {
   date: string;
