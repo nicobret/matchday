@@ -24,12 +24,12 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
-import { useMembers } from "@/scenes/club/lib/member/useMembers";
+import { useMembers } from "@/lib/member/useMembers";
+import useCreatePlayer from "@/lib/player/useCreatePlayer";
+import usePlayers from "@/lib/player/usePlayers";
 import { useCopyToClipboard } from "@uidotdev/usehooks";
 import { Send } from "lucide-react";
 import { useForm } from "react-hook-form";
-import useCreatePlayer from "../lib/player/useCreatePlayer";
-import usePlayers from "../lib/player/usePlayers";
 
 type FormValues = { userId: string };
 

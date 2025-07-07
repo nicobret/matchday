@@ -1,7 +1,7 @@
 import { useToast } from "@/hooks/use-toast";
+import { Player } from "@/lib/player/player.service";
 import { DndContext, DragEndEvent } from "@dnd-kit/core";
 import { Shirt } from "lucide-react";
-import { Player } from "../../lib/player/player.service";
 import Team from "./Team";
 
 const teams: { [key: string]: number | null } = {

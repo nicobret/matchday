@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { getProfile } from "../account/lib/account.service";
+import { getProfile } from "./profileService";
 
 export default function useProfile(userId?: string) {
   return useQuery({

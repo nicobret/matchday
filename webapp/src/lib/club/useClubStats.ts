@@ -1,4 +1,4 @@
-import { fetchClubStats } from "@/lib/statsService";
+import { fetchClubStats } from "@/lib/statistics/statsService";
 import { useQuery } from "@tanstack/react-query";
 import { Tables } from "shared/types/supabase";
 

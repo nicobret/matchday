@@ -1,8 +1,8 @@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import useAuth from "@/lib/useAuth";
+import useAuth from "@/lib/auth/useAuth";
+import useClubs from "@/lib/club/useClubs";
 import { Search, Shield } from "lucide-react";
 import { useQueryState } from "nuqs";
-import useClubs from "../useClubs";
 import ClubCard from "./ClubCard";
 import CreateDialog from "./CreateDialog";
 

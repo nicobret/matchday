@@ -15,11 +15,11 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { Club } from "@/lib/club/club.service";
+import useGames from "@/lib/game/useGames";
 import { ArrowRight } from "lucide-react";
 import { useQueryState } from "nuqs";
 import { Link } from "wouter";
-import useGames from "../../game/lib/game/useGames";
-import { Club } from "../lib/club/club.service";
 
 export default function ClubHistory({ club }: { club: Club }) {
   const seasons = club.seasons || [];

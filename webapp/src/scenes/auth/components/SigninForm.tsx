@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import useAuth from "@/lib/useAuth";
+import useAuth from "@/lib/auth/useAuth";
 import { useForm } from "react-hook-form";
 import { useLocation } from "wouter";
 

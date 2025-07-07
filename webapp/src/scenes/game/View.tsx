@@ -1,6 +1,11 @@
 import { SessionContext } from "@/components/auth-provider";
 import { buttonVariants } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { getGameDurationInMinutes } from "@/lib/game/gameService";
+import useGame from "@/lib/game/useGame";
+import { useMembers } from "@/lib/member/useMembers";
+import { getPlayerChannel } from "@/lib/player/player.service";
+import usePlayers from "@/lib/player/usePlayers";
 import {
   ArrowLeft,
   BarChart,
@@ -12,7 +17,6 @@ import {
 } from "lucide-react";
 import { useContext, useEffect } from "react";
 import { Link, useParams } from "wouter";
-import { useMembers } from "../club/lib/member/useMembers";
 import AddToCalendar from "./components/AddToCalendar";
 import GameStats from "./components/GameStats";
 import InviteMenu from "./components/InviteMenu";
@@ -22,10 +26,6 @@ import LineUp from "./components/LineUp";
 import MyEvents from "./components/MyEvents";
 import PlayerTable from "./components/PlayerTable";
 import Score from "./components/Score";
-import { getGameDurationInMinutes } from "./lib/game/gameService";
-import useGame from "./lib/game/useGame";
-import { getPlayerChannel } from "./lib/player/player.service";
-import usePlayers from "./lib/player/usePlayers";
 
 export default function View() {
   const { id } = useParams();

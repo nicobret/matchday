@@ -5,9 +5,9 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { Game, getCalendarEvent } from "@/lib/game/gameService";
 import { google, ics, outlook, yahoo } from "calendar-link";
 import { Calendar } from "lucide-react";
-import { Game, getCalendarEvent } from "../lib/game/gameService";
 
 export default function AddToCalendar({ game }: { game: Game }) {
   const event = getCalendarEvent(game);

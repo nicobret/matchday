@@ -1,4 +1,4 @@
-import { deleteSeasonById } from "@/lib/seasonService";
+import { deleteSeasonById } from "@/lib/season/seasonService";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 export default function useDeleteSeason() {

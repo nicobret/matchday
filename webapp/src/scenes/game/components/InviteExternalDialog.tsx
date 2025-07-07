@@ -9,8 +9,8 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
+import useCreatePlayer from "@/lib/player/useCreatePlayer";
 import { useForm } from "react-hook-form";
-import useCreatePlayer from "../lib/player/useCreatePlayer";
 
 type FormValues = { name: string };
 

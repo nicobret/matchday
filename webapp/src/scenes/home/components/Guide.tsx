@@ -1,7 +1,7 @@
-import useAuth from "@/lib/useAuth";
+import useAuth from "@/lib/auth/useAuth";
+import useProfile from "@/lib/profile/useProfile";
 import { Swords, TableProperties, Users } from "lucide-react";
 import { Link } from "wouter";
-import useProfile from "../useProfile";
 
 export default function Guide() {
   const { session, isLoggedIn, isLoggedOut } = useAuth();

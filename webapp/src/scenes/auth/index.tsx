@@ -1,5 +1,5 @@
 import { Button, buttonVariants } from "@/components/ui/button";
-import useAuth from "@/lib/useAuth";
+import useAuth from "@/lib/auth/useAuth";
 import { Link, Route, Switch } from "wouter";
 import SigninForm from "./components/SigninForm";
 import SignupForm from "./components/SignupForm";

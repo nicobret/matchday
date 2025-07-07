@@ -1,7 +1,7 @@
 import { useToast } from "@/hooks/use-toast";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { TablesUpdate } from "shared/types/supabase";
-import { updateProfile } from "./account.service";
+import { updateProfile } from "./profileService";
 
 export default function useUpdateProfile(userId: string) {
   const { toast } = useToast();

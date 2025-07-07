@@ -1,4 +1,4 @@
-import useClubStats from "../lib/club/useClubStats";
+import useClubStats from "@/lib/club/useClubStats";
 import EventStats from "./EventStats";
 import WinStats from "./WinStats";
 

@@ -9,13 +9,13 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import useAuth from "@/lib/useAuth";
+import useAuth from "@/lib/auth/useAuth";
+import useProfile from "@/lib/profile/useProfile";
+import useUpdateProfile from "@/lib/profile/useUpdateProfile";
 import { ArrowLeft } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { TablesUpdate } from "shared/types/supabase";
 import { Link } from "wouter";
-import useProfile from "../home/useProfile";
-import useUpdateProfile from "./lib/useUpdateProfile";
 
 type FormValues = TablesUpdate<"users">;
 

@@ -1,5 +1,5 @@
 import { useToast } from "@/hooks/use-toast";
-import { createSeason } from "@/lib/seasonService";
+import { createSeason } from "@/lib/season/seasonService";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 export default function useCreateSeason(clubId: number) {

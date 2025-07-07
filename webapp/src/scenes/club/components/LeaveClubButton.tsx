@@ -1,8 +1,8 @@
 import { SessionContext } from "@/components/auth-provider";
 import { Button } from "@/components/ui/button";
+import useDeleteMember from "@/lib/member/useDeleteMember";
 import { Ban } from "lucide-react";
 import { useContext } from "react";
-import useDeleteMember from "../lib/member/useDeleteMember";
 
 export default function LeaveClubButton({ clubId }: { clubId: number }) {
   const { session } = useContext(SessionContext);

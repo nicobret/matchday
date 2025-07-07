@@ -1,6 +1,6 @@
+import useClub from "@/lib/club/useClub";
 import { ArrowLeft } from "lucide-react";
 import { Link, useParams } from "wouter";
-import useClub from "../lib/club/useClub";
 import ClubForm from "./ClubForm";
 import CreateSeasonDialog from "./CreateSeasonDialog";
 import DeleteClub from "./DeleteClub";
@@ -24,14 +24,14 @@ export default function EditClub() {
       </Link>
 
       <section id="club" className="mt-6">
-        <h2 className="text-2xl font-semibold tracking-tight uppercase">
+        <h2 className="text-2xl font-semibold uppercase tracking-tight">
           Modifier mon club
         </h2>
         <ClubForm initialData={club} />
       </section>
 
       <section id="seasons" className="mt-16">
-        <h2 className="mb-4 text-2xl font-semibold tracking-tight uppercase">
+        <h2 className="mb-4 text-2xl font-semibold uppercase tracking-tight">
           Liste des saisons
         </h2>
         <CreateSeasonDialog />
@@ -41,7 +41,7 @@ export default function EditClub() {
       </section>
 
       <section id="delete" className="mt-16">
-        <h2 className="mb-4 text-2xl font-semibold tracking-tight uppercase">
+        <h2 className="mb-4 text-2xl font-semibold uppercase tracking-tight">
           Supprimer le club
         </h2>
         <DeleteClub club={club} />

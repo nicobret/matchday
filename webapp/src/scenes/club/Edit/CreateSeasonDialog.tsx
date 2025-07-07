@@ -8,10 +8,10 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
+import useCreateSeason from "@/lib/season/useCreateSeason";
 import { useForm } from "react-hook-form";
 import { TablesInsert } from "shared/types/supabase";
 import { useParams } from "wouter";
-import useCreateSeason from "../lib/season/useCreateSeason";
 
 type FormValues = TablesInsert<"season">;
 

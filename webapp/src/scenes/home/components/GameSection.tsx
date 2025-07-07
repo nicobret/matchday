@@ -1,5 +1,5 @@
+import useGames from "@/lib/game/useGames";
 import GameCard from "@/scenes/club/components/GameCard";
-import useGames from "@/scenes/game/lib/game/useGames";
 
 export default function GameSection() {
   const { data: games, isPending, isError } = useGames({ filter: "next" });

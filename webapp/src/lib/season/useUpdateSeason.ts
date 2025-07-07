@@ -1,5 +1,5 @@
 import { useToast } from "@/hooks/use-toast";
-import { updateSeason } from "@/lib/seasonService";
+import { updateSeason } from "@/lib/season/seasonService";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 export default function useUpdateSeason() {

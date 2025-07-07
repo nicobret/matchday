@@ -14,9 +14,9 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { ClubStatsType } from "@/lib/club/useClubStats";
 import { Crown } from "lucide-react";
 import { useQueryState } from "nuqs";
-import { ClubStatsType } from "../lib/club/useClubStats";
 
 const sortWinsOptions = [
   { value: "games", label: "Matchs" },
@@ -39,7 +39,7 @@ export default function WinStats({ data }: { data: ClubStatsType[] }) {
       <h3 className="scroll-m-20 text-2xl font-semibold tracking-tight">
         Victoires
       </h3>
-      <div className="mt-4 mb-2 flex gap-2">
+      <div className="mb-2 mt-4 flex gap-2">
         <div className="grid w-full max-w-36 items-center gap-1.5">
           <Label>Trier par</Label>
           <Select

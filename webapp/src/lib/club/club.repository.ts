@@ -34,6 +34,17 @@ export async function getClub(id: number): Promise<
   return data;
 }
 
+export async function getClubs() {
+  const { data } = await supabase
+    .from("clubs")
+    .select("*, members: club_member (*)")
+    .is("deleted_at", null)
+    .order("created_at")
+    .throwOnError();
+  if (!data) return [];
+  return data;
+}
+
 export async function updateClub(
   payload: TablesUpdate<"clubs">,
 ): Promise<Tables<"clubs">> {

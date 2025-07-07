@@ -1,4 +1,4 @@
-import { getSeasonsByClubId } from "@/lib/seasonService";
+import { getSeasonsByClubId } from "@/lib/season/seasonService";
 import { useQuery } from "@tanstack/react-query";
 
 export default function useSeasons(clubId: number) {

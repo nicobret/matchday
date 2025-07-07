@@ -11,16 +11,16 @@ import {
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
+import useClub from "@/lib/club/useClub";
+import { categories } from "@/lib/game/gameService";
+import useCreateGame from "@/lib/game/useCreateGame";
 import { fromZonedTime } from "date-fns-tz";
 import { ArrowLeft } from "lucide-react";
 import { useContext } from "react";
 import { useForm } from "react-hook-form";
 import { TablesInsert } from "shared/types/supabase";
 import { Link, useLocation } from "wouter";
-import useClub from "../club/lib/club/useClub";
-import { useMembers } from "../club/lib/member/useMembers";
-import { categories } from "./lib/game/gameService";
-import useCreateGame from "./lib/game/useCreateGame";
+import { useMembers } from "../../lib/member/useMembers";
 
 type Payload = TablesInsert<"games">;
 type FormValues = {

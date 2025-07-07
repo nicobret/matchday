@@ -8,9 +8,9 @@ import { SessionProvider } from "./components/auth-provider.tsx";
 import Layout from "./components/Layout.tsx";
 import { ThemeProvider } from "./components/theme-provider.tsx";
 import "./index.css";
-import { queryClient } from "./lib/react-query.ts";
-import useAuth from "./lib/useAuth.ts";
-import useProfile from "./scenes/home/useProfile.ts";
+import useAuth from "./lib/auth/useAuth.ts";
+import useProfile from "./lib/profile/useProfile.ts";
+import { queryClient } from "./utils/react-query.ts";
 
 const Account = lazy(() => import("./scenes/account/index.tsx"));
 const Club = lazy(() => import("./scenes/club/Club.tsx"));

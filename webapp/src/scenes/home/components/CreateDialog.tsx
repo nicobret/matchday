@@ -17,10 +17,10 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
-import useAuth from "@/lib/useAuth";
+import useAuth from "@/lib/auth/useAuth";
+import { useCreateClub } from "@/lib/club/useCreateClub";
+import useCreateMember from "@/lib/member/useCreateMember";
 import { countryList } from "@/lib/utils";
-import { useCreateClub } from "@/scenes/club/lib/club/useCreateClub";
-import useCreateMember from "@/scenes/club/lib/member/useCreateMember";
 import { Plus } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { TablesInsert } from "shared/types/supabase";

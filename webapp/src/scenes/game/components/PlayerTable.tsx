@@ -15,9 +15,9 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { Player, translateStatus } from "@/lib/player/player.service";
+import useUpdatePlayer from "@/lib/player/useUpdatePlayer";
 import { useContext } from "react";
-import { Player, translateStatus } from "../lib/player/player.service";
-import useUpdatePlayer from "../lib/player/useUpdatePlayer";
 
 export default function PlayerTable({ players }: { players: Player[] }) {
   return (
