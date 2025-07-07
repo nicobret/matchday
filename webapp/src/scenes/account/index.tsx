@@ -9,56 +9,38 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { useToast } from "@/hooks/use-toast";
 import useAuth from "@/lib/useAuth";
 import { ArrowLeft } from "lucide-react";
-import { useEffect, useState } from "react";
-import { Tables } from "shared/types/supabase";
-import { Link, useLocation } from "wouter";
-import { getProfile, updateProfile } from "./account.service";
+import { useForm } from "react-hook-form";
+import { TablesUpdate } from "shared/types/supabase";
+import { Link } from "wouter";
+import useProfile from "../home/useProfile";
+import useUpdateProfile from "./lib/useUpdateProfile";
+
+type FormValues = TablesUpdate<"users">;
 
 export default function Account() {
-  const [loading, setLoading] = useState(true);
-  const [profile, setProfile] = useState<Tables<"users">>();
-  const [_location, navigate] = useLocation();
-  const { toast } = useToast();
   const { session } = useAuth();
+  const userId = session?.user.id || "";
+  const { data: profile, isPending, error } = useProfile(userId);
+  const { mutate } = useUpdateProfile(userId);
+  const { register, handleSubmit } = useForm<FormValues>();
 
-  async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-    const formData = new FormData(event.currentTarget);
-    const firstname = formData.get("firstName") as string;
-    const lastname = formData.get("lastName") as string;
-    if (!firstname) {
-      window.alert("Veuillez remplir tous les champs");
-      return;
-    }
-    try {
-      const data = await updateProfile(firstname, lastname);
-      setProfile(data);
-      toast({ description: "Profil mis à jour" });
-      navigate("/");
-    } catch (error) {
-      console.error(error);
-    }
+  function onSubmit(data: FormValues) {
+    mutate(data);
   }
 
-  useEffect(() => {
-    setLoading(true);
-    getProfile(session?.user.id!)
-      .then((data) => setProfile(data))
-      .catch(console.error)
-      .finally(() => setLoading(false));
-  }, []);
-
-  if (loading) {
+  if (!session) {
+    return <div>Veuillez vous connecter pour accéder à votre compte</div>;
+  }
+  if (isPending) {
     return <div className="animate-pulse">Chargement...</div>;
   }
-  if (!profile) {
+  if (error) {
     return <div>Profil non trouvé</div>;
   }
   return (
-    <div className="p-4">
+    <div className="mx-auto max-w-5xl p-4">
       <Link to={"/"} className="text-muted-foreground text-sm">
         <ArrowLeft className="mr-2 inline-block h-4 w-4 align-text-top" />
         Retour au club
@@ -81,7 +63,7 @@ export default function Account() {
         </CardHeader>
         <CardContent>
           <form
-            onSubmit={handleSubmit}
+            onSubmit={handleSubmit(onSubmit)}
             id="profile-form"
             className="grid grid-cols-1 gap-4"
           >
@@ -89,8 +71,8 @@ export default function Account() {
               <Label htmlFor="firstName">Prénom</Label>
               <Input
                 type="text"
-                name="firstName"
-                className="input"
+                {...register("firstname")}
+                required
                 placeholder="Prénom"
                 defaultValue={profile.firstname || ""}
               />
@@ -99,8 +81,7 @@ export default function Account() {
               <Label htmlFor="lastName">Nom (facultatif)</Label>
               <Input
                 type="text"
-                name="lastName"
-                className="input"
+                {...register("lastname")}
                 placeholder="Nom"
                 defaultValue={profile.lastname || ""}
               />
@@ -110,7 +91,7 @@ export default function Account() {
 
         <CardFooter>
           <div className="flex gap-2">
-            <Button form="profile-form" type="submit" disabled={loading}>
+            <Button form="profile-form" type="submit" disabled={isPending}>
               Enregistrer
             </Button>
             <Link href="/" className={buttonVariants({ variant: "secondary" })}>
