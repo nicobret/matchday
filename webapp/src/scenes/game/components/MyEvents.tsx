@@ -11,26 +11,23 @@ import { Label } from "@/components/ui/label";
 import { Player } from "@/lib/player/player.service";
 import useUpdatePlayer from "@/lib/player/useUpdatePlayer";
 import { useQueryClient } from "@tanstack/react-query";
+import { useForm } from "react-hook-form";
+import { TablesUpdate } from "shared/types/supabase";
+
+type FormValues = Pick<
+  TablesUpdate<"game_player">,
+  "goals" | "saves" | "assists"
+>;
 
 export default function MyEvents({ player }: { player: Player }) {
   const { mutate, isPending } = useUpdatePlayer(player);
-  const queryClient = useQueryClient();
+  const client = useQueryClient();
+  const { handleSubmit, register } = useForm<FormValues>();
 
-  function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
-    e.preventDefault();
-
-    const form = new FormData(e.target as HTMLFormElement);
-    const goals = parseInt(form.get("goals") as string) || 0;
-    const assists = parseInt(form.get("assists") as string) || 0;
-    const saves = parseInt(form.get("saves") as string) || 0;
-
-    mutate(
-      { goals, assists, saves },
-      {
-        onSuccess: () =>
-          queryClient.invalidateQueries({ queryKey: ["game_stats"] }),
-      },
-    );
+  function onSubmit(data: FormValues) {
+    mutate(data, {
+      onSuccess: () => client.invalidateQueries({ queryKey: ["game_stats"] }),
+    });
   }
 
   return (
@@ -41,34 +38,31 @@ export default function MyEvents({ player }: { player: Player }) {
 
       <CardContent>
         <form
-          onSubmit={handleSubmit}
+          onSubmit={handleSubmit(onSubmit)}
           id="my-events"
           className="grid grid-cols-3 gap-4"
         >
           <div>
             <Label htmlFor="goals">Buts</Label>
             <Input
-              id="goals"
-              name="goals"
               type="number"
+              {...register("goals")}
               defaultValue={player.goals || 0}
             />
           </div>
           <div>
             <Label htmlFor="assists">Passes dé</Label>
             <Input
-              id="assists"
-              name="assists"
               type="number"
+              {...register("assists")}
               defaultValue={player.assists || 0}
             />
           </div>
           <div>
             <Label htmlFor="saves">Arrêts</Label>
             <Input
-              id="saves"
-              name="saves"
               type="number"
+              {...register("saves")}
               defaultValue={player.saves || 0}
             />
           </div>

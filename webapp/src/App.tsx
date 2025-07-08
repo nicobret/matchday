@@ -13,8 +13,8 @@ import useProfile from "./lib/profile/useProfile.ts";
 import { queryClient } from "./utils/react-query.ts";
 
 const Account = lazy(() => import("./scenes/account/index.tsx"));
-const Club = lazy(() => import("./scenes/club/Club.tsx"));
-const Game = lazy(() => import("./scenes/game/Game.tsx"));
+const Club = lazy(() => import("./scenes/club/index.tsx"));
+const Game = lazy(() => import("./scenes/game/index.tsx"));
 const Home = lazy(() => import("./scenes/home/index.tsx"));
 const Player = lazy(() => import("./scenes/player/index.tsx"));
 const Auth = lazy(() => import("./scenes/auth/index.tsx"));

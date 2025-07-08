@@ -39,7 +39,7 @@ export default function View() {
 
   useEffect(() => {
     if (!id) return;
-    const playerChannel = getPlayerChannel(parseInt(id));
+    const playerChannel = getPlayerChannel(Number(id));
     playerChannel.subscribe();
     return () => {
       playerChannel.unsubscribe();

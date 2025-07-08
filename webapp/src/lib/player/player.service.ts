@@ -4,7 +4,7 @@ import {
   REALTIME_LISTEN_TYPES,
   REALTIME_POSTGRES_CHANGES_LISTEN_EVENT,
 } from "@supabase/supabase-js";
-import { Tables } from "shared/types/supabase";
+import { Tables, TablesUpdate } from "shared/types/supabase";
 
 const statusTranslation: { [key: string]: string } = {
   confirmed: "Confirmé",
@@ -65,7 +65,10 @@ export async function createPlayer(
   }
 }
 
-export async function updatePlayer(id: string, payload: Partial<Player>) {
+export async function updatePlayer(
+  id: string,
+  payload: TablesUpdate<"game_player">,
+) {
   const { data } = await supabase
     .from("game_player")
     .update(payload)
@@ -79,40 +82,59 @@ export async function updatePlayer(id: string, payload: Partial<Player>) {
 }
 
 export function getPlayerChannel(gameId: number) {
-  return supabase
-    .channel("game_player")
-    .on(
-      REALTIME_LISTEN_TYPES.POSTGRES_CHANGES,
-      {
-        event: REALTIME_POSTGRES_CHANGES_LISTEN_EVENT.UPDATE,
-        schema: "public",
-        table: "game_player",
-        filter: `game_id=eq.${gameId}`,
-      },
-      (payload) => {
-        const data = payload.new as Tables<"game_player">;
-        queryClient.setQueryData(["players", gameId], (cache: Player[] = []) =>
-          cache.map((p) => (p.id === data.id ? { ...p, ...data } : p)),
-        );
-      },
-    )
-    .on(
-      REALTIME_LISTEN_TYPES.POSTGRES_CHANGES,
-      {
-        event: REALTIME_POSTGRES_CHANGES_LISTEN_EVENT.INSERT,
-        schema: "public",
-        table: "game_player",
-        filter: `game_id=eq.${gameId}`,
-      },
-      async (payload) => {
-        const data = payload.new as Tables<"game_player">;
-        const playerWithProfile = await fetchPlayer(data.id);
-        if (!playerWithProfile) throw new Error("Player not found");
-        queryClient.setQueryData(
-          ["players", gameId],
-          (cache: Player[] = []) => [...cache, playerWithProfile],
-        );
-      },
-    );
-  // Impossible to listen to DELETE events because of the filter.
+  return supabase.channel("player_list").on(
+    REALTIME_LISTEN_TYPES.POSTGRES_CHANGES,
+    {
+      event: REALTIME_POSTGRES_CHANGES_LISTEN_EVENT.ALL,
+      schema: "public",
+      table: "game_player",
+      filter: `game_id=eq.${gameId}`,
+    },
+    () => {
+      console.log("Invalidating player list cache.");
+      queryClient.invalidateQueries({ queryKey: ["players", gameId] });
+    },
+  );
 }
+
+// export function getPlayerChannel(gameId: number) {
+//   return supabase
+//     .channel("game_player")
+//     .on(
+//       REALTIME_LISTEN_TYPES.POSTGRES_CHANGES,
+//       {
+//         event: REALTIME_POSTGRES_CHANGES_LISTEN_EVENT.UPDATE,
+//         schema: "public",
+//         table: "game_player",
+//         filter: `game_id=eq.${gameId}`,
+//       },
+//       (payload) => {
+//         const data = payload.new as Tables<"game_player">;
+//         queryClient.setQueryData(["players", gameId], (cache: Player[] = []) =>
+//           cache.map((p) => (p.id === data.id ? { ...p, ...data } : p)),
+//         );
+//       },
+//     )
+//     .on(
+//       REALTIME_LISTEN_TYPES.POSTGRES_CHANGES,
+//       {
+//         event: REALTIME_POSTGRES_CHANGES_LISTEN_EVENT.INSERT,
+//         schema: "public",
+//         table: "game_player",
+//         filter: `game_id=eq.${gameId}`,
+//       },
+//       async (payload) => {
+//         const data = payload.new as Tables<"game_player">;
+//         const cache = queryClient.getQueryData(["players", gameId]) as Player[];
+//         if (cache?.some((p) => p.id === data.id)) return; // Player already exists in cache
+//         // Fetch the populated player profile
+//         const playerWithProfile = await fetchPlayer(data.id);
+//         if (!playerWithProfile) throw new Error("Player not found");
+//         queryClient.setQueryData(
+//           ["players", gameId],
+//           (currentCache: Player[] = []) => [...currentCache, playerWithProfile],
+//         );
+//       },
+//     );
+//   // Impossible to listen to DELETE events because of the filter.
+// }

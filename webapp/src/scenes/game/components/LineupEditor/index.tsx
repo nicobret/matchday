@@ -1,8 +1,22 @@
 import { useToast } from "@/hooks/use-toast";
-import { Player } from "@/lib/player/player.service";
+import { Player, updatePlayer } from "@/lib/player/player.service";
+import { updatePlayerListCache } from "@/lib/player/playerCacheService";
 import { DndContext, DragEndEvent } from "@dnd-kit/core";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Shirt } from "lucide-react";
+import { TablesUpdate } from "shared/types/supabase";
 import Team from "./Team";
+
+type LineUpEditorProps = {
+  gameId: number;
+  players: Player[];
+  disabled: boolean;
+};
+
+type PlayerMutationArguments = {
+  playerId: string;
+  payload: Pick<TablesUpdate<"game_player">, "team">;
+};
 
 const teams: { [key: string]: number | null } = {
   none: null,
@@ -11,20 +25,31 @@ const teams: { [key: string]: number | null } = {
 };
 
 export default function LineupEditor({
+  gameId,
   players,
   disabled,
-}: {
-  players: Player[];
-  disabled: boolean;
-}) {
+}: LineUpEditorProps) {
   const { toast } = useToast();
+  const client = useQueryClient();
+
+  const { mutate } = useMutation({
+    mutationFn: ({ playerId, payload }: PlayerMutationArguments) =>
+      updatePlayer(playerId, payload),
+
+    onMutate: ({ playerId, payload }: PlayerMutationArguments) =>
+      updatePlayerListCache(client, {
+        id: playerId,
+        game_id: gameId,
+        ...payload,
+      }),
+  });
 
   function handleDrop({ active, over }: DragEndEvent) {
     if (disabled) {
       window.alert("Vous n'avez pas la permission de modifier l'équipe.");
       return;
     }
-    if (over === null || active.data.current === null) {
+    if (!over) {
       console.error("Invalid drop event");
       return;
     }
@@ -33,8 +58,10 @@ export default function LineupEditor({
       console.error("Team not found");
       return;
     }
-    active.data.current?.mutate({ team });
-    toast({ description: "Modification enregistrée" });
+    mutate(
+      { playerId: active.id as string, payload: { team } },
+      { onSuccess: () => toast({ description: "Modification enregistrée" }) },
+    );
   }
 
   return (
