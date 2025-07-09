@@ -29,7 +29,7 @@ export default function LineUp({
         </CardDescription>
       </CardHeader>
       <CardContent>
-        <LineupEditor players={players} disabled={disabled} />
+        <LineupEditor gameId={game.id} players={players} disabled={disabled} />
       </CardContent>
       <CardFooter className="flex gap-2">
         <InviteExternalDialog gameId={game.id} disabled={disabled} />

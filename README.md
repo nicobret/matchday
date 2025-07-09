@@ -22,7 +22,7 @@ A modern football game organizer.
 - [React](https://reactjs.org/)
 - [Wouter](https://github.com/molefrog/wouter)
 - [Tailwind CSS](https://tailwindcss.com/)
-- [ShadCN UI](https://shadcn.dev/)
+- [shadcn/ui](https://ui.shadcn.com/)
 
 ### Backend
 

@@ -16,7 +16,7 @@ export default function useUpdatePlayer(player: Player) {
       );
     },
 
-    onSettled: () =>
-      client.invalidateQueries({ queryKey: ["players", player.game_id] }),
+    onError: (_error, variables) =>
+      client.invalidateQueries({ queryKey: ["players", variables.game_id] }),
   });
 }
