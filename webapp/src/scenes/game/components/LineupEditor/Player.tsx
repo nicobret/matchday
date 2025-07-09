@@ -5,6 +5,7 @@ import { Grip } from "lucide-react";
 export default function Player({ player }: { player: PlayerType }) {
   const { attributes, listeners, setNodeRef, transform } = useDraggable({
     id: player.id,
+    data: { player },
   });
   const style = transform
     ? {

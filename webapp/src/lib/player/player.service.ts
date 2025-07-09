@@ -4,6 +4,7 @@ import {
   REALTIME_LISTEN_TYPES,
   REALTIME_POSTGRES_CHANGES_LISTEN_EVENT,
 } from "@supabase/supabase-js";
+import { QueryClient } from "@tanstack/react-query";
 import { Tables, TablesUpdate } from "shared/types/supabase";
 
 const statusTranslation: { [key: string]: string } = {
@@ -92,4 +93,15 @@ export function getPlayerChannel(gameId: number) {
     },
     () => queryClient.invalidateQueries({ queryKey: ["players", gameId] }),
   );
+}
+
+export function updatePlayerListCache(
+  client: QueryClient,
+  payload: TablesUpdate<"game_player">,
+) {
+  client.setQueryData(["players", payload.game_id], (cache: Player[] = []) => {
+    return cache.map((player) =>
+      player.id === payload.id ? { ...player, ...payload } : player,
+    );
+  });
 }

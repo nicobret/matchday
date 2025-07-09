@@ -1,6 +1,9 @@
 import { useToast } from "@/hooks/use-toast";
-import { Player, updatePlayer } from "@/lib/player/player.service";
-import { updatePlayerListCache } from "@/lib/player/playerCacheService";
+import {
+  Player,
+  updatePlayer,
+  updatePlayerListCache,
+} from "@/lib/player/player.service";
 import { DndContext, DragEndEvent } from "@dnd-kit/core";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Shirt } from "lucide-react";
@@ -46,18 +49,14 @@ export default function LineupEditor({
 
   function handleDrop({ active, over }: DragEndEvent) {
     if (disabled) {
-      window.alert("Vous n'avez pas la permission de modifier l'équipe.");
+      toast({
+        description: "Vous n'avez pas la permission de modifier l'équipe.",
+      });
       return;
     }
-    if (!over) {
-      console.error("Invalid drop event");
-      return;
-    }
-    const team = teams[over.id];
-    if (team === undefined) {
-      console.error("Team not found");
-      return;
-    }
+    if (!over) return;
+    const team = teams[over.id] as number | null;
+    if (active.data.current?.player.team === team) return;
     mutate(
       { playerId: active.id as string, payload: { team } },
       { onSuccess: () => toast({ description: "Modification enregistrée" }) },
