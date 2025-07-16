@@ -30,7 +30,9 @@ export default function Result({
   return (
     <Card id="score" className="col-span-2 flex flex-col md:col-span-1">
       <CardHeader>
-        <CardTitle className="flex items-center gap-3">Résultat</CardTitle>
+        <CardTitle className="flex items-center gap-3">
+          Résultat du match
+        </CardTitle>
       </CardHeader>
       <CardContent>
         {game.score ? (

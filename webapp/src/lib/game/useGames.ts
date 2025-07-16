@@ -12,6 +12,6 @@ export default function useGames({
 }) {
   return useQuery({
     queryKey: ["games", clubId, filter, seasonId],
-    queryFn: async () => await fetchGames(clubId, filter, seasonId),
+    queryFn: () => fetchGames({ clubId, filter, seasonId }),
   });
 }

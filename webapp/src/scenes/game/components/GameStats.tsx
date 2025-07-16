@@ -38,7 +38,7 @@ export default function Statistics({ gameId }: { gameId: number }) {
   return (
     <Card id="stats" className="col-span-2">
       <CardHeader>
-        <CardTitle>Joueurs</CardTitle>
+        <CardTitle>Actions des joueurs</CardTitle>
       </CardHeader>
 
       <CardContent>

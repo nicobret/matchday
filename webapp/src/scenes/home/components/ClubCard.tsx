@@ -19,7 +19,7 @@ export default function ClubCard({
   isMember?: boolean;
 }) {
   return (
-    <Card className="flex w-full flex-col sm:w-80">
+    <Card className="flex w-full flex-col">
       <CardHeader>
         <CardTitle className="truncate">
           <Link to={"/club/" + club.id.toString()}>{club.name}</Link>

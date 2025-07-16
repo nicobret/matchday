@@ -106,7 +106,7 @@ export default function ClubHistory({ club }: { club: Club }) {
           </TableBody>
         </Table>
       ) : (
-        <p className="text-center">Aucun match joué.</p>
+        <p className="mt-4 text-center">Aucun match joué.</p>
       )}
     </div>
   );
