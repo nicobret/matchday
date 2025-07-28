@@ -35,11 +35,6 @@ export default function ClubSection() {
       <h2 className="mt-10 scroll-m-20 text-3xl font-semibold tracking-tight">
         Clubs
       </h2>
-      {isLoggedIn ? (
-        <div className="mt-2">
-          <CreateDialog />
-        </div>
-      ) : null}
 
       <Tabs value={tab} onValueChange={setTab} className="mt-4">
         <TabsList className="w-full sm:w-auto">
@@ -70,7 +65,7 @@ export default function ClubSection() {
               </span>
             </p>
           ) : myClubs.length ? (
-            <Carousel className="mx-auto w-2/3">
+            <Carousel className="mx-auto w-2/3 md:w-auto">
               <CarouselContent>
                 {myClubs
                   .sort(
@@ -118,6 +113,11 @@ export default function ClubSection() {
           </Carousel>
         </TabsContent>
       </Tabs>
+      {isLoggedIn ? (
+        <div className="mt-4">
+          <CreateDialog />
+        </div>
+      ) : null}
     </section>
   );
 }

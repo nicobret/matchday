@@ -29,13 +29,10 @@ export default function GameSection() {
           Aucun match trouvé. Créez un match pour commencer !
         </p>
       ) : (
-        <Carousel className="mx-auto mt-4 w-2/3">
+        <Carousel className="mx-auto mt-4 w-2/3 md:w-auto">
           <CarouselContent className="flex w-full gap-4">
             {games.map((game) => (
-              <CarouselItem
-                key={game.id}
-                className="sm:basis-1/2 md:basis-1/3 lg:basis-1/4"
-              >
+              <CarouselItem key={game.id} className="sm:basis-1/2 md:basis-1/3">
                 <GameCard game={game} />
               </CarouselItem>
             ))}
