@@ -1,3 +1,11 @@
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import useProfile from "@/lib/profile/useProfile";
 import { fetchPlayerStats } from "@/lib/statistics/statsService";
 import { useQuery } from "@tanstack/react-query";
@@ -47,10 +55,9 @@ export default function View() {
         Page en chantier.
       </p>
 
-      {/* 
-            <br />
-            <h2>Mes dernières performances</h2>
-            <br />
+      <br />
+      <h2>Mes dernières performances</h2>
+      <br />
       <Table>
         <TableHeader>
           <TableRow>
@@ -82,7 +89,7 @@ export default function View() {
             </TableRow>
           ))}
         </TableBody>
-      </Table> */}
+      </Table>
     </div>
   );
 }
