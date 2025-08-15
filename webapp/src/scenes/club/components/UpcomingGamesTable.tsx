@@ -8,7 +8,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Game } from "@/lib/club/club.service";
+import { Game } from "@/lib/game/gameService";
 import useGames from "@/lib/game/useGames";
 import { useMembers } from "@/lib/member/useMembers";
 import usePlayers from "@/lib/player/usePlayers";
@@ -23,7 +23,7 @@ export default function UpcomingGamesTable({ clubId }: { clubId: number }) {
     data: games,
     isPending,
     isError,
-  } = useGames({ clubId, filter: "next" });
+  } = useGames({ clubId, when: "upcoming" });
   const { isMember } = useMembers(clubId);
 
   if (isPending) {
@@ -45,9 +45,13 @@ export default function UpcomingGamesTable({ clubId }: { clubId: number }) {
         </TableRow>
       </TableHeader>
       <TableBody>
-        {games.map((game) => (
-          <GameRow key={game.id} game={game} />
-        ))}
+        {games
+          .sort(
+            (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime(),
+          )
+          .map((game) => (
+            <GameRow key={game.id} game={game} />
+          ))}
       </TableBody>
     </Table>
   );

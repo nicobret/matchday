@@ -6,17 +6,21 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Game } from "@/lib/club/club.service";
-import usePlayers from "@/lib/player/usePlayers";
+import useAuth from "@/lib/auth/useAuth";
+import { Game } from "@/lib/game/gameService";
 import JoinGameButton from "@/scenes/game/components/JoinGameButton";
 import LeaveGameButton from "@/scenes/game/components/LeaveGameButton";
 import { CheckCircle, Eye, Hourglass, Users } from "lucide-react";
 import { Link } from "wouter";
 
 export default function GameCard({ game }: { game: Game }) {
-  const count = game.players.filter((e) => e.status === "confirmed").length;
-  const isFull = count >= (game.total_players || 10);
-  const { isPlayer } = usePlayers(game.id);
+  const { session } = useAuth();
+  const playerCount =
+    game.players?.filter((e) => e.status === "confirmed").length || 0;
+  const isFull = playerCount >= (game.total_players || 10);
+  const isPlayer = game.players?.some(
+    (player) => player.user_id === session?.user.id,
+  );
 
   return (
     <Card>
@@ -30,12 +34,13 @@ export default function GameCard({ game }: { game: Game }) {
             })}
           </Link>
         </CardTitle>
+        <p className="line-clamp-1">{game.club?.name}</p>
       </CardHeader>
 
       <CardContent className="flex items-center justify-around gap-4">
         <Users className="h-6 w-6" />
         <p className="text-2xl">
-          {count} / {game.total_players || 10}
+          {playerCount} / {game.total_players || 10}
         </p>
         {isFull ? (
           <CheckCircle className="text-primary h-6 w-6" />

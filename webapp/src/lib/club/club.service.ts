@@ -8,11 +8,6 @@ export type Club = Tables<"clubs"> & {
   seasons?: Tables<"season">[];
 };
 
-export type Game = Tables<"games"> & {
-  players: Tables<"game_player">[];
-  season: Tables<"season"> | null;
-};
-
 export type Member = Tables<"club_member"> & {
   profile: Tables<"users"> | null;
 };

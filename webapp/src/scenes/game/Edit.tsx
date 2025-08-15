@@ -10,8 +10,11 @@ import {
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
-import { Game } from "@/lib/club/club.service";
-import { categories, getGameDurationInMinutes } from "@/lib/game/gameService";
+import {
+  categories,
+  Game,
+  getGameDurationInMinutes,
+} from "@/lib/game/gameService";
 import useGame from "@/lib/game/useGame";
 import useUpdateGame from "@/lib/game/useUpdateGame";
 import useSeasons from "@/lib/season/useSeasons";

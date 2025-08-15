@@ -16,7 +16,6 @@ import { categories } from "@/lib/game/gameService";
 import useCreateGame from "@/lib/game/useCreateGame";
 import { fromZonedTime } from "date-fns-tz";
 import { ArrowLeft } from "lucide-react";
-import { useQueryState } from "nuqs";
 import { useContext } from "react";
 import { useForm } from "react-hook-form";
 import { TablesInsert } from "shared/types/supabase";
@@ -37,7 +36,6 @@ type FormValues = {
 
 export default function CreateGame() {
   const clubId = new URLSearchParams(window.location.search).get("clubId");
-  const [clubId] = useQueryState("clubId");
   const { data: club, isPending, isError } = useClub(Number(clubId));
   const { isMember } = useMembers(Number(clubId));
   const [_location, navigate] = useLocation();

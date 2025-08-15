@@ -38,7 +38,7 @@ export default function ClubHistory({ club }: { club: Club }) {
 
   const { data: games, isPending } = useGames({
     clubId: club.id,
-    filter: "past",
+    when: "past",
     seasonId: selectedSeason,
   });
 

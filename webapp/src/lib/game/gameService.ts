@@ -11,7 +11,7 @@ export type Game = Tables<"games"> & {
 };
 
 const selectQuery =
-  "*, club: clubs!games_club_id_fkey (*), players: game_player (*), season: season (*)";
+  "*, club: clubs!games_club_id_fkey (*), players: game_player (*), season (*)";
 
 // Repository
 export async function fetchGame(id: number) {
@@ -29,16 +29,50 @@ export async function fetchGame(id: number) {
 
 export async function fetchGames({
   clubId,
-  filter,
+  when,
   seasonId,
 }: {
   clubId?: number;
-  filter?: "all" | "next" | "past";
+  when?: "upcoming" | "past";
   seasonId?: string;
 }) {
-  const query = gamesQueryBuilder(clubId, filter, seasonId);
+  const query = gamesQueryBuilder(clubId, when, seasonId);
   const { data } = await query.throwOnError();
   if (!data) return [];
+  return data;
+}
+
+export async function getUpcomingGamesByUserId(
+  userId: string,
+): Promise<Game[]> {
+  const { data } = await supabase
+    .from("games")
+    .select(
+      `
+      *,
+      club: clubs!games_club_id_fkey (*),
+      season (*),
+      players: game_player (*),
+      game_player!inner (user_id)
+    `,
+    )
+    .eq("game_player.user_id", userId)
+    .neq("status", "deleted")
+    .gte("date", new Date().toISOString())
+    .order("date")
+    .throwOnError();
+
+  const games = data.map(({ game_player, ...rest }) => rest);
+  return games;
+}
+
+export async function getConfirmedGamesByUserId(userId: string) {
+  const { data } = await supabase
+    .from("confirmed_game_players_detail")
+    .select()
+    .eq("user_id", userId)
+    .gte("game_date", new Date().toISOString())
+    .throwOnError();
   return data;
 }
 
@@ -66,31 +100,34 @@ export async function updateGame(id: number, payload: TablesUpdate<"games">) {
 // Utils
 function gamesQueryBuilder(
   clubId?: number,
-  filter?: "all" | "next" | "past",
+  when?: "upcoming" | "past" | "today",
   seasonId?: string,
 ) {
-  let query = supabase.from("games").select(selectQuery);
+  let query = supabase
+    .from("games")
+    .select(selectQuery)
+    .neq("status", "deleted")
+    .order("date", { ascending: false });
 
   if (clubId) {
-    query = query.eq("club_id", clubId);
+    query.eq("club_id", clubId);
   }
-  if (filter === "next") {
-    query = query
-      .gte("date", new Date().toISOString())
-      .order("date", { ascending: true });
+  if (when === "upcoming") {
+    query.gte("date", new Date().toISOString());
   }
-  if (filter === "past") {
-    query = query
-      .lt("date", new Date().toISOString())
-      .order("date", { ascending: false });
+  if (when === "past") {
+    query.lt("date", new Date().toISOString());
+  }
+  if (when === "today") {
+    query.eq("date", new Date().toISOString().split("T")[0]);
   }
   if (seasonId === "none") {
-    query = query.is("season_id", null);
+    query.is("season_id", null);
   } else if (seasonId) {
-    query = query.eq("season_id", seasonId);
+    query.eq("season_id", seasonId);
   }
 
-  return query.neq("status", "deleted").order("date", { ascending: false });
+  return query;
 }
 
 export function getCalendarEvent(g: Game): CalendarEvent {
