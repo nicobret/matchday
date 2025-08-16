@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import useAuth from "@/lib/auth/useAuth";
-import { Game } from "@/lib/club/club.service";
+import { Game } from "@/lib/game/gameService";
 import useCreateMember from "@/lib/member/useCreateMember";
 import { useMembers } from "@/lib/member/useMembers";
 import useCreatePlayer from "@/lib/player/useCreatePlayer";

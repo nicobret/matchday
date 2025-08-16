@@ -7,7 +7,7 @@ export default function usePlayers(gameId: number) {
   const { session } = useContext(SessionContext);
   const res = useQuery({
     queryKey: ["players", gameId],
-    queryFn: () => fetchPlayers(Number(gameId)),
+    queryFn: () => fetchPlayers({ game_id: Number(gameId) }),
     enabled: !!gameId,
   });
   const isPlayer = res.data?.some(

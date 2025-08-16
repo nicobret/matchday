@@ -54,7 +54,7 @@ export default function CreateDialog() {
     <Dialog>
       <DialogTrigger asChild>
         <Button variant="secondary">
-          <Plus className="mr-2 h-5 w-5" />
+          <Plus className="mr-2 h-4 w-4" />
           Créer un club
         </Button>
       </DialogTrigger>

@@ -3,15 +3,15 @@ import { fetchGames } from "./gameService";
 
 export default function useGames({
   clubId,
-  filter,
+  when,
   seasonId,
 }: {
   clubId?: number;
-  filter?: "all" | "next" | "past";
+  when?: "upcoming" | "past";
   seasonId?: string;
 }) {
   return useQuery({
-    queryKey: ["games", clubId, filter, seasonId],
-    queryFn: async () => await fetchGames(clubId, filter, seasonId),
+    queryKey: ["games", clubId, when, seasonId],
+    queryFn: () => fetchGames({ clubId, when, seasonId }),
   });
 }

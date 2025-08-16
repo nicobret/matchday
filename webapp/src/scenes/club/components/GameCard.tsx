@@ -6,30 +6,41 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Game } from "@/lib/club/club.service";
-import { ArrowRight, CheckCircle, Hourglass, Users } from "lucide-react";
+import useAuth from "@/lib/auth/useAuth";
+import { Game } from "@/lib/game/gameService";
+import JoinGameButton from "@/scenes/game/components/JoinGameButton";
+import LeaveGameButton from "@/scenes/game/components/LeaveGameButton";
+import { CheckCircle, Eye, Hourglass, Users } from "lucide-react";
 import { Link } from "wouter";
 
 export default function GameCard({ game }: { game: Game }) {
-  const count = game.players.filter((e) => e.status === "confirmed").length;
-  const isFull = count >= (game.total_players || 10);
+  const { session } = useAuth();
+  const playerCount =
+    game.players?.filter((e) => e.status === "confirmed").length || 0;
+  const isFull = playerCount >= (game.total_players || 10);
+  const isPlayer = game.players?.some(
+    (player) => player.user_id === session?.user.id,
+  );
 
   return (
     <Card>
       <CardHeader>
         <CardTitle className="line-clamp-1 capitalize">
-          {new Date(game.date).toLocaleDateString("fr-FR", {
-            weekday: "long",
-            month: "short",
-            day: "numeric",
-          })}
+          <Link to={"~/game/" + game.id.toString()}>
+            {new Date(game.date).toLocaleDateString("fr-FR", {
+              weekday: "long",
+              month: "short",
+              day: "numeric",
+            })}
+          </Link>
         </CardTitle>
+        <p className="line-clamp-1">{game.club?.name}</p>
       </CardHeader>
 
       <CardContent className="flex items-center justify-around gap-4">
         <Users className="h-6 w-6" />
         <p className="text-2xl">
-          {count} / {game.total_players || 10}
+          {playerCount} / {game.total_players || 10}
         </p>
         {isFull ? (
           <CheckCircle className="text-primary h-6 w-6" />
@@ -38,13 +49,18 @@ export default function GameCard({ game }: { game: Game }) {
         )}
       </CardContent>
 
-      <CardFooter>
+      <CardFooter className="grid gap-2">
+        {isPlayer ? (
+          <LeaveGameButton gameId={game.id} />
+        ) : (
+          <JoinGameButton game={game} className="w-full" />
+        )}
         <Link
           to={"~/game/" + game.id.toString()}
-          className={`${buttonVariants()} w-full`}
+          className={`${buttonVariants({ variant: "secondary" })} w-full`}
         >
+          <Eye className="h-5 w-5" />
           Voir
-          <ArrowRight className="ml-2 h-5 w-5" />
         </Link>
       </CardFooter>
     </Card>

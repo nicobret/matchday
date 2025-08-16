@@ -20,9 +20,10 @@ export function translateStatus(status?: string) {
 
 export type Player = Tables<"game_player"> & {
   profile?: Tables<"users"> | null;
+  game?: Tables<"games"> | null;
 };
 
-const selectQuery = "*, profile: users (*)";
+const selectQuery = "*, profile: users (*), game: games (*)";
 
 export async function fetchPlayer(id: string) {
   const { data } = await supabase
@@ -34,12 +35,26 @@ export async function fetchPlayer(id: string) {
   return data;
 }
 
-export async function fetchPlayers(game_id: number) {
-  const { data } = await supabase
-    .from("game_player")
-    .select(selectQuery)
-    .eq("game_id", game_id)
-    .throwOnError();
+export async function fetchPlayers({
+  game_id,
+  user_id,
+  status,
+}: {
+  game_id?: number;
+  user_id?: string;
+  status?: string;
+}) {
+  const query = supabase.from("game_player").select(selectQuery);
+  if (game_id) {
+    query.eq("game_id", game_id);
+  }
+  if (user_id) {
+    query.eq("user_id", user_id);
+  }
+  if (status) {
+    query.eq("status", status);
+  }
+  const { data } = await query.throwOnError();
   return data;
 }
 

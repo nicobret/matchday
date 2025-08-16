@@ -17,9 +17,9 @@ import { useQueryState } from "nuqs";
 import { useContext } from "react";
 import { Link, useParams } from "wouter";
 import ClubHistory from "./components/ClubHistory";
+import ClubInviteMenu from "./components/ClubInviteMenu";
 import ClubMembers from "./components/ClubMembers";
 import ClubStats from "./components/ClubStats";
-import CopyButton from "./components/CopyButton";
 import JoinClubButton from "./components/JoinClubButton";
 import LeaveClubButton from "./components/LeaveClubButton";
 import UpcomingGamesTable from "./components/UpcomingGamesTable";
@@ -56,7 +56,7 @@ export default function View() {
       : "Adresse non renseignée.";
 
   return (
-    <div className="mx-auto max-w-6xl p-4">
+    <div className="mx-auto max-w-4xl p-2">
       <div className="flex-none md:w-96 md:pr-4">
         <header className="mx-auto flex max-w-lg gap-4">
           <div className="h-28 w-28 flex-none rounded-xl border-2 border-dashed"></div>
@@ -69,7 +69,11 @@ export default function View() {
             >
               {userStatus}
             </p>
-            {isMember ? <CopyButton /> : <JoinClubButton clubId={club.id} />}
+            {isMember ? (
+              <ClubInviteMenu />
+            ) : (
+              <JoinClubButton clubId={club.id} />
+            )}
           </div>
         </header>
 
@@ -110,7 +114,7 @@ export default function View() {
       </div>
 
       <Tabs value={tab} onValueChange={setTab} className="mt-8 w-full">
-        <TabsList className="w-full md:w-auto">
+        <TabsList className="w-full max-w-lg">
           <TabsTrigger value="schedule" className="w-1/3">
             <Calendar className="mr-2 h-4 w-4" />
             Matches

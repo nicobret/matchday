@@ -34,7 +34,7 @@ export default function App() {
                     <Route path="/account" component={Account} />
                     <Route path="/club/:id" component={Club} nest />
                     <Route path="/game" component={Game} nest />
-                    <Route path="/player/:id" component={Player} />
+                    <Route path="/player" component={Player} nest />
                     <Route path="/" component={Home} />
                     <Route component={NotFound} />
                   </Switch>

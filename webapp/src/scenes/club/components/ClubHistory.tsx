@@ -38,7 +38,7 @@ export default function ClubHistory({ club }: { club: Club }) {
 
   const { data: games, isPending } = useGames({
     clubId: club.id,
-    filter: "past",
+    when: "past",
     seasonId: selectedSeason,
   });
 
@@ -69,7 +69,7 @@ export default function ClubHistory({ club }: { club: Club }) {
       {isPending ? (
         <p className="text-center">Chargement...</p>
       ) : games?.length ? (
-        <Table className="mt-4 border">
+        <Table className="mt-4">
           <TableHeader>
             <TableRow>
               <TableHead>Date</TableHead>
@@ -106,7 +106,7 @@ export default function ClubHistory({ club }: { club: Club }) {
           </TableBody>
         </Table>
       ) : (
-        <p className="text-center">Aucun match joué.</p>
+        <p className="mt-4 text-center">Aucun match joué.</p>
       )}
     </div>
   );

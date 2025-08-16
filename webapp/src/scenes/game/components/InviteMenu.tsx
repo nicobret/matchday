@@ -80,13 +80,13 @@ export default function InviteMenu({
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent>
-          <DropdownMenuLabel>Inviter un joueur</DropdownMenuLabel>
+          <DropdownMenuLabel>Inviter un joueur :</DropdownMenuLabel>
           <DropdownMenuSeparator />
           <DialogTrigger asChild>
             <DropdownMenuItem>Inviter un membre du club</DropdownMenuItem>
           </DialogTrigger>
           <DropdownMenuItem onClick={handleCopyLink}>
-            Copier le lien
+            Copier le lien d'invitation
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>

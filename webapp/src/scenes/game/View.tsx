@@ -1,13 +1,16 @@
 import { SessionContext } from "@/components/auth-provider";
 import { buttonVariants } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { getGameDurationInMinutes } from "@/lib/game/gameService";
+import {
+  getGameDurationInMinutes,
+  getGameStatusString,
+} from "@/lib/game/gameService";
 import useGame from "@/lib/game/useGame";
 import { useMembers } from "@/lib/member/useMembers";
 import { getPlayerChannel } from "@/lib/player/player.service";
 import usePlayers from "@/lib/player/usePlayers";
+import { addMinutes, isFuture, isPast } from "date-fns";
 import {
-  ArrowLeft,
   BarChart,
   Clock,
   Hourglass,
@@ -30,8 +33,17 @@ import Score from "./components/Score";
 export default function View() {
   const { id } = useParams();
   const { session } = useContext(SessionContext);
-  const { data: game, hasStarted, hasEnded } = useGame(Number(id));
-  const { data: players, isPlayer } = usePlayers(Number(id));
+  const {
+    data: game,
+    isPending: isGamePending,
+    isError: isGameError,
+  } = useGame(Number(id));
+  const {
+    data: players,
+    isPlayer,
+    isPending: isPlayersPending,
+    isError: isPlayersError,
+  } = usePlayers(Number(id));
   const { isMember } = useMembers(game?.club_id);
   const confirmedPlayers =
     players?.filter((p) => p.status === "confirmed") || [];
@@ -49,53 +61,54 @@ export default function View() {
   if (!id) {
     return <div>Erreur</div>;
   }
-  if (!game || !players) {
+  if (isGamePending || isPlayersPending) {
     return (
       <div className="p-4">
         <p className="animate_pulse text-center">Chargement des données...</p>
       </div>
     );
   }
+  if (isGameError || isPlayersError) {
+    return (
+      <div className="p-4">
+        <p className="text-center text-red-500">
+          Une erreur est survenue lors du chargement des données du match.
+        </p>
+      </div>
+    );
+  }
 
   const durationInMinutes = getGameDurationInMinutes(game.duration as string);
 
-  const gameStatus =
-    game.status === "deleted"
-      ? "Match supprimé"
-      : hasEnded
-        ? `Match terminé${game.score ? ` • ${game.score[0]} - ${game.score[1]}` : ""}`
-        : hasStarted
-          ? "Match en cours"
-          : `Le match commence dans ${Math.floor(
-              (new Date(game.date).getTime() - new Date().getTime()) /
-                (1000 * 60 * 60 * 24),
-            )} jours.`;
+  const endDate = addMinutes(new Date(game.date), durationInMinutes);
 
-  const userStatus = isPlayer
-    ? "✓ Vous êtes inscrit(e)"
-    : isMember
-      ? "Vous n'êtes pas inscrit(e)"
-      : session
-        ? "Vous n'êtes pas membre du club"
-        : "Vous n'êtes pas connecté(e)";
+  function getPlayerStatusString() {
+    if (isPlayer) {
+      return "✓ Vous êtes inscrit(e)";
+    }
+    if (isMember) {
+      return "Vous n'êtes pas inscrit(e)";
+    }
+    if (session) {
+      return "Vous n'êtes pas membre du club";
+    }
+    return "Vous n'êtes pas connecté(e)";
+  }
 
   return (
-    <div className="mx-auto max-w-5xl p-4">
-      <Link
-        to={`~/club/${game.club_id}`}
-        className="text-muted-foreground text-sm"
-      >
-        <ArrowLeft className="mr-2 inline-block h-4 w-4 align-text-top" />
-        Retour au club
-      </Link>
-
+    <div className="mx-auto max-w-4xl p-2">
       <header className="mt-6 text-center">
         <p className="text-muted-foreground text-xs font-bold uppercase tracking-tight">
-          {game.club?.name}
+          <Link
+            to={`~/club/${game.club_id}`}
+            className="underline decoration-dotted underline-offset-4"
+          >
+            {game.club?.name}
+          </Link>
           {game.season?.name ? ` • Saison ${game.season?.name}` : ""}
         </p>
 
-        <h1 className="font-new-amsterdam leading-12 text-5xl">
+        <h1 className="font-new-amsterdam leading-12 mt-2 text-5xl">
           {new Date(game.date).toLocaleDateString("fr-FR", {
             weekday: "long",
             day: "numeric",
@@ -103,21 +116,21 @@ export default function View() {
           })}
         </h1>
 
-        <div className="mt-4">
-          <p className="text-muted-foreground text-center text-sm">
-            {gameStatus}
+        <div>
+          <p className="text-muted-foreground mt-2 text-center text-sm">
+            {getGameStatusString(game)}
           </p>
-          {!hasEnded && (
+          {isFuture(endDate) && (
             <p
               className={`text-sm ${isPlayer ? "text-primary" : "text-muted-foreground"}`}
             >
-              {userStatus}
+              {getPlayerStatusString()}
             </p>
           )}
 
-          <div className="mt-2 flex items-center justify-center gap-2">
+          <div className="mt-4 flex items-center justify-center gap-2">
             {!isPlayer && <JoinGameButton game={game} />}
-            {!hasStarted && (
+            {isFuture(game.date) && (
               <InviteMenu
                 gameId={game.id}
                 clubId={game.club_id}
@@ -128,7 +141,7 @@ export default function View() {
         </div>
       </header>
 
-      <div className="mx-auto mt-8 max-w-xl">
+      <div className="mx-auto mt-8">
         <div className="rounded-xl border p-4">
           <div className="text-sm leading-relaxed">
             <p>
@@ -155,7 +168,7 @@ export default function View() {
             </p>
           </div>
 
-          <div className="mt-2 grid grid-cols-2 gap-2">
+          <div className="mt-4 grid grid-cols-1 gap-2 sm:grid-cols-2">
             <AddToCalendar game={game} />
 
             {session && isMember && (
@@ -173,7 +186,10 @@ export default function View() {
         </div>
       </div>
 
-      <Tabs defaultValue={hasEnded ? "stats" : "players"} className="mt-8">
+      <Tabs
+        defaultValue={isPast(endDate) ? "stats" : "players"}
+        className="mt-8"
+      >
         <TabsList className="mx-auto w-full md:w-auto">
           <TabsTrigger value="players" disabled={!isMember} className="w-1/2">
             <Users className="mr-2 inline-block h-4 w-4" />
