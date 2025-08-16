@@ -17,7 +17,7 @@ import useCreateGame from "@/lib/game/useCreateGame";
 import { fromZonedTime } from "date-fns-tz";
 import { ArrowLeft } from "lucide-react";
 import { useContext } from "react";
-import { useForm } from "react-hook-form";
+import { Controller, useForm } from "react-hook-form";
 import { TablesInsert } from "shared/types/supabase";
 import { Link, useLocation } from "wouter";
 import { useMembers } from "../../lib/member/useMembers";
@@ -40,7 +40,7 @@ export default function CreateGame() {
   const { isMember } = useMembers(Number(clubId));
   const [_location, navigate] = useLocation();
   const { mutate, isPending: isCreationPending } = useCreateGame();
-  const { register, handleSubmit } = useForm<FormValues>();
+  const { register, handleSubmit, control } = useForm<FormValues>();
   const { session } = useContext(SessionContext);
 
   const seasons = club?.seasons || [];
@@ -107,21 +107,25 @@ export default function CreateGame() {
       <form onSubmit={handleSubmit(onSubmit)} className="mx-auto max-w-lg">
         <div className="mb-1 grid w-full items-center gap-2">
           <Label htmlFor="season">Saison</Label>
-          <Select
-            {...register("season_id")}
+          <Controller
+            name="season_id"
+            control={control}
             defaultValue={seasonOptions[0].value}
-          >
-            <SelectTrigger>
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              {seasonOptions.map((option) => (
-                <SelectItem key={option.value} value={option.value}>
-                  {option.label}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+            render={({ field }) => (
+              <Select value={field.value} onValueChange={field.onChange}>
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  {seasonOptions.map((option) => (
+                    <SelectItem key={option.value} value={option.value}>
+                      {option.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            )}
+          />
         </div>
         <Link
           to={`~/club/${club.id}/edit#seasons`}

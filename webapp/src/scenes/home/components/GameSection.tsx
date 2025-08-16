@@ -10,13 +10,10 @@ export default function GameSection() {
   const { isLoggedIn, isLoggedOut } = useAuth();
 
   return (
-    <section id="games" className="">
+    <section id="games">
       <h2 className="mt-8 scroll-m-20 text-3xl font-semibold tracking-tight">
         Matches à venir
       </h2>
-      <p className="text-muted-foreground mt-2">
-        Trouvez un match à jouer ou inscrivez-vous à un match déjà créé.
-      </p>
 
       <Tabs defaultValue={isLoggedIn ? "my-games" : "search"} className="mt-4">
         <TabsList className="w-full sm:w-auto">
@@ -28,6 +25,7 @@ export default function GameSection() {
             <Calendar className="mr-2 inline-block h-4 w-4" />
             Mes matchs
           </TabsTrigger>
+
           <TabsTrigger value="search" className="w-1/2 sm:w-44">
             <Search className="mr-2 inline-block h-4 w-4" />
             Trouver un match

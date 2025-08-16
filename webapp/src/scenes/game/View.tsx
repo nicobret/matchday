@@ -11,7 +11,6 @@ import { getPlayerChannel } from "@/lib/player/player.service";
 import usePlayers from "@/lib/player/usePlayers";
 import { addMinutes, isFuture, isPast } from "date-fns";
 import {
-  ArrowLeft,
   BarChart,
   Clock,
   Hourglass,
@@ -98,17 +97,14 @@ export default function View() {
 
   return (
     <div className="mx-auto max-w-4xl p-2">
-      <Link
-        to={`~/club/${game.club_id}`}
-        className="text-muted-foreground text-sm"
-      >
-        <ArrowLeft className="mr-2 inline-block h-4 w-4 align-text-top" />
-        Retour au club
-      </Link>
-
       <header className="mt-6 text-center">
         <p className="text-muted-foreground text-xs font-bold uppercase tracking-tight">
-          {game.club?.name}
+          <Link
+            to={`~/club/${game.club_id}`}
+            className="underline decoration-dotted underline-offset-4"
+          >
+            {game.club?.name}
+          </Link>
           {game.season?.name ? ` • Saison ${game.season?.name}` : ""}
         </p>
 

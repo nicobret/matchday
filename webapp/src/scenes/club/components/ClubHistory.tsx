@@ -69,7 +69,7 @@ export default function ClubHistory({ club }: { club: Club }) {
       {isPending ? (
         <p className="text-center">Chargement...</p>
       ) : games?.length ? (
-        <Table className="mt-4 border">
+        <Table className="mt-4">
           <TableHeader>
             <TableRow>
               <TableHead>Date</TableHead>

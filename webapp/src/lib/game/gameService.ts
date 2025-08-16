@@ -106,14 +106,14 @@ function gamesQueryBuilder(
   let query = supabase
     .from("games")
     .select(selectQuery)
-    .neq("status", "deleted")
-    .order("date", { ascending: false });
+    .neq("status", "deleted");
 
   if (clubId) {
     query.eq("club_id", clubId);
   }
   if (when === "upcoming") {
     query.gte("date", new Date().toISOString());
+    query.order("date");
   }
   if (when === "past") {
     query.lt("date", new Date().toISOString());

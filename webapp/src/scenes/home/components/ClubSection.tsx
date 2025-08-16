@@ -17,8 +17,8 @@ export default function ClubSection() {
     clubs?.filter(
       (c) => !c.members?.some((m) => m.user_id === session?.user?.id),
     ) ?? [];
-  const defaultTab = myClubs.length > 0 ? "club-list" : "search";
-  const [tab, setTab] = useQueryState("tab", {
+  const defaultTab = myClubs.length > 0 ? "list" : "search";
+  const [tab, setTab] = useQueryState("club-tab", {
     defaultValue: defaultTab,
     clearOnDefault: false,
   });
@@ -32,7 +32,7 @@ export default function ClubSection() {
       <Tabs value={tab} onValueChange={setTab} className="mt-4">
         <TabsList className="w-full sm:w-auto">
           <TabsTrigger
-            value="club-list"
+            value="list"
             disabled={isLoggedOut}
             className="w-1/2 sm:w-44"
           >
@@ -50,7 +50,7 @@ export default function ClubSection() {
           <ClubCarousel clubs={notMyClubs} />
         </TabsContent>
 
-        <TabsContent value="club-list">
+        <TabsContent value="list">
           {isPending ? (
             <p className="animate-pulse text-center">Chargement des clubs...</p>
           ) : isError ? (

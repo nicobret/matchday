@@ -10,7 +10,7 @@ import ClubCard from "./ClubCard";
 
 export default function ClubCarousel({ clubs }: { clubs: Club[] }) {
   return (
-    <Carousel>
+    <Carousel className="mx-auto mt-4 w-2/3 md:w-auto">
       <CarouselContent>
         {clubs
           .sort(

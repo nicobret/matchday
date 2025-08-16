@@ -114,7 +114,7 @@ export default function View() {
       </div>
 
       <Tabs value={tab} onValueChange={setTab} className="mt-8 w-full">
-        <TabsList className="w-full md:w-auto">
+        <TabsList className="w-full max-w-lg">
           <TabsTrigger value="schedule" className="w-1/3">
             <Calendar className="mr-2 h-4 w-4" />
             Matches
