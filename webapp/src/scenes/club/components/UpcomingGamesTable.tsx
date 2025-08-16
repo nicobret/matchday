@@ -52,19 +52,6 @@ export default function UpcomingGamesTable({ clubId }: { clubId: number }) {
           .map((game) => (
             <GameRow key={game.id} game={game} />
           ))}
-        {/* {isMember && (
-          <TableRow>
-            <TableCell colSpan={3} className="text-center">
-              <Link
-                to={`~/game/create?clubId=${clubId}`}
-                className={buttonVariants({ variant: "secondary" })}
-              >
-                <Plus />
-                Créer un match
-              </Link>
-            </TableCell>
-          </TableRow>
-        )} */}
       </TableBody>
     </Table>
   );

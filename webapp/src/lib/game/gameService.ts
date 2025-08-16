@@ -66,16 +66,6 @@ export async function getUpcomingGamesByUserId(
   return games;
 }
 
-export async function getConfirmedGamesByUserId(userId: string) {
-  const { data } = await supabase
-    .from("confirmed_game_players_detail")
-    .select()
-    .eq("user_id", userId)
-    .gte("game_date", new Date().toISOString())
-    .throwOnError();
-  return data;
-}
-
 export async function createGame(payload: TablesInsert<"games">) {
   const { data } = await supabase
     .from("games")

@@ -28,9 +28,8 @@ function SessionProvider({ children }: { children: React.ReactNode }) {
         navigate("/");
       } else if (event === "SIGNED_IN") {
         setSession(session);
-        const redirectTo = new URLSearchParams(window.location.search).get(
-          "redirectTo",
-        );
+        const params = new URLSearchParams(window.location.search);
+        const redirectTo = params.get("redirectTo");
         if (redirectTo) navigate(`~${redirectTo}`);
       } else if (session) {
         setSession(session);
