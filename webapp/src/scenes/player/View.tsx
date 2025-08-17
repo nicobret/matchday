@@ -7,18 +7,23 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import useProfile from "@/lib/profile/useProfile";
-import { fetchPlayerStats } from "@/lib/statistics/statsService";
+import { getPlayerStatsByUserId } from "@/lib/statistics/statsService";
 import { useQuery } from "@tanstack/react-query";
-import { ArrowLeft, TrafficCone } from "lucide-react";
+import { ArrowLeft } from "lucide-react";
 import { Link, useParams } from "wouter";
+import PlayerStatsChart from "./components/PlayerStatsChart";
 
 export default function View() {
   const params = new URLSearchParams(window.location.search);
   const fromClub = params.get("fromClub");
   const { id } = useParams();
   const { data: player, isPending } = useProfile(id);
-  const { data: stats, isPending: isStatsPending } = useQuery({
-    queryFn: () => fetchPlayerStats(id!),
+  const {
+    data,
+    isPending: isStatsPending,
+    isError: isStatsError,
+  } = useQuery({
+    queryFn: () => getPlayerStatsByUserId(id!),
     queryKey: ["playerStats", id],
     enabled: !!id,
   });
@@ -26,9 +31,14 @@ export default function View() {
   if (isPending || isStatsPending) {
     return <div>Loading...</div>;
   }
+  if (isStatsError) {
+    return <div>Error loading player stats</div>;
+  }
   if (!player) {
     return <div>Player not found</div>;
   }
+  const { history, formattedData } = data;
+
   return (
     <div className="mx-auto max-w-4xl p-4">
       {fromClub ? (
@@ -50,18 +60,27 @@ export default function View() {
         {player.firstname} {player.lastname}
       </h1>
 
-      <p className="mt-2">
-        <TrafficCone className="mr-2 inline-block h-4 w-4" />
-        Page en chantier.
-      </p>
+      <h2 className="scroll-m-20 border-b pb-2 text-3xl font-semibold tracking-tight first:mt-0">
+        Résumé par clubs
+      </h2>
+
+      {formattedData.map((clubAggregation) => (
+        <div key={clubAggregation.clubId}>
+          <h3 className="mt-4 text-2xl font-semibold">
+            {clubAggregation.clubName}
+          </h3>
+          <PlayerStatsChart data={clubAggregation.statsBySeason} />
+        </div>
+      ))}
 
       <br />
-      <h2>Mes dernières performances</h2>
+      <h2 className="scroll-m-20 border-b pb-2 text-3xl font-semibold tracking-tight first:mt-0">
+        Mes dernières performances
+      </h2>
       <br />
       <Table>
         <TableHeader>
           <TableRow>
-            <TableHead>Match ID</TableHead>
             <TableHead>Date</TableHead>
             <TableHead>Club</TableHead>
             <TableHead>Saison</TableHead>
@@ -72,11 +91,10 @@ export default function View() {
           </TableRow>
         </TableHeader>
         <TableBody>
-          {stats?.map((stat) => (
+          {history?.map((stat) => (
             <TableRow key={stat.game_id}>
-              <TableCell>{stat.game_id || "Aucune donnée"}</TableCell>
               <TableCell>
-                {stats?.length
+                {history?.length
                   ? new Date(stat.game_date || "").toLocaleDateString("fr-FR")
                   : "Aucune donnée"}
               </TableCell>
