@@ -23,7 +23,7 @@ export default function GameCard({ game }: { game: Game }) {
   );
 
   return (
-    <Card>
+    <Card className="w-full">
       <CardHeader>
         <CardTitle className="line-clamp-1 capitalize">
           <Link to={"~/game/" + game.id.toString()}>

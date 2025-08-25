@@ -53,10 +53,12 @@ export default function CreateDialog() {
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button variant="secondary">
-          <Plus className="mr-2 h-4 w-4" />
-          Créer un club
-        </Button>
+        <div className="flex">
+          <Button variant="outline" className="mx-auto w-2/3">
+            <Plus className="mr-2 h-4 w-4" />
+            Créer un club
+          </Button>
+        </div>
       </DialogTrigger>
 
       <DialogContent>
