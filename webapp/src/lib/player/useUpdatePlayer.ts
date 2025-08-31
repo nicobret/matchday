@@ -14,6 +14,7 @@ export default function useUpdatePlayer(player: Player) {
       client.setQueryData(["players", player.game_id], (cache: Player[] = []) =>
         cache.map((p) => (p.id === player.id ? { ...p, ...payload } : p)),
       );
+      client.invalidateQueries({ queryKey: ["myGames"] });
     },
 
     onError: (_error, variables) =>

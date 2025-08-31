@@ -1,13 +1,11 @@
-import ClubSection from "./components/ClubSection";
-import GameSection from "./components/GameSection";
-import Guide from "./components/Guide";
+import useAuth from "@/lib/auth/useAuth";
+import HomeAuthenticated from "./scenes/authenticated";
+import HomeUnauthenticated from "./scenes/unauthenticated";
 
 export default function Home() {
-  return (
-    <div className="mx-auto max-w-4xl p-2">
-      <Guide />
-      <GameSection />
-      <ClubSection />
-    </div>
-  );
+  const { isAuthenticated } = useAuth();
+  if (isAuthenticated) {
+    return <HomeAuthenticated />;
+  }
+  return <HomeUnauthenticated />;
 }

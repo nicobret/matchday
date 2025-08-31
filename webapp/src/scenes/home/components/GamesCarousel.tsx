@@ -11,9 +11,12 @@ import GameCard from "@/scenes/club/components/GameCard";
 export default function GamesCarousel({ games }: { games: Game[] }) {
   return (
     <Carousel className="mx-auto mt-4 w-2/3 md:w-auto">
-      <CarouselContent className="flex w-full gap-4">
+      <CarouselContent>
         {games.map((game) => (
-          <CarouselItem key={game.id} className="sm:basis-1/2 md:basis-1/3">
+          <CarouselItem
+            key={game.id}
+            className="w-full sm:basis-1/2 md:basis-1/3"
+          >
             <GameCard game={game} />
           </CarouselItem>
         ))}

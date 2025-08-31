@@ -50,7 +50,7 @@ export default function useAuth() {
     session,
     login,
     logout,
-    isLoggedIn: !!session,
+    isAuthenticated: !!session,
     isLoggedOut: !session,
   };
 }

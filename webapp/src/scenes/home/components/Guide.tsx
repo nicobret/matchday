@@ -5,7 +5,7 @@ import { ChevronDown, Swords, TableProperties, Users } from "lucide-react";
 import { Link } from "wouter";
 
 export default function Guide() {
-  const { session, isLoggedIn, isLoggedOut } = useAuth();
+  const { session, isAuthenticated, isLoggedOut } = useAuth();
   const { data: profile, isLoading: loadingProfile } = useProfile(
     session?.user?.id,
   );
@@ -17,7 +17,7 @@ export default function Guide() {
     );
   }
 
-  const isProfileIncomplete: boolean = isLoggedIn && !profile?.firstname;
+  const isProfileIncomplete: boolean = isAuthenticated && !profile?.firstname;
 
   return (
     <section id="guide" className="rounded-lg border p-4">
