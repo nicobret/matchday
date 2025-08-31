@@ -1,6 +1,7 @@
-import { Button } from "@/components/ui/button";
+import { buttonVariants } from "@/components/ui/button";
 import useGames from "@/lib/game/useGames";
 import { Search } from "lucide-react";
+import { Link } from "wouter";
 import GamesCarousel from "../../../components/GamesCarousel";
 
 export default function UpcomingGames() {
@@ -24,11 +25,14 @@ export default function UpcomingGames() {
       ) : (
         <GamesCarousel games={data} />
       )}
-      <div className="mt-4 flex">
-        <Button variant="outline" className="mx-auto w-2/3 md:w-1/3">
-          <Search className="inline-block h-4 w-4" />
+      <div className="mx-auto mt-4 grid w-2/3 gap-2 md:w-full md:grid-cols-3 md:gap-4">
+        <Link
+          to="~/game/search"
+          className={buttonVariants({ variant: "outline" })}
+        >
+          <Search className="h-4 w-4" />
           Chercher un match
-        </Button>
+        </Link>
       </div>
     </section>
   );
