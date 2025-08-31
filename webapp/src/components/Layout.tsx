@@ -58,7 +58,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
         </nav>
       </div>
 
-      <div className="min-h-screens mx-auto mb-20 mt-12">{children}</div>
+      <div className="mx-auto mb-20 mt-12 min-h-screen">{children}</div>
       <Toaster />
 
       {/* <footer className="flex justify-center bg-muted p-6 text-muted-foreground">

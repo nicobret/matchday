@@ -1,6 +1,9 @@
+import { buttonVariants } from "@/components/ui/button";
 import useAuth from "@/lib/auth/useAuth";
 import useClubs from "@/lib/club/useClubs";
-import ClubCarousel from "../../components/ClubCarousel";
+import { Search } from "lucide-react";
+import { Link } from "wouter";
+import ClubCarousel from "../../../components/ClubCarousel";
 import CreateClubDialog from "./CreateClubDialog";
 
 export default function MyClubs() {
@@ -13,7 +16,7 @@ export default function MyClubs() {
 
   return (
     <section id="my-clubs">
-      <h2 className="scroll-m-20 text-2xl font-semibold tracking-tight">
+      <h2 className="font-new-amsterdam scroll-m-20 text-center text-4xl md:text-justify">
         Mes clubs
       </h2>
 
@@ -24,18 +27,24 @@ export default function MyClubs() {
       ) : myClubs.length === 0 ? (
         <p className="text-center">
           Vous n'êtes membre d'aucun club.{" "}
-          <span className="text-primary underline underline-offset-2">
-            <a href="#search">Trouvez un club</a>
-          </span>
+          <Link to="~/club/search">
+            <Search className="h-4 w-4" />
+            Chercher un club
+          </Link>
         </p>
-      ) : myClubs.length ? (
-        <ClubCarousel clubs={myClubs} />
       ) : (
-        <p className="text-center">Vous n'êtes membre d'aucun club</p>
+        <ClubCarousel clubs={myClubs} />
       )}
 
-      <div className="mt-4">
-        <CreateClubDialog />
+      <div className="mx-auto mt-4 grid w-2/3 gap-2 md:w-full md:grid-cols-3 md:gap-4">
+        <Link
+          to="~/club/search"
+          className={buttonVariants({ variant: "outline" })}
+        >
+          <Search className="h-4 w-4" />
+          Chercher un club
+        </Link>
+        <CreateClubDialog buttonClassName="w-full" />
       </div>
     </section>
   );

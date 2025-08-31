@@ -4,7 +4,7 @@ import { getUpcomingGamesByUserId } from "@/lib/game/gameService";
 import { useQuery } from "@tanstack/react-query";
 import { Search } from "lucide-react";
 import { Link } from "wouter";
-import GamesCarousel from "../../components/GamesCarousel";
+import GamesCarousel from "../../../components/GamesCarousel";
 
 export default function MyGames() {
   const { session } = useAuth();
@@ -15,8 +15,8 @@ export default function MyGames() {
 
   return (
     <section id="my-games">
-      <h2 className="mt-4 scroll-m-20 text-2xl font-semibold tracking-tight">
-        Matches à venir
+      <h2 className="font-new-amsterdam scroll-m-20 text-center text-4xl md:text-justify">
+        Mes prochains matches
       </h2>
 
       {isPending ? (
@@ -33,12 +33,12 @@ export default function MyGames() {
         <GamesCarousel games={data} />
       )}
 
-      <div className="mt-4 flex">
+      <div className="mx-auto mt-4 grid w-2/3 gap-2 md:w-full md:grid-cols-3 md:gap-4">
         <Link
-          href="/games/search"
-          className={`${buttonVariants({ variant: "outline" })} mx-auto w-2/3 md:w-auto`}
+          to="~/game/search"
+          className={buttonVariants({ variant: "outline" })}
         >
-          <Search className="inline-block h-4 w-4" />
+          <Search className="h-4 w-4" />
           Chercher un match
         </Link>
       </div>

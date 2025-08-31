@@ -61,7 +61,7 @@ export default function View() {
         <header className="mx-auto flex max-w-lg gap-4">
           <div className="h-28 w-28 flex-none rounded-xl border-2 border-dashed"></div>
           <div>
-            <h1 className="font-new-amsterdam scroll-m-20 text-4xl">
+            <h1 className="font-new-amsterdam line-clamp-1 scroll-m-20 text-4xl">
               {club.name}
             </h1>
             <p

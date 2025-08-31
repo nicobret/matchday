@@ -13,7 +13,9 @@ export default function useCreatePlayer(gameId: number) {
       name?: string;
       status?: "confirmed" | "pending";
     }) => createPlayer(gameId, user_id, name, status),
-    onSuccess: () =>
-      queryClient.invalidateQueries({ queryKey: ["players", gameId] }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["players", gameId] });
+      queryClient.invalidateQueries({ queryKey: ["myGames"] });
+    },
   });
 }

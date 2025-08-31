@@ -1,13 +1,13 @@
 import useClubs from "@/lib/club/useClubs";
-import ClubCarousel from "../../components/ClubCarousel";
+import ClubCarousel from "../../../components/ClubCarousel";
 
 export default function AllClubs() {
   const { data: clubs, isError, isPending } = useClubs();
 
   return (
     <section id="clubs">
-      <h2 className="scroll-m-20 text-2xl font-semibold tracking-tight">
-        Mes clubs
+      <h2 className="font-new-amsterdam scroll-m-20 text-center text-4xl md:text-justify">
+        Trouver un club
       </h2>
 
       {isPending ? (

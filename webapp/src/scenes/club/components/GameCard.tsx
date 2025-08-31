@@ -1,4 +1,3 @@
-import { buttonVariants } from "@/components/ui/button";
 import {
   Card,
   CardContent,
@@ -10,7 +9,7 @@ import useAuth from "@/lib/auth/useAuth";
 import { Game } from "@/lib/game/gameService";
 import JoinGameButton from "@/scenes/game/components/JoinGameButton";
 import LeaveGameButton from "@/scenes/game/components/LeaveGameButton";
-import { CheckCircle, Eye, Hourglass, Users } from "lucide-react";
+import { ArrowRight, CheckCircle, Hourglass, Users } from "lucide-react";
 import { Link } from "wouter";
 
 export default function GameCard({ game }: { game: Game }) {
@@ -19,21 +18,25 @@ export default function GameCard({ game }: { game: Game }) {
     game.players?.filter((e) => e.status === "confirmed").length || 0;
   const isFull = playerCount >= (game.total_players || 10);
   const isPlayer = game.players?.some(
-    (player) => player.user_id === session?.user.id,
+    (player) =>
+      player.user_id === session?.user.id && player.status === "confirmed",
   );
 
   return (
     <Card className="w-full">
       <CardHeader>
-        <CardTitle className="line-clamp-1 capitalize">
-          <Link to={"~/game/" + game.id.toString()}>
-            {new Date(game.date).toLocaleDateString("fr-FR", {
-              weekday: "long",
-              month: "short",
-              day: "numeric",
-            })}
-          </Link>
-        </CardTitle>
+        <Link to={"~/game/" + game.id.toString()}>
+          <CardTitle className="flex justify-between">
+            <p className="line-clamp-1 capitalize">
+              {new Date(game.date).toLocaleDateString("fr-FR", {
+                weekday: "long",
+                month: "short",
+                day: "numeric",
+              })}
+            </p>
+            <ArrowRight />
+          </CardTitle>
+        </Link>
         <p className="line-clamp-1">{game.club?.name}</p>
       </CardHeader>
 
@@ -55,13 +58,6 @@ export default function GameCard({ game }: { game: Game }) {
         ) : (
           <JoinGameButton game={game} className="w-full" />
         )}
-        <Link
-          to={"~/game/" + game.id.toString()}
-          className={`${buttonVariants({ variant: "secondary" })} w-full`}
-        >
-          <Eye className="h-5 w-5" />
-          Voir
-        </Link>
       </CardFooter>
     </Card>
   );
