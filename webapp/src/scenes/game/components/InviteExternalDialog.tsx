@@ -33,7 +33,9 @@ export default function InviteExternalDialog({
       <DialogTrigger asChild>
         <Button
           disabled={disabled}
-          className={buttonVariants({ variant: "secondary" })}
+          className={
+            buttonVariants({ variant: "secondary" }) + " w-full md:w-auto"
+          }
         >
           Ajouter un joueur extérieur à la plateforme
         </Button>

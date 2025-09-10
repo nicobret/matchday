@@ -1,5 +1,4 @@
 import { SessionContext } from "@/components/auth-provider";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Select,
   SelectContent,
@@ -15,41 +14,34 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Player, translateStatus } from "@/lib/player/player.service";
+import { type Player, translateStatus } from "@/lib/player/player.service";
 import useUpdatePlayer from "@/lib/player/useUpdatePlayer";
 import { useContext } from "react";
 
 export default function PlayerTable({ players }: { players: Player[] }) {
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>Liste</CardTitle>
-      </CardHeader>
-      <CardContent>
-        <div className="overflow-x-auto">
-          <Table className="w-fit-content">
-            <TableHeader>
-              <TableRow>
-                <TableHead>Prénom</TableHead>
-                <TableHead>Inscription</TableHead>
-                <TableHead>Statut</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {players
-                .sort(
-                  (a, b) =>
-                    new Date(b.created_at).getTime() -
-                    new Date(a.created_at).getTime(),
-                )
-                .map((player) => (
-                  <Row key={player.id} player={player} />
-                ))}
-            </TableBody>
-          </Table>
-        </div>
-      </CardContent>
-    </Card>
+    <div className="overflow-x-auto">
+      <Table className="w-fit-content">
+        <TableHeader>
+          <TableRow>
+            <TableHead>Prénom</TableHead>
+            <TableHead>Inscription</TableHead>
+            <TableHead>Statut</TableHead>
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {players
+            .sort(
+              (a, b) =>
+                new Date(b.created_at).getTime() -
+                new Date(a.created_at).getTime(),
+            )
+            .map((player) => (
+              <Row key={player.id} player={player} />
+            ))}
+        </TableBody>
+      </Table>
+    </div>
   );
 }
 

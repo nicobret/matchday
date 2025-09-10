@@ -2,7 +2,7 @@ import { buttonVariants } from "@/components/ui/button";
 import useAuth from "@/lib/auth/useAuth";
 import { getUpcomingGamesByUserId } from "@/lib/game/gameService";
 import { useQuery } from "@tanstack/react-query";
-import { Search } from "lucide-react";
+import { Plus, Search } from "lucide-react";
 import { Link } from "wouter";
 import GamesCarousel from "../../../components/GamesCarousel";
 
@@ -26,8 +26,12 @@ export default function MyGames() {
           Une erreur est survenue lors du chargement des matches.
         </p>
       ) : data.length === 0 ? (
-        <p className="mt-4 text-center">
-          Aucun match trouvé. Créez un match pour commencer !
+        <p className="my-8 text-center">
+          Aucun match trouvé.{" "}
+          <Link to="~/game/create" className="underline underline-offset-4">
+            Créez un match
+          </Link>{" "}
+          pour commencer !
         </p>
       ) : (
         <GamesCarousel games={data} />
@@ -40,6 +44,13 @@ export default function MyGames() {
         >
           <Search className="h-4 w-4" />
           Chercher un match
+        </Link>
+        <Link
+          to="~/game/create"
+          className={buttonVariants({ variant: "outline" })}
+        >
+          <Plus className="h-4 w-4" />
+          Créer un match
         </Link>
       </div>
     </section>
