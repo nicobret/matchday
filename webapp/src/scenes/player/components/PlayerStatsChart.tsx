@@ -1,10 +1,10 @@
 import {
-  ChartConfig,
+  type ChartConfig,
   ChartContainer,
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/ui/chart";
-import { Bar, BarChart, CartesianGrid, XAxis } from "recharts";
+import { Bar, BarChart, CartesianGrid, LabelList, XAxis } from "recharts";
 
 export default function PlayerStatsChart({
   data,
@@ -31,12 +31,17 @@ export default function PlayerStatsChart({
           tickLine={false}
           tickMargin={10}
           axisLine={false}
-          tickFormatter={(value) => value.slice(0, 3)}
         />
         <ChartTooltip content={<ChartTooltipContent indicator="dashed" />} />
-        <Bar dataKey="goals" fill="var(--chart-1)" />
-        <Bar dataKey="assists" fill="var(--chart-2)" />
-        <Bar dataKey="saves" fill="var(--chart-3)" />
+        <Bar dataKey="goals" fill="var(--chart-1)">
+          <LabelList dataKey="goals" position="top" />
+        </Bar>
+        <Bar dataKey="assists" fill="var(--chart-2)">
+          <LabelList dataKey="assists" position="top" />
+        </Bar>
+        <Bar dataKey="saves" fill="var(--chart-3)">
+          <LabelList dataKey="saves" position="top" />
+        </Bar>
       </BarChart>
     </ChartContainer>
   );

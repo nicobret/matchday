@@ -43,6 +43,7 @@ export async function fetchPlayerStats(user_id: string) {
 
 type statsAggregatedByClubAndSeason = {
   clubId: number;
+  clubName: string;
   statsBySeason: {
     season: string;
     goals: number;
