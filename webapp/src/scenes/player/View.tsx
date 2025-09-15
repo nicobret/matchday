@@ -16,15 +16,16 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import useProfile from "@/lib/profile/useProfile";
+import useSeasons from "@/lib/season/useSeasons";
 import { getPlayerStatsByUserId } from "@/lib/statistics/statsService";
 import { useQuery } from "@tanstack/react-query";
 import { ArrowLeft } from "lucide-react";
 import { parseAsInteger, useQueryState } from "nuqs";
+import type { Tables } from "shared/types/supabase";
 import { Link, useParams } from "wouter";
 import PlayerStatsChart from "./components/PlayerStatsChart";
 
 export default function View() {
-  const [fromClub] = useQueryState("fromClub", parseAsInteger);
   const { id } = useParams();
   const { data: player, isPending } = useProfile(id);
   const {
@@ -37,7 +38,7 @@ export default function View() {
     enabled: !!id,
   });
 
-  const defaultClubId = fromClub || data?.formattedData[0]?.clubId || 0;
+  const defaultClubId = data?.formattedData[0]?.clubId || 0;
 
   const [clubId, setClubId] = useQueryState(
     "club",
@@ -64,23 +65,15 @@ export default function View() {
   const clubHistory = history?.filter((stat) => stat.club_id === clubId);
 
   return (
-    <div className="mx-auto max-w-4xl p-2">
-      {fromClub ? (
-        <Link
-          to={`~/club/${fromClub}`}
-          className="text-muted-foreground text-sm"
-        >
+    <div className="mx-auto grid max-w-4xl gap-4 p-2">
+      {clubId && (
+        <Link to={`~/club/${clubId}`} className="text-muted-foreground text-sm">
           <ArrowLeft className="mr-2 inline-block h-4 w-4 align-text-top" />
           Retour au club
         </Link>
-      ) : (
-        <Link to="~/" className="text-muted-foreground text-sm">
-          <ArrowLeft className="mr-2 inline-block h-4 w-4 align-text-top" />
-          Retour à l'accueil
-        </Link>
       )}
 
-      <div className="my-8 flex gap-4">
+      <div className="flex items-center gap-4 py-4">
         <div className="flex-none">
           <div className="bg-muted h-16 w-16 rounded-full border-2 border-dashed"></div>
         </div>
@@ -88,13 +81,13 @@ export default function View() {
           <p className="font-new-amsterdam text-4xl">
             {player.firstname} {player.lastname}
           </p>
-          <p>
+          <p className="text-muted-foreground text-sm">
             Inscrit depuis le {new Date(player.created_at).toLocaleDateString()}
           </p>
         </div>
       </div>
 
-      <div className="my-4 grid gap-2">
+      <div className="grid gap-2">
         <Label>Club</Label>
         <Select
           onValueChange={(value) => setClubId(parseInt(value, 10))}
@@ -116,7 +109,7 @@ export default function View() {
       {clubData && (
         <Card>
           <CardHeader>
-            <CardTitle>Mes actions</CardTitle>
+            <CardTitle>Actions</CardTitle>
           </CardHeader>
           <CardContent>
             <PlayerStatsChart data={clubData.statsBySeason} />
@@ -124,18 +117,56 @@ export default function View() {
         </Card>
       )}
 
-      <br />
+      {clubHistory && <HistoryCard clubId={clubId} history={clubHistory} />}
+    </div>
+  );
+}
 
-      <Card>
-        <CardHeader>
-          <CardTitle>Historique</CardTitle>
-        </CardHeader>
-        <CardContent className="overflow-x-auto">
+function HistoryCard({
+  clubId,
+  history,
+}: {
+  clubId: number;
+  history: Tables<"game_report">[];
+}) {
+  const { data: seasons } = useSeasons(clubId);
+  const options = seasons?.map((season) => ({
+    label: season.name,
+    value: season.id,
+  }));
+  const [seasonId, setSeasonId] = useQueryState("season", {
+    defaultValue: options?.[0]?.value || "",
+  });
+
+  return (
+    <Card className="overflow-hidden">
+      <CardHeader>
+        <CardTitle>Historique</CardTitle>
+      </CardHeader>
+      <CardContent>
+        <div className="mb-2 grid gap-2">
+          <Label>Saison</Label>
+          <Select
+            onValueChange={(value) => setSeasonId(value)}
+            defaultValue={seasonId}
+          >
+            <SelectTrigger className="w-fit">
+              <SelectValue placeholder="Toutes saisons" />
+            </SelectTrigger>
+            <SelectContent>
+              {options?.map((option) => (
+                <SelectItem key={option.value} value={option.value}>
+                  {option.label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </div>
+        <div className="overflow-x-auto">
           <Table>
             <TableHeader>
               <TableRow>
                 <TableHead>Date</TableHead>
-                <TableHead>Saison</TableHead>
                 <TableHead>Équipe</TableHead>
                 <TableHead>Buts</TableHead>
                 <TableHead>Passes décisives</TableHead>
@@ -143,7 +174,7 @@ export default function View() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {clubHistory?.map((stat) => (
+              {history.map((stat) => (
                 <TableRow key={stat.game_id}>
                   <TableCell>
                     {history?.length
@@ -152,7 +183,6 @@ export default function View() {
                         )
                       : "Aucune donnée"}
                   </TableCell>
-                  <TableCell>{stat.season_name}</TableCell>
                   <TableCell>{stat.user_team}</TableCell>
                   <TableCell>{stat.goals}</TableCell>
                   <TableCell>{stat.assists}</TableCell>
@@ -161,8 +191,8 @@ export default function View() {
               ))}
             </TableBody>
           </Table>
-        </CardContent>
-      </Card>
-    </div>
+        </div>
+      </CardContent>
+    </Card>
   );
 }
