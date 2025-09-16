@@ -19,8 +19,9 @@ export default function UpcomingGames() {
           Une erreur est survenue lors du chargement des matches.
         </p>
       ) : data.length === 0 ? (
-        <p className="mt-4 text-center">
-          Aucun match trouvé. Créez un match pour commencer !
+        <p className="my-8 text-center">
+          Aucun match trouvé. <Link to="~/game/create">Créez un match</Link>{" "}
+          pour commencer !
         </p>
       ) : (
         <GamesCarousel games={data} />

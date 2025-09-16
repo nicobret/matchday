@@ -143,13 +143,13 @@ export function getGameDurationInMinutes(duration: string) {
 }
 
 export function getGameStatusString(game: Tables<"games">): string {
-  const startDate = new Date(game.date);
-  const durationInMinutes = getGameDurationInMinutes(game.duration as string);
-  const endDate = addMinutes(startDate, durationInMinutes);
-
   if (game.status === "deleted") {
     return "Match supprimé";
   }
+
+  const startDate = new Date(game.date);
+  const durationInMinutes = getGameDurationInMinutes(game.duration as string);
+  const endDate = addMinutes(startDate, durationInMinutes);
 
   if (isPast(endDate)) {
     if (game.score) {
@@ -164,6 +164,10 @@ export function getGameStatusString(game: Tables<"games">): string {
   }
 
   const daysUntilGame = differenceInCalendarDays(startDate, new Date());
+
+  if (daysUntilGame === 0) {
+    return "Le match a lieu aujourd'hui.";
+  }
 
   if (daysUntilGame === 1) {
     return "Le match a lieu demain.";

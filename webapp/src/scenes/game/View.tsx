@@ -1,13 +1,14 @@
-import { SessionContext } from "@/components/auth-provider";
 import { buttonVariants } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import useAuth from "@/lib/auth/useAuth";
 import {
+  type Game,
   getGameDurationInMinutes,
   getGameStatusString,
 } from "@/lib/game/gameService";
 import useGame from "@/lib/game/useGame";
 import { useMembers } from "@/lib/member/useMembers";
-import { getPlayerChannel } from "@/lib/player/player.service";
+import { getPlayerChannel, type Player } from "@/lib/player/player.service";
 import usePlayers from "@/lib/player/usePlayers";
 import { addMinutes, isFuture, isPast } from "date-fns";
 import {
@@ -18,7 +19,7 @@ import {
   Pencil,
   Users,
 } from "lucide-react";
-import { useContext, useEffect } from "react";
+import { useEffect } from "react";
 import { Link, useParams } from "wouter";
 import AddToCalendar from "./components/AddToCalendar";
 import GameStats from "./components/GameStats";
@@ -32,7 +33,7 @@ import Score from "./components/Score";
 
 export default function View() {
   const { id } = useParams();
-  const { session } = useContext(SessionContext);
+  const { isAuthenticated, session } = useAuth();
   const {
     data: game,
     isPending: isGamePending,
@@ -47,7 +48,6 @@ export default function View() {
   const { isMember } = useMembers(game?.club_id);
   const confirmedPlayers =
     players?.filter((p) => p.status === "confirmed") || [];
-  const player = players?.find((p) => p.user_id === session?.user.id);
 
   useEffect(() => {
     if (!id) return;
@@ -101,14 +101,14 @@ export default function View() {
         <p className="text-muted-foreground text-xs font-bold uppercase tracking-tight">
           <Link
             to={`~/club/${game.club_id}`}
-            className="underline decoration-dotted underline-offset-4"
+            className="underline underline-offset-4"
           >
             {game.club?.name}
           </Link>
           {game.season?.name ? ` • Saison ${game.season?.name}` : ""}
         </p>
 
-        <h1 className="font-new-amsterdam leading-12 mt-2 text-5xl">
+        <h1 className="font-new-amsterdam leading-12 mt-1 text-5xl">
           {new Date(game.date).toLocaleDateString("fr-FR", {
             weekday: "long",
             day: "numeric",
@@ -186,41 +186,54 @@ export default function View() {
         </div>
       </div>
 
-      <Tabs
-        defaultValue={isPast(endDate) ? "stats" : "players"}
-        className="mt-8"
-      >
-        <TabsList className="mx-auto w-full md:w-auto">
-          <TabsTrigger value="players" disabled={!isMember} className="w-1/2">
-            <Users className="mr-2 inline-block h-4 w-4" />
-            Joueurs
-          </TabsTrigger>
-
-          <TabsTrigger value="stats" className="w-1/2">
-            <BarChart className="mr-2 inline-block h-4 w-4" />
-            Data
-          </TabsTrigger>
-        </TabsList>
-
-        <TabsContent value="players">
-          <div className="mt-4 grid grid-cols-1 gap-4">
-            <LineUp
-              game={game}
-              players={confirmedPlayers}
-              disabled={!isMember}
-            />
-            <PlayerTable players={players} />
-          </div>
-        </TabsContent>
-
-        <TabsContent value="stats" className="mt-4">
-          <div className="grid grid-cols-2 gap-4">
-            <Score game={game} players={confirmedPlayers} />
-            {!!player && <MyEvents player={player} />}
-            <GameStats gameId={Number(id)} />
-          </div>
-        </TabsContent>
-      </Tabs>
+      {isAuthenticated && <GameTabs game={game} players={players} />}
     </div>
+  );
+}
+
+function GameTabs({ game, players }: { game: Game; players: Player[] }) {
+  const { session } = useAuth();
+  const { isMember } = useMembers(game.club_id);
+  const confirmedPlayers =
+    players?.filter((p) => p.status === "confirmed") || [];
+  const player = players?.find((p) => p.user_id === session?.user.id);
+  const durationInMinutes = getGameDurationInMinutes(game.duration as string);
+  const endDate = addMinutes(new Date(game.date), durationInMinutes);
+
+  return (
+    <Tabs defaultValue={isPast(endDate) ? "stats" : "players"} className="mt-4">
+      <TabsList className="mx-auto w-full md:w-auto">
+        <TabsTrigger value="players" disabled={!isMember} className="w-1/2">
+          <Users className="mr-2 inline-block h-4 w-4" />
+          Liste
+        </TabsTrigger>
+
+        <TabsTrigger value="lineup" disabled={!isMember} className="w-1/2">
+          <Pencil className="mr-2 inline-block h-4 w-4" />
+          Compos
+        </TabsTrigger>
+
+        <TabsTrigger value="stats" className="w-1/2">
+          <BarChart className="mr-2 inline-block h-4 w-4" />
+          Data
+        </TabsTrigger>
+      </TabsList>
+
+      <TabsContent value="players">
+        <PlayerTable players={players} />
+      </TabsContent>
+
+      <TabsContent value="lineup">
+        <LineUp game={game} players={confirmedPlayers} disabled={!isMember} />
+      </TabsContent>
+
+      <TabsContent value="stats">
+        <div className="grid grid-cols-2 gap-4">
+          <Score game={game} players={confirmedPlayers} />
+          {!!player && <MyEvents player={player} />}
+          <GameStats gameId={game.id} />
+        </div>
+      </TabsContent>
+    </Tabs>
   );
 }

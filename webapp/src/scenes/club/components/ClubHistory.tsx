@@ -15,9 +15,8 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Club } from "@/lib/club/club.service";
+import type { Club } from "@/lib/club/club.service";
 import useGames from "@/lib/game/useGames";
-import { ArrowRight } from "lucide-react";
 import { useQueryState } from "nuqs";
 import { Link } from "wouter";
 
@@ -74,14 +73,22 @@ export default function ClubHistory({ club }: { club: Club }) {
             <TableRow>
               <TableHead>Date</TableHead>
               <TableHead>Score</TableHead>
-              <TableHead>Actions</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {games.map((game) => (
               <TableRow key={game.id}>
                 <TableCell>
-                  {new Date(game.date).toLocaleDateString("fr-FR")}
+                  <Link
+                    to={`~/game/${game.id}`}
+                    className={buttonVariants({ variant: "link" })}
+                  >
+                    {new Date(game.date).toLocaleDateString("fr-FR", {
+                      weekday: "long",
+                      month: "short",
+                      day: "numeric",
+                    })}
+                  </Link>
                 </TableCell>
                 <TableCell>
                   {game.score && game.score.length === 2
@@ -89,17 +96,6 @@ export default function ClubHistory({ club }: { club: Club }) {
                       " - " +
                       game.score[1].toString()
                     : "N/A"}
-                </TableCell>
-                <TableCell>
-                  <Link
-                    to={`~/game/${game.id}`}
-                    className={
-                      buttonVariants({ variant: "secondary" }) + "gap-2"
-                    }
-                  >
-                    Voir
-                    <ArrowRight className="ml-2 h-5 w-5" />
-                  </Link>
                 </TableCell>
               </TableRow>
             ))}

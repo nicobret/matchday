@@ -1,7 +1,8 @@
 import { QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
+import { useQueryState } from "nuqs";
 import { NuqsAdapter } from "nuqs/adapters/react";
-import { Suspense, lazy } from "react";
+import { lazy, Suspense } from "react";
 import { ErrorBoundary } from "react-error-boundary";
 import { Redirect, Route, Switch } from "wouter";
 import { SessionProvider } from "./components/auth-provider.tsx";
@@ -81,9 +82,10 @@ function Fallback({
 function RedirectIfProfileNotComplete() {
   const { session } = useAuth();
   const { data: profile } = useProfile(session?.user?.id);
-  const params = new URLSearchParams(window.location.search);
-  const redirectTo = params.get("redirectTo");
-  const url = redirectTo ? `/account?redirectTo=${redirectTo}` : "/account";
+  const [url] = useQueryState("redirectTo", {
+    defaultValue: "/account",
+    clearOnDefault: true,
+  });
 
   if (profile && !profile?.firstname) {
     return <Redirect to={url} />;
