@@ -1,6 +1,6 @@
 import supabase from "@/utils/supabase";
 import { CalendarEvent } from "calendar-link";
-import { addMinutes, differenceInDays, isPast } from "date-fns";
+import { addMinutes, differenceInCalendarDays, isPast } from "date-fns";
 import { Tables, TablesInsert, TablesUpdate } from "shared/types/supabase";
 
 // Types
@@ -143,13 +143,13 @@ export function getGameDurationInMinutes(duration: string) {
 }
 
 export function getGameStatusString(game: Tables<"games">): string {
-  const startDate = new Date(game.date);
-  const durationInMinutes = getGameDurationInMinutes(game.duration as string);
-  const endDate = addMinutes(startDate, durationInMinutes);
-
   if (game.status === "deleted") {
     return "Match supprimé";
   }
+
+  const startDate = new Date(game.date);
+  const durationInMinutes = getGameDurationInMinutes(game.duration as string);
+  const endDate = addMinutes(startDate, durationInMinutes);
 
   if (isPast(endDate)) {
     if (game.score) {
@@ -163,7 +163,17 @@ export function getGameStatusString(game: Tables<"games">): string {
     return "Match en cours";
   }
 
-  return `Le match commence dans ${differenceInDays(startDate, new Date())} jours.`;
+  const daysUntilGame = differenceInCalendarDays(startDate, new Date());
+
+  if (daysUntilGame === 0) {
+    return "Le match a lieu aujourd'hui.";
+  }
+
+  if (daysUntilGame === 1) {
+    return "Le match a lieu demain.";
+  }
+
+  return `Le match a lieu dans ${daysUntilGame} jours.`;
 }
 
 export const categories = [

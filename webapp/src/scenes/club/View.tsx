@@ -1,6 +1,6 @@
-import { SessionContext } from "@/components/auth-provider";
 import { buttonVariants } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import useAuth from "@/lib/auth/useAuth";
 import useClub from "@/lib/club/useClub";
 import { useMembers } from "@/lib/member/useMembers";
 import {
@@ -14,7 +14,6 @@ import {
   Users,
 } from "lucide-react";
 import { useQueryState } from "nuqs";
-import { useContext } from "react";
 import { Link, useParams } from "wouter";
 import ClubHistory from "./components/ClubHistory";
 import ClubInviteMenu from "./components/ClubInviteMenu";
@@ -25,7 +24,7 @@ import LeaveClubButton from "./components/LeaveClubButton";
 import UpcomingGamesTable from "./components/UpcomingGamesTable";
 
 export default function View() {
-  const { session } = useContext(SessionContext);
+  const { session } = useAuth();
   const { id } = useParams();
   const clubId = Number(id);
   const { data: club, isPending, isError, isAdmin } = useClub(clubId);
@@ -57,11 +56,11 @@ export default function View() {
 
   return (
     <div className="mx-auto max-w-4xl p-2">
-      <div className="flex-none md:w-96 md:pr-4">
-        <header className="mx-auto flex max-w-lg gap-4">
+      <div className="max-w-xl flex-none">
+        <header className="mx-auto flex gap-4">
           <div className="h-28 w-28 flex-none rounded-xl border-2 border-dashed"></div>
           <div>
-            <h1 className="font-new-amsterdam scroll-m-20 text-4xl">
+            <h1 className="font-new-amsterdam line-clamp-1 scroll-m-20 text-4xl">
               {club.name}
             </h1>
             <p
@@ -77,7 +76,7 @@ export default function View() {
           </div>
         </header>
 
-        <div className="text-muted-foreground mx-auto mt-4 max-w-lg rounded-lg border p-3 text-sm leading-loose">
+        <div className="text-muted-foreground mt-4 rounded-lg border p-3 text-sm leading-loose">
           <p>
             <Shield className="mr-2 inline-block h-4 w-4 align-text-top" />
             Créé le{" "}
@@ -113,24 +112,24 @@ export default function View() {
         </div>
       </div>
 
-      <Tabs value={tab} onValueChange={setTab} className="mt-8 w-full">
-        <TabsList className="w-full max-w-lg">
+      <Tabs value={tab} onValueChange={setTab} className="mt-4">
+        <TabsList className="w-full max-w-xl">
           <TabsTrigger value="schedule" className="w-1/3">
             <Calendar className="mr-2 h-4 w-4" />
             Matches
           </TabsTrigger>
-          <TabsTrigger value="members" className="w-1/3">
+          <TabsTrigger value="members" className="w-1/3" disabled={!isMember}>
             <Users className="mr-2 h-4 w-4" />
             Membres
           </TabsTrigger>
-          <TabsTrigger value="stats" className="w-1/3">
+          <TabsTrigger value="stats" className="w-1/3" disabled={!isMember}>
             <ChartLine className="mr-2 h-4 w-4" />
             Stats
           </TabsTrigger>
         </TabsList>
 
         <TabsContent value="schedule">
-          <section id="schedule" className="mt-8">
+          <section id="schedule" className="mt-4">
             <h2 className="font-new-amsterdam scroll-m-20 text-4xl">
               Calendrier
             </h2>
@@ -148,12 +147,14 @@ export default function View() {
             </div>
           </section>
 
-          <section id="history" className="mt-10">
-            <h2 className="font-new-amsterdam scroll-m-20 text-4xl">
-              Historique
-            </h2>
-            <ClubHistory club={club} />
-          </section>
+          {isMember && (
+            <section id="history" className="mt-8">
+              <h2 className="font-new-amsterdam scroll-m-20 text-4xl">
+                Historique
+              </h2>
+              <ClubHistory club={club} />
+            </section>
+          )}
         </TabsContent>
 
         <TabsContent value="members">

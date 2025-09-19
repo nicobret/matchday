@@ -19,13 +19,16 @@ export default function ClubCarousel({ clubs }: { clubs: Club[] }) {
               new Date(a.created_at).getTime(),
           )
           .map((club) => (
-            <CarouselItem key={club.id} className="sm:basis-1/2 md:basis-1/3">
+            <CarouselItem
+              key={club.id}
+              className="w-full sm:basis-1/2 md:basis-1/3"
+            >
               <ClubCard club={club} />
             </CarouselItem>
           ))}
-        <CarouselPrevious />
-        <CarouselNext />
       </CarouselContent>
+      <CarouselPrevious />
+      <CarouselNext />
     </Carousel>
   );
 }

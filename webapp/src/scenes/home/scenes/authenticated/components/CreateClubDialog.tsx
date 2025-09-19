@@ -28,7 +28,11 @@ import { useLocation } from "wouter";
 
 type FormValues = Omit<TablesInsert<"clubs">, "creator_id">;
 
-export default function CreateDialog() {
+export default function CreateDialog({
+  buttonClassName,
+}: {
+  buttonClassName?: string;
+}) {
   const [, navigate] = useLocation();
   const { session } = useAuth();
   const { register, handleSubmit } = useForm<FormValues>();
@@ -53,8 +57,8 @@ export default function CreateDialog() {
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button variant="secondary">
-          <Plus className="mr-2 h-4 w-4" />
+        <Button variant="outline" className={buttonClassName}>
+          <Plus className="h-4 w-4" />
           Créer un club
         </Button>
       </DialogTrigger>

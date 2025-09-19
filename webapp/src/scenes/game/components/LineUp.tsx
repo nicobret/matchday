@@ -23,7 +23,7 @@ export default function LineUp({
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Compos</CardTitle>
+        <CardTitle>Compositions</CardTitle>
         <CardDescription>
           {players.length} / {game.total_players} joueurs inscrits.
         </CardDescription>

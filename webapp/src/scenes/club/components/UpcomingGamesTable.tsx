@@ -8,11 +8,10 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Game } from "@/lib/game/gameService";
+import type { Game } from "@/lib/game/gameService";
 import useGames from "@/lib/game/useGames";
 import { useMembers } from "@/lib/member/useMembers";
 import usePlayers from "@/lib/player/usePlayers";
-import { Eye } from "lucide-react";
 import { useContext } from "react";
 import { Link } from "wouter";
 import JoinGameButton from "../../game/components/JoinGameButton";
@@ -66,11 +65,16 @@ function GameRow({ game }: { game: Game }) {
   return (
     <TableRow key={game.id}>
       <TableCell>
-        {new Date(game.date).toLocaleDateString("fr-FR", {
-          weekday: "long",
-          month: "long",
-          day: "numeric",
-        })}
+        <Link
+          to={`~/game/${game.id}`}
+          className={buttonVariants({ variant: "link" })}
+        >
+          {new Date(game.date).toLocaleDateString("fr-FR", {
+            weekday: "long",
+            month: "short",
+            day: "numeric",
+          })}
+        </Link>
       </TableCell>
       {isMember && (
         <TableCell>
@@ -81,13 +85,6 @@ function GameRow({ game }: { game: Game }) {
         <div className="grid max-w-xl gap-2 md:grid-cols-2">
           {!isPlayer && <JoinGameButton game={game} />}
           {session && isPlayer && <LeaveGameButton gameId={game.id} />}
-          <Link
-            to={`~/game/${game.id}`}
-            className={buttonVariants({ variant: "secondary" })}
-          >
-            <Eye />
-            Voir la page
-          </Link>
         </div>
       </TableCell>
     </TableRow>
