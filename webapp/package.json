@@ -4,9 +4,9 @@
   "version": "0.2.0",
   "type": "module",
   "scripts": {
-    "dev": "vite",
-    "build": "tsc && vite build",
-    "preview": "vite preview"
+    "dev": "bun build.js --serve",
+    "build": "bun build.js --production",
+    "preview": "bun serve.js"
   },
   "dependencies": {
     "@dnd-kit/core": "^6.3.1",
@@ -40,15 +40,14 @@
     "wouter": "^3.6.0"
   },
   "devDependencies": {
-    "@tailwindcss/vite": "^4.1.13",
+    "@tailwindcss/cli": "^4.1.13",
     "@types/node": "^22.10.2",
     "@types/react": "^19.0.10",
     "@types/react-dom": "^19.0.4",
-    "@vitejs/plugin-react": "^5.0.2",
+    "bun-types": "^1.2.22",
     "prettier": "^3.5.3",
     "prettier-plugin-tailwindcss": "^0.6.11",
     "tailwindcss": "^4.0.0",
-    "typescript": "^5.3.3",
-    "vite": "npm:rolldown-vite@latest"
+    "typescript": "^5.3.3"
   }
 }
