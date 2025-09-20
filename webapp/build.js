@@ -68,6 +68,24 @@ function processHTML() {
   writeFileSync("dist/index.html", html);
 }
 
+// Generate environment config file
+function generateEnvConfig() {
+  const env = loadEnv();
+  const envConfig = `// Auto-generated environment config
+export const env = {
+${Object.entries(env)
+  .map(([key, value]) => `  ${key}: "${value}",`)
+  .join("\n")}
+};
+`;
+
+  // Ensure src/config directory exists
+  if (!existsSync("src/config")) mkdirSync("src/config", { recursive: true });
+
+  writeFileSync("src/config/env.ts", envConfig);
+  console.log("📝 Generated environment config");
+}
+
 // Main build function
 async function build() {
   const isProduction = process.argv.includes("--production");
@@ -80,11 +98,8 @@ async function build() {
   // Ensure dist exists
   if (!existsSync("dist")) mkdirSync("dist", { recursive: true });
 
-  // Load environment variables
-  const env = loadEnv();
-  const envDefines = Object.entries(env)
-    .map(([k, v]) => `--define process.env.${k}="${v}"`)
-    .join(" ");
+  // Generate environment config
+  generateEnvConfig();
 
   // Build CSS
   const cssCmd = `bunx tailwindcss -i src/index.css -o dist/index.css ${isProduction ? "--minify" : ""}`;
@@ -104,7 +119,6 @@ async function build() {
   ];
 
   if (isProduction) jsArgs.push("--minify");
-  if (envDefines) jsArgs.push(...envDefines.split(" "));
 
   console.log("⚡ Building JavaScript...");
   const jsResult = Bun.spawnSync(["bun", ...jsArgs]);
