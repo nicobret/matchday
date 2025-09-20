@@ -21,3 +21,6 @@ dist-ssr
 *.sln
 *.sw?
 .env
+
+# Generated environment config (contains sensitive data)
+webapp/src/config/env.ts
