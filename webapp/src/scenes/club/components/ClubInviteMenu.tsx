@@ -16,20 +16,16 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { useToast } from "@/hooks/use-toast";
 import { useCopyToClipboard } from "@uidotdev/usehooks";
 import { Send } from "lucide-react";
+import { toast } from "sonner";
 
 export default function ClubInviteMenu({ disabled = false }) {
-  const { toast } = useToast();
   const [, copyToClipboard] = useCopyToClipboard();
 
   function handleCopyLink() {
     copyToClipboard(window.location.href);
-    toast({
-      title: "Lien copié",
-      description: "Le lien a été copié dans le presse-papiers.",
-    });
+    toast.success("Le lien a été copié dans le presse-papiers.");
   }
 
   return (

@@ -1,16 +1,15 @@
-import { useToast } from "@/hooks/use-toast";
 import { useMutation } from "@tanstack/react-query";
+import { toast } from "sonner";
 import { deleteClub } from "./club.repository";
 
 export default function useDeleteClub(clubId: number) {
-  const { toast } = useToast();
   return useMutation({
     mutationFn: () => deleteClub(clubId),
     onSuccess: () => {
-      toast({ description: "Club supprimé avec succès" });
+      toast.success("Club supprimé avec succès");
     },
     onError: (error: Error) => {
-      toast({ description: error.message, variant: "destructive" });
+      toast.error(error.message);
     },
   });
 }

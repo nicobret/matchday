@@ -1,4 +1,3 @@
-import { useToast } from "@/hooks/use-toast";
 import {
   Player,
   updatePlayer,
@@ -8,6 +7,7 @@ import { DndContext, DragEndEvent } from "@dnd-kit/core";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Shirt } from "lucide-react";
 import { TablesUpdate } from "shared/types/supabase";
+import { toast } from "sonner";
 import Team from "./Team";
 
 type LineUpEditorProps = {
@@ -32,7 +32,6 @@ export default function LineupEditor({
   players,
   disabled,
 }: LineUpEditorProps) {
-  const { toast } = useToast();
   const client = useQueryClient();
 
   const { mutate } = useMutation({
@@ -49,9 +48,7 @@ export default function LineupEditor({
 
   function handleDrop({ active, over }: DragEndEvent) {
     if (disabled) {
-      toast({
-        description: "Vous n'avez pas la permission de modifier l'équipe.",
-      });
+      toast.error("Vous n'avez pas la permission de modifier l'équipe.");
       return;
     }
     if (!over) return;
@@ -59,7 +56,7 @@ export default function LineupEditor({
     if (active.data.current?.player.team === team) return;
     mutate(
       { playerId: active.id as string, payload: { team } },
-      { onSuccess: () => toast({ description: "Modification enregistrée" }) },
+      { onSuccess: () => toast.success("Modification enregistrée") },
     );
   }
 
