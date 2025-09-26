@@ -9,7 +9,6 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
-import { useToast } from "@/hooks/use-toast";
 import useAuth from "@/lib/auth/useAuth";
 import useClub from "@/lib/club/useClub";
 import { categories } from "@/lib/game/gameService";
@@ -18,6 +17,7 @@ import { useMembers } from "@/lib/member/useMembers";
 import { fromZonedTime } from "date-fns-tz";
 import { Controller, useForm } from "react-hook-form";
 import type { TablesInsert } from "shared/types/supabase";
+import { toast } from "sonner";
 import { Link, useLocation } from "wouter";
 
 type Payload = TablesInsert<"games">;
@@ -39,7 +39,6 @@ export default function GameForm({ clubId }: { clubId: number }) {
   const { mutate, isPending: isCreationPending } = useCreateGame();
   const { register, handleSubmit, control } = useForm<FormValues>();
   const { session } = useAuth();
-  const { toast } = useToast();
 
   if (!session?.user) {
     return <p className="text-center">Vous devez être connecté</p>;
@@ -86,7 +85,7 @@ export default function GameForm({ clubId }: { clubId: number }) {
 
     mutate(payload, {
       onSuccess: (game) => {
-        toast({ description: "Match créé avec succès" });
+        toast.success("Match créé avec succès");
         navigate(`~/game/${game?.id}`);
       },
     });

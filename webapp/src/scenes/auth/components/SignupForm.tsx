@@ -1,9 +1,9 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { useToast } from "@/hooks/use-toast";
 import supabase from "@/utils/supabase";
 import { useForm } from "react-hook-form";
+import { toast } from "sonner";
 import { useLocation } from "wouter";
 
 type SignupFormValues = {
@@ -17,7 +17,6 @@ export default function SignupForm() {
   const redirectTo = params.get("redirectTo");
   const { handleSubmit, register, watch } = useForm<SignupFormValues>();
   const [_, navigate] = useLocation();
-  const { toast } = useToast();
   const url = redirectTo ? `~/${redirectTo}` : "~/";
 
   async function onSubmit(data: SignupFormValues) {
@@ -32,11 +31,7 @@ export default function SignupForm() {
       // },
     });
     if (error) {
-      toast({
-        title: "Erreur",
-        description: error.message,
-        variant: "destructive",
-      });
+      toast.error(error.message);
       return;
     }
     navigate(url);

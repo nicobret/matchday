@@ -1,24 +1,19 @@
-import { useToast } from "@/hooks/use-toast";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { TablesInsert } from "shared/types/supabase";
+import { toast } from "sonner";
 import { createGame } from "./gameService";
 
 export default function useCreateGame() {
-  const { toast } = useToast();
   const queryClient = useQueryClient();
+
   return useMutation({
-    mutationFn: (payload: TablesInsert<"games">) => createGame(payload),
-    onSuccess: ({ club_id }) => {
-      queryClient.invalidateQueries({ queryKey: ["games", club_id] });
-      toast({
-        description: "Match créé",
-      });
+    mutationFn: (data: TablesInsert<"games">) => createGame(data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["games"] });
+      toast.success("Match créé avec succès");
     },
-    onError: (e: Error) => {
-      toast({
-        description: e.message || "Une erreur s'est produite",
-        variant: "destructive",
-      });
+    onError: (error: Error) => {
+      toast.error(error.message);
     },
   });
 }
