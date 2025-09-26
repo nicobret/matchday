@@ -7,9 +7,9 @@ export default function useCreateGame() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (data: TablesInsert<"games">) => createGame(data),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["games"] });
+    mutationFn: (payload: TablesInsert<"games">) => createGame(payload),
+    onSuccess: ({ club_id }) => {
+      queryClient.invalidateQueries({ queryKey: ["games", club_id] });
       toast.success("Match créé avec succès");
     },
     onError: (error: Error) => {

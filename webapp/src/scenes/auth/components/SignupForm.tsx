@@ -2,6 +2,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import supabase from "@/utils/supabase";
+import { useQueryState } from "nuqs";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { useLocation } from "wouter";
@@ -13,8 +14,7 @@ type SignupFormValues = {
 };
 
 export default function SignupForm() {
-  const params = new URLSearchParams(window.location.search);
-  const redirectTo = params.get("redirectTo");
+  const redirectTo = useQueryState("redirectTo");
   const { handleSubmit, register, watch } = useForm<SignupFormValues>();
   const [_, navigate] = useLocation();
   const url = redirectTo ? `~/${redirectTo}` : "~/";
