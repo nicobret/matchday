@@ -14,8 +14,8 @@ import { useMembers } from "@/lib/member/useMembers";
 import usePlayers from "@/lib/player/usePlayers";
 import { useContext } from "react";
 import { Link } from "wouter";
-import JoinGameButton from "../../game/components/JoinGameButton";
-import LeaveGameButton from "../../game/components/LeaveGameButton";
+import JoinGameButton from "../../../game/components/JoinGameButton";
+import LeaveGameButton from "../../../game/components/LeaveGameButton";
 
 export default function UpcomingGamesTable({ clubId }: { clubId: number }) {
   const {
@@ -83,8 +83,12 @@ function GameRow({ game }: { game: Game }) {
       )}
       <TableCell>
         <div className="grid max-w-xl gap-2 md:grid-cols-2">
-          {!isPlayer && <JoinGameButton game={game} />}
-          {session && isPlayer && <LeaveGameButton gameId={game.id} />}
+          {!isPlayer && (
+            <JoinGameButton game={game} size="sm" showIcon={false} />
+          )}
+          {session && isPlayer && (
+            <LeaveGameButton gameId={game.id} size="sm" showIcon={false} />
+          )}
         </div>
       </TableCell>
     </TableRow>

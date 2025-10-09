@@ -2,6 +2,14 @@
 
 @plugin 'tailwindcss-animate';
 
+@font-face {
+  font-display: swap;
+  font-family: "New Amsterdam";
+  font-style: normal;
+  font-weight: 400;
+  src: url("/fonts/new-amsterdam-v1-latin-regular.woff2") format("woff2");
+}
+
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
@@ -78,7 +86,7 @@
   If we ever want to remove these styles, we need to add an explicit border
   color utility to any element that depends on these defaults.
 */
-@layer base {
+/* @layer base {
   *,
   ::after,
   ::before,
@@ -86,7 +94,7 @@
   ::file-selector-button {
     border-color: var(--color-gray-200, currentColor);
   }
-}
+} */
 
 :root {
   --background: hsl(0, 0%, 100%);

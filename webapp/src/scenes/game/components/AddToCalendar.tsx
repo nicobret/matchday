@@ -21,7 +21,7 @@ export default function AddToCalendar({ game }: { game: Game }) {
       <DropdownMenuTrigger asChild>
         <Button variant="outline">
           <Calendar />
-          <p className="truncate">Ajouter au calendrier</p>
+          <p className="truncate">Ajouter</p>
         </Button>
       </DropdownMenuTrigger>
 
