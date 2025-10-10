@@ -12,7 +12,7 @@ export default function ClubStats({ clubId }: { clubId: number }) {
     return <div>Erreur</div>;
   }
   return (
-    <div className="mt-4 grid gap-8 md:grid-cols-2">
+    <div className="grid gap-8 pb-4 pt-2">
       <WinStats data={data} />
       <EventStats data={data} />
     </div>

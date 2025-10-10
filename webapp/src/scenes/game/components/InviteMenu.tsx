@@ -74,13 +74,13 @@ export default function InviteMenu({
     <Dialog>
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <Button disabled={disabled} variant="secondary">
+          <Button disabled={disabled} variant="outline">
             <Send />
             Inviter
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent>
-          <DropdownMenuLabel>Inviter un joueur :</DropdownMenuLabel>
+          <DropdownMenuLabel>Inviter un joueur</DropdownMenuLabel>
           <DropdownMenuSeparator />
           <DialogTrigger asChild>
             <DropdownMenuItem>Inviter un membre du club</DropdownMenuItem>

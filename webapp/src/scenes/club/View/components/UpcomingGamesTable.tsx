@@ -1,5 +1,4 @@
 import { SessionContext } from "@/components/auth-provider";
-import { buttonVariants } from "@/components/ui/button";
 import {
   Table,
   TableBody,
@@ -14,8 +13,8 @@ import { useMembers } from "@/lib/member/useMembers";
 import usePlayers from "@/lib/player/usePlayers";
 import { useContext } from "react";
 import { Link } from "wouter";
-import JoinGameButton from "../../game/components/JoinGameButton";
-import LeaveGameButton from "../../game/components/LeaveGameButton";
+import JoinGameButton from "../../../game/components/JoinGameButton";
+import LeaveGameButton from "../../../game/components/LeaveGameButton";
 
 export default function UpcomingGamesTable({ clubId }: { clubId: number }) {
   const {
@@ -67,7 +66,7 @@ function GameRow({ game }: { game: Game }) {
       <TableCell>
         <Link
           to={`~/game/${game.id}`}
-          className={buttonVariants({ variant: "link" })}
+          className="text-primary underline underline-offset-4"
         >
           {new Date(game.date).toLocaleDateString("fr-FR", {
             weekday: "long",
@@ -83,8 +82,12 @@ function GameRow({ game }: { game: Game }) {
       )}
       <TableCell>
         <div className="grid max-w-xl gap-2 md:grid-cols-2">
-          {!isPlayer && <JoinGameButton game={game} />}
-          {session && isPlayer && <LeaveGameButton gameId={game.id} />}
+          {!isPlayer && (
+            <JoinGameButton game={game} size="sm" showIcon={false} />
+          )}
+          {session && isPlayer && (
+            <LeaveGameButton gameId={game.id} size="sm" showIcon={false} />
+          )}
         </div>
       </TableCell>
     </TableRow>

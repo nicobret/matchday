@@ -1,10 +1,4 @@
-import {
-  Card,
-  CardContent,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { Item, ItemContent, ItemHeader, ItemTitle } from "@/components/ui/item";
 import { Label } from "@/components/ui/label";
 import {
   Select,
@@ -24,7 +18,7 @@ import {
 import useGameStats from "@/lib/game/useGameStats";
 import { useState } from "react";
 
-export default function Statistics({ gameId }: { gameId: number }) {
+export default function GameStats({ gameId }: { gameId: number }) {
   const [team, setTeam] = useState("all");
   const [sortby, setSortby] = useState<"goals" | "assists" | "saves">("goals");
   const { data, isError, isPending } = useGameStats({ gameId, sortby });
@@ -36,12 +30,11 @@ export default function Statistics({ gameId }: { gameId: number }) {
     return <div>Erreur</div>;
   }
   return (
-    <Card id="stats" className="col-span-2">
-      <CardHeader>
-        <CardTitle>Actions des joueurs</CardTitle>
-      </CardHeader>
-
-      <CardContent>
+    <Item variant="outline">
+      <ItemHeader>
+        <ItemTitle>Actions des joueurs</ItemTitle>
+      </ItemHeader>
+      <ItemContent>
         {data.length ? (
           <>
             <div className="mb-2 flex gap-2">
@@ -85,35 +78,38 @@ export default function Statistics({ gameId }: { gameId: number }) {
                 </Select>
               </div>
             </div>
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Prénom</TableHead>
-                  <TableHead>Equipe</TableHead>
-                  <TableHead>Buts</TableHead>
-                  <TableHead>Passes décisives</TableHead>
-                  <TableHead>Arrêts</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {data
-                  .filter((row) => !!row.user_id)
-                  .filter((row) =>
-                    team === "all" ? true : row.user_team === team,
-                  )
-                  .map((row) => {
-                    return (
-                      <TableRow key={row.user_id}>
-                        <TableCell>{row.firstname}</TableCell>
-                        <TableCell>{row.user_team}</TableCell>
-                        <TableCell>{row.goals}</TableCell>
-                        <TableCell>{row.assists}</TableCell>
-                        <TableCell>{row.saves}</TableCell>
-                      </TableRow>
-                    );
-                  })}
-              </TableBody>
-            </Table>
+
+            <div className="overflow-x-auto">
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Prénom</TableHead>
+                    <TableHead>Equipe</TableHead>
+                    <TableHead>Buts</TableHead>
+                    <TableHead>Passes décisives</TableHead>
+                    <TableHead>Arrêts</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {data
+                    .filter((row) => !!row.user_id)
+                    .filter((row) =>
+                      team === "all" ? true : row.user_team === team,
+                    )
+                    .map((row) => {
+                      return (
+                        <TableRow key={row.user_id}>
+                          <TableCell>{row.firstname}</TableCell>
+                          <TableCell>{row.user_team}</TableCell>
+                          <TableCell>{row.goals}</TableCell>
+                          <TableCell>{row.assists}</TableCell>
+                          <TableCell>{row.saves}</TableCell>
+                        </TableRow>
+                      );
+                    })}
+                </TableBody>
+              </Table>
+            </div>
           </>
         ) : (
           <p className="text-muted-foreground text-center">
@@ -121,9 +117,7 @@ export default function Statistics({ gameId }: { gameId: number }) {
             match.
           </p>
         )}
-      </CardContent>
-
-      <CardFooter></CardFooter>
-    </Card>
+      </ItemContent>
+    </Item>
   );
 }

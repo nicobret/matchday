@@ -1,12 +1,5 @@
 import { Button } from "@/components/ui/button";
 import {
-  Card,
-  CardContent,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import {
   Dialog,
   DialogContent,
   DialogHeader,
@@ -14,6 +7,13 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
+import {
+  Item,
+  ItemActions,
+  ItemContent,
+  ItemHeader,
+  ItemTitle,
+} from "@/components/ui/item";
 import { Label } from "@/components/ui/label";
 import useUpdateGame from "@/lib/game/useUpdateGame";
 import { Player } from "@/lib/player/player.service";
@@ -28,13 +28,11 @@ export default function Result({
   players: Player[];
 }) {
   return (
-    <Card id="score" className="col-span-2 flex flex-col md:col-span-1">
-      <CardHeader>
-        <CardTitle className="flex items-center gap-3">
-          Résultat du match
-        </CardTitle>
-      </CardHeader>
-      <CardContent>
+    <Item variant="outline">
+      <ItemHeader>
+        <ItemTitle>Résultat du match</ItemTitle>
+      </ItemHeader>
+      <ItemContent>
         {game.score ? (
           <div className="grid grid-cols-3 gap-4">
             <div className="text-right">
@@ -44,9 +42,7 @@ export default function Result({
               {players
                 .filter((p) => p.team === 0)
                 .map((p) => (
-                  <p key={p.id}>
-                    {p.profile?.firstname} {p.profile?.lastname}
-                  </p>
+                  <p key={p.id}>{p.profile?.firstname}</p>
                 ))}
             </div>
 
@@ -70,13 +66,13 @@ export default function Result({
             </div>
           </div>
         ) : (
-          <p className="text-muted-foreground text-center">Aucun résultat.</p>
+          <p className="text-muted-foreground">Aucun résultat.</p>
         )}
-      </CardContent>
-      <CardFooter className="mt-auto">
+      </ItemContent>
+      <ItemActions>
         <ScoreDialog game={game} />
-      </CardFooter>
-    </Card>
+      </ItemActions>
+    </Item>
   );
 }
 
