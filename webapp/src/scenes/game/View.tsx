@@ -253,7 +253,7 @@ function GameTabs({ game, players }: { game: Game; players: Player[] }) {
         </TabsContent>
 
         <TabsContent value="stats">
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid gap-4">
             <Score game={game} players={confirmedPlayers} />
             {!!player && <MyEvents player={player} />}
             <GameStats gameId={game.id} />

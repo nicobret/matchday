@@ -1,12 +1,12 @@
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
+import {
+  Item,
+  ItemActions,
+  ItemContent,
+  ItemHeader,
+  ItemTitle,
+} from "@/components/ui/item";
 import { Label } from "@/components/ui/label";
 import { Player } from "@/lib/player/player.service";
 import useUpdatePlayer from "@/lib/player/useUpdatePlayer";
@@ -29,18 +29,16 @@ export default function MyEvents({ player }: { player: Player }) {
       onSuccess: () => client.invalidateQueries({ queryKey: ["game_stats"] }),
     });
   }
-
   return (
-    <Card id="events" className="col-span-2 md:col-span-1">
-      <CardHeader>
-        <CardTitle>Mes actions</CardTitle>
-      </CardHeader>
-
-      <CardContent>
+    <Item variant="outline">
+      <ItemHeader>
+        <ItemTitle>Mes actions</ItemTitle>
+      </ItemHeader>
+      <ItemContent>
         <form
           onSubmit={handleSubmit(onSubmit)}
           id="my-events"
-          className="grid grid-cols-3 gap-4"
+          className="grid gap-4 md:grid-cols-3"
         >
           <div>
             <Label htmlFor="goals">Buts</Label>
@@ -67,13 +65,17 @@ export default function MyEvents({ player }: { player: Player }) {
             />
           </div>
         </form>
-      </CardContent>
-
-      <CardFooter>
-        <Button type="submit" disabled={isPending} form="my-events">
+      </ItemContent>
+      <ItemActions>
+        <Button
+          type="submit"
+          disabled={isPending}
+          form="my-events"
+          variant="secondary"
+        >
           {isPending ? "En cours..." : "Enregistrer"}
         </Button>
-      </CardFooter>
-    </Card>
+      </ItemActions>
+    </Item>
   );
 }

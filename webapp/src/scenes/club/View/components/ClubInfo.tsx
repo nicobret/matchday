@@ -37,7 +37,7 @@ export default function ClubInfo({
         : "Vous n'êtes pas connecté(e)";
 
   return (
-    <Item>
+    <Item variant="outline">
       <ItemHeader>
         <ItemTitle>{userStatus}</ItemTitle>
       </ItemHeader>
