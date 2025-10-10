@@ -1,4 +1,3 @@
-import { buttonVariants } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import {
   Select,
@@ -81,7 +80,7 @@ export default function ClubHistory({ club }: { club: Club }) {
                 <TableCell>
                   <Link
                     to={`~/game/${game.id}`}
-                    className={buttonVariants({ variant: "link" })}
+                    className="text-primary underline underline-offset-4"
                   >
                     {new Date(game.date).toLocaleDateString("fr-FR", {
                       weekday: "long",

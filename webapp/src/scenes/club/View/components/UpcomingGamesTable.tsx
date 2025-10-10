@@ -1,5 +1,4 @@
 import { SessionContext } from "@/components/auth-provider";
-import { buttonVariants } from "@/components/ui/button";
 import {
   Table,
   TableBody,
@@ -67,7 +66,7 @@ function GameRow({ game }: { game: Game }) {
       <TableCell>
         <Link
           to={`~/game/${game.id}`}
-          className={buttonVariants({ variant: "link" })}
+          className="text-primary underline underline-offset-4"
         >
           {new Date(game.date).toLocaleDateString("fr-FR", {
             weekday: "long",

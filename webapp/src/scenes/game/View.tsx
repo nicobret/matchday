@@ -196,7 +196,7 @@ function GameInfos({
         {isMember && (
           <Link
             to="/edit"
-            className={buttonVariants({ variant: "outline", size: "sm" })}
+            className={buttonVariants({ variant: "secondary", size: "sm" })}
           >
             Modifier
           </Link>
@@ -234,7 +234,7 @@ function GameTabs({ game, players }: { game: Game; players: Player[] }) {
         </TabsTrigger>
       </TabsList>
 
-      <div className="mt-4 rounded-lg border p-4">
+      <div className="bg-muted/50 mt-4 rounded-lg border p-4">
         <TabsContent value="players">
           <p className="text-muted-foreground mb-2 text-sm">
             {confirmedPlayers.length} / {game.total_players} joueurs inscrits.

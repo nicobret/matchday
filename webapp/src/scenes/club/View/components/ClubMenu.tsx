@@ -13,11 +13,9 @@ import { Link } from "wouter";
 import ClubInviteMenu from "./ClubInviteMenu";
 
 export default function ClubMenu({
-  isMember,
   isAdmin,
   clubId,
 }: {
-  isMember: boolean;
   isAdmin: boolean;
   clubId: number;
 }) {
@@ -48,12 +46,10 @@ export default function ClubMenu({
                 </Link>
               </DropdownMenuItem>
             )}
-            {isMember && (
-              <DropdownMenuItem onClick={handleLeave} disabled={isPending}>
-                <Ban />
-                Quitter
-              </DropdownMenuItem>
-            )}
+            <DropdownMenuItem onClick={handleLeave} disabled={isPending}>
+              <Ban />
+              Quitter
+            </DropdownMenuItem>
           </DropdownMenuGroup>
         </DropdownMenuContent>
       </DropdownMenu>
