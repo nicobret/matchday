@@ -39,7 +39,7 @@ import LeaveGameButton from "./components/LeaveGameButton";
 import LineupEditor from "./components/LineupEditor";
 import MyEvents from "./components/MyEvents";
 import PlayerTable from "./components/PlayerTable";
-import Score from "./components/Score";
+import ScoreBoard from "./components/ScoreBoard";
 
 export default function View() {
   const { id } = useParams();
@@ -130,7 +130,7 @@ export default function View() {
           </p>
           {isFuture(endDate) && (
             <p
-              className={`text-sm ${isPlayer ? "text-primary" : "text-muted-foreground"}`}
+              className={`text-sm leading-relaxed ${isPlayer ? "text-primary" : "text-muted-foreground"}`}
             >
               {getPlayerStatusString()}
             </p>
@@ -234,7 +234,7 @@ function GameTabs({ game, players }: { game: Game; players: Player[] }) {
         </TabsTrigger>
       </TabsList>
 
-      <div className="bg-muted/50 mt-4 rounded-lg border p-4">
+      <div className="bg-muted/30 mt-4 rounded-lg border p-4">
         <TabsContent value="players">
           <p className="text-muted-foreground mb-2 text-sm">
             {confirmedPlayers.length} / {game.total_players} joueurs inscrits.
@@ -253,10 +253,12 @@ function GameTabs({ game, players }: { game: Game; players: Player[] }) {
         </TabsContent>
 
         <TabsContent value="stats">
-          <div className="grid gap-4">
-            <Score game={game} players={confirmedPlayers} />
+          <div className="grid gap-4 md:grid-cols-2">
+            <ScoreBoard game={game} players={confirmedPlayers} />
             {!!player && <MyEvents player={player} />}
-            <GameStats gameId={game.id} />
+            <div className="md:col-span-2">
+              <GameStats gameId={game.id} />
+            </div>
           </div>
         </TabsContent>
       </div>

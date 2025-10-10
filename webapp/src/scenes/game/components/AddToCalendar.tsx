@@ -26,25 +26,25 @@ export default function AddToCalendar({ game }: { game: Game }) {
       </DropdownMenuTrigger>
 
       <DropdownMenuContent align="start">
-        <DropdownMenuItem asChild className="p-4">
+        <DropdownMenuItem asChild>
           <a href={googleUrl} target="_blank" className="flex gap-2">
             Google
           </a>
         </DropdownMenuItem>
 
-        <DropdownMenuItem asChild className="p-4">
+        <DropdownMenuItem asChild>
           <a href={outlookUrl} target="_blank" className="flex gap-2">
             Outlook
           </a>
         </DropdownMenuItem>
 
-        <DropdownMenuItem asChild className="p-4">
+        <DropdownMenuItem asChild>
           <a href={yahooUrl} target="_blank" className="flex gap-2">
             Yahoo
           </a>
         </DropdownMenuItem>
 
-        <DropdownMenuItem asChild className="p-4">
+        <DropdownMenuItem asChild>
           <a href={icsUrl} target="_blank" className="flex gap-2">
             iCal
           </a>

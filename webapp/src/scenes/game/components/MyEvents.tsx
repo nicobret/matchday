@@ -1,9 +1,8 @@
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import {
   Item,
-  ItemActions,
   ItemContent,
+  ItemFooter,
   ItemHeader,
   ItemTitle,
 } from "@/components/ui/item";
@@ -11,71 +10,51 @@ import { Label } from "@/components/ui/label";
 import { Player } from "@/lib/player/player.service";
 import useUpdatePlayer from "@/lib/player/useUpdatePlayer";
 import { useQueryClient } from "@tanstack/react-query";
-import { useForm } from "react-hook-form";
-import { TablesUpdate } from "shared/types/supabase";
-
-type FormValues = Pick<
-  TablesUpdate<"game_player">,
-  "goals" | "saves" | "assists"
->;
+import { useState } from "react";
+import NumberInput from "./NumberInput";
 
 export default function MyEvents({ player }: { player: Player }) {
+  const [goals, setsGoals] = useState(player.goals || 0);
+  const [assists, setAssists] = useState(player.assists || 0);
+  const [saves, setSaves] = useState(player.saves || 0);
   const { mutate, isPending } = useUpdatePlayer(player);
   const client = useQueryClient();
-  const { handleSubmit, register } = useForm<FormValues>();
 
-  function onSubmit(data: FormValues) {
-    mutate(data, {
-      onSuccess: () => client.invalidateQueries({ queryKey: ["game_stats"] }),
-    });
+  function handleSubmit() {
+    mutate(
+      { goals, assists, saves },
+      {
+        onSuccess: () => client.invalidateQueries({ queryKey: ["game_stats"] }),
+      },
+    );
   }
+
   return (
     <Item variant="outline">
       <ItemHeader>
         <ItemTitle>Mes actions</ItemTitle>
       </ItemHeader>
       <ItemContent>
-        <form
-          onSubmit={handleSubmit(onSubmit)}
-          id="my-events"
-          className="grid gap-4 md:grid-cols-3"
-        >
-          <div>
-            <Label htmlFor="goals">Buts</Label>
-            <Input
-              type="number"
-              {...register("goals")}
-              defaultValue={player.goals || 0}
-            />
+        <div className="mx-auto grid w-fit grid-cols-3 gap-2">
+          <div className="flex flex-col items-center gap-2">
+            <NumberInput value={goals} setValue={setsGoals} />
+            <Label>Buts</Label>
           </div>
-          <div>
-            <Label htmlFor="assists">Passes dé</Label>
-            <Input
-              type="number"
-              {...register("assists")}
-              defaultValue={player.assists || 0}
-            />
+          <div className="flex flex-col items-center gap-2">
+            <NumberInput value={assists} setValue={setAssists} />
+            <Label>Passes dé</Label>
           </div>
-          <div>
-            <Label htmlFor="saves">Arrêts</Label>
-            <Input
-              type="number"
-              {...register("saves")}
-              defaultValue={player.saves || 0}
-            />
+          <div className="flex flex-col items-center gap-2">
+            <NumberInput value={saves} setValue={setSaves} />
+            <Label>Arrêts</Label>
           </div>
-        </form>
+        </div>
       </ItemContent>
-      <ItemActions>
-        <Button
-          type="submit"
-          disabled={isPending}
-          form="my-events"
-          variant="secondary"
-        >
+      <ItemFooter>
+        <Button onClick={handleSubmit} disabled={isPending} variant="secondary">
           {isPending ? "En cours..." : "Enregistrer"}
         </Button>
-      </ItemActions>
+      </ItemFooter>
     </Item>
   );
 }
