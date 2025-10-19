@@ -20,7 +20,7 @@ export default function JoinClubButton({ clubId }: { clubId: number }) {
   }
 
   return (
-    <Button onClick={handleClick} disabled={isPending}>
+    <Button onClick={handleClick} disabled={isPending} variant="outline">
       <ClipboardSignature />
       Rejoindre
     </Button>

@@ -1,4 +1,13 @@
 import { buttonVariants } from "@/components/ui/button";
+import { ButtonGroup } from "@/components/ui/button-group";
+import {
+  Item,
+  ItemActions,
+  ItemContent,
+  ItemDescription,
+  ItemHeader,
+  ItemTitle,
+} from "@/components/ui/item";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import useAuth from "@/lib/auth/useAuth";
 import {
@@ -10,7 +19,7 @@ import useGame from "@/lib/game/useGame";
 import { useMembers } from "@/lib/member/useMembers";
 import { getPlayerChannel, type Player } from "@/lib/player/player.service";
 import usePlayers from "@/lib/player/usePlayers";
-import { addMinutes, isFuture, isPast } from "date-fns";
+import { addMinutes, format, isFuture, isPast } from "date-fns";
 import {
   BarChart,
   Clock,
@@ -23,13 +32,14 @@ import { useEffect } from "react";
 import { Link, useParams } from "wouter";
 import AddToCalendar from "./components/AddToCalendar";
 import GameStats from "./components/GameStats";
+import InviteExternalDialog from "./components/InviteExternalDialog";
 import InviteMenu from "./components/InviteMenu";
 import JoinGameButton from "./components/JoinGameButton";
 import LeaveGameButton from "./components/LeaveGameButton";
-import LineUp from "./components/LineUp";
+import LineupEditor from "./components/LineupEditor";
 import MyEvents from "./components/MyEvents";
 import PlayerTable from "./components/PlayerTable";
-import Score from "./components/Score";
+import ScoreBoard from "./components/ScoreBoard";
 
 export default function View() {
   const { id } = useParams();
@@ -46,8 +56,6 @@ export default function View() {
     isError: isPlayersError,
   } = usePlayers(Number(id));
   const { isMember } = useMembers(game?.club_id);
-  const confirmedPlayers =
-    players?.filter((p) => p.status === "confirmed") || [];
 
   useEffect(() => {
     if (!id) return;
@@ -96,7 +104,7 @@ export default function View() {
   }
 
   return (
-    <div className="mx-auto max-w-4xl p-2">
+    <div className="mx-auto grid max-w-4xl gap-4 p-2">
       <header className="mt-6 text-center">
         <p className="text-muted-foreground text-xs font-bold uppercase tracking-tight">
           <Link
@@ -122,72 +130,79 @@ export default function View() {
           </p>
           {isFuture(endDate) && (
             <p
-              className={`text-sm ${isPlayer ? "text-primary" : "text-muted-foreground"}`}
+              className={`text-sm leading-relaxed ${isPlayer ? "text-primary" : "text-muted-foreground"}`}
             >
               {getPlayerStatusString()}
             </p>
           )}
-
-          <div className="mt-4 flex items-center justify-center gap-2">
-            {!isPlayer && <JoinGameButton game={game} />}
-            {isFuture(game.date) && (
-              <InviteMenu
-                gameId={game.id}
-                clubId={game.club_id}
-                disabled={!isMember}
-              />
-            )}
-          </div>
         </div>
       </header>
 
-      <div className="mx-auto mt-8">
-        <div className="rounded-xl border p-4">
-          <div className="text-sm leading-relaxed">
-            <p>
-              <Clock className="mr-2 inline-block h-4 w-4 align-text-top" />
-              {new Date(game.date).toLocaleTimeString("fr-FR", {
-                timeStyle: "short",
-              })}
-            </p>
-
-            <p>
-              <MapPin className="mr-2 inline-block h-4 w-4 align-text-top" />
-              {game.location}
-            </p>
-
-            <p>
-              <Hourglass className="mr-2 inline-block h-4 w-4 align-text-top" />
-              Durée : {durationInMinutes} minute
-              {durationInMinutes > 1 ? "s" : ""}
-            </p>
-
-            <p>
-              <Users className="mr-2 inline-block h-4 w-4 align-text-top" />
-              {confirmedPlayers.length} / {game.total_players} joueurs inscrits.
-            </p>
-          </div>
-
-          <div className="mt-4 grid grid-cols-1 gap-2 sm:grid-cols-2">
-            <AddToCalendar game={game} />
-
-            {session && isMember && (
-              <Link
-                to="/edit"
-                className={buttonVariants({ variant: "outline" })}
-              >
-                <Pencil />
-                Modifier
-              </Link>
-            )}
-
-            {session && isPlayer && <LeaveGameButton gameId={game.id} />}
-          </div>
-        </div>
-      </div>
+      <ButtonGroup className="mx-auto">
+        <AddToCalendar game={game} />
+        {session && isPlayer && <LeaveGameButton gameId={game.id} />}
+        {!isPlayer && <JoinGameButton game={game} variant="outline" />}
+        {isFuture(game.date) && (
+          <InviteMenu
+            gameId={game.id}
+            clubId={game.club_id}
+            disabled={!isMember}
+          />
+        )}
+      </ButtonGroup>
+      <br></br>
+      <GameInfos
+        game={game}
+        isMember={isMember}
+        durationInMinutes={durationInMinutes}
+      />
 
       {isAuthenticated && <GameTabs game={game} players={players} />}
     </div>
+  );
+}
+
+function GameInfos({
+  game,
+  isMember,
+  durationInMinutes,
+}: {
+  game: Game;
+  isMember: boolean;
+  durationInMinutes: number;
+}) {
+  return (
+    <Item variant="outline">
+      <ItemHeader>
+        <ItemTitle>Lieu du match</ItemTitle>
+      </ItemHeader>
+      <ItemContent>
+        <ItemDescription>
+          <MapPin className="mr-2 inline-block h-4 w-4 align-text-top" />
+          {game.location}
+        </ItemDescription>
+        <ItemDescription>
+          <Clock className="mr-2 inline-block h-4 w-4 align-text-top" />
+          {format(new Date(game.date), "dd/MM/yyyy '-' HH:mm")}
+        </ItemDescription>
+        <ItemDescription>
+          <Hourglass className="mr-2 inline-block h-4 w-4 align-text-top" />
+          Durée : {durationInMinutes} minute
+          {durationInMinutes > 1 ? "s" : ""}
+        </ItemDescription>
+      </ItemContent>
+
+      <ItemActions>
+        {isMember && (
+          <Link
+            to="/edit"
+            className={buttonVariants({ variant: "secondary", size: "sm" })}
+          >
+            Modifier
+          </Link>
+        )}
+      </ItemActions>
+    </Item>
   );
 }
 
@@ -201,7 +216,7 @@ function GameTabs({ game, players }: { game: Game; players: Player[] }) {
   const endDate = addMinutes(new Date(game.date), durationInMinutes);
 
   return (
-    <Tabs defaultValue={isPast(endDate) ? "stats" : "players"} className="mt-4">
+    <Tabs defaultValue={isPast(endDate) ? "stats" : "players"}>
       <TabsList className="mx-auto w-full md:w-auto">
         <TabsTrigger value="players" disabled={!isMember} className="w-1/2">
           <Users className="mr-2 inline-block h-4 w-4" />
@@ -219,21 +234,34 @@ function GameTabs({ game, players }: { game: Game; players: Player[] }) {
         </TabsTrigger>
       </TabsList>
 
-      <TabsContent value="players">
-        <PlayerTable players={players} />
-      </TabsContent>
+      <div className="bg-muted/30 mt-4 rounded-lg border p-4">
+        <TabsContent value="players">
+          <p className="text-muted-foreground mb-2 text-sm">
+            {confirmedPlayers.length} / {game.total_players} joueurs inscrits.
+          </p>
 
-      <TabsContent value="lineup">
-        <LineUp game={game} players={confirmedPlayers} disabled={!isMember} />
-      </TabsContent>
+          <PlayerTable players={players} />
+        </TabsContent>
 
-      <TabsContent value="stats">
-        <div className="grid grid-cols-2 gap-4">
-          <Score game={game} players={confirmedPlayers} />
-          {!!player && <MyEvents player={player} />}
-          <GameStats gameId={game.id} />
-        </div>
-      </TabsContent>
+        <TabsContent value="lineup" className="grid gap-4">
+          <LineupEditor
+            gameId={game.id}
+            players={players}
+            disabled={!isMember}
+          />
+          <InviteExternalDialog gameId={game.id} disabled={!isMember} />
+        </TabsContent>
+
+        <TabsContent value="stats">
+          <div className="grid gap-4 md:grid-cols-2">
+            <ScoreBoard game={game} players={confirmedPlayers} />
+            {!!player && <MyEvents player={player} />}
+            <div className="md:col-span-2">
+              <GameStats gameId={game.id} />
+            </div>
+          </div>
+        </TabsContent>
+      </div>
     </Tabs>
   );
 }
