@@ -135,8 +135,12 @@ function HistoryCard({
     value: season.id,
   }));
   const [seasonId, setSeasonId] = useQueryState("season", {
-    defaultValue: options?.[0]?.value || "",
+    defaultValue: "",
   });
+
+  const filteredHistory = seasonId
+    ? history.filter((stat) => stat.season_id === seasonId)
+    : history;
 
   return (
     <Card className="overflow-hidden">
@@ -174,21 +178,21 @@ function HistoryCard({
               </TableRow>
             </TableHeader>
             <TableBody>
-              {history.map((stat) => (
-                <TableRow key={stat.game_id}>
-                  <TableCell>
-                    {history?.length
-                      ? new Date(stat.game_date || "").toLocaleDateString(
+              {filteredHistory?.length
+                ? filteredHistory.map((stat) => (
+                    <TableRow key={stat.game_id}>
+                      <TableCell>
+                        {new Date(stat.game_date || "").toLocaleDateString(
                           "fr-FR",
-                        )
-                      : "Aucune donnée"}
-                  </TableCell>
-                  <TableCell>{stat.user_team}</TableCell>
-                  <TableCell>{stat.goals}</TableCell>
-                  <TableCell>{stat.assists}</TableCell>
-                  <TableCell>{stat.saves}</TableCell>
-                </TableRow>
-              ))}
+                        )}
+                      </TableCell>
+                      <TableCell>{stat.user_team}</TableCell>
+                      <TableCell>{stat.goals}</TableCell>
+                      <TableCell>{stat.assists}</TableCell>
+                      <TableCell>{stat.saves}</TableCell>
+                    </TableRow>
+                  ))
+                : "Aucune donnée"}
             </TableBody>
           </Table>
         </div>

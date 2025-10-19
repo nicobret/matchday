@@ -6,7 +6,7 @@
   font-display: swap;
   font-family: "New Amsterdam";
   font-style: normal;
-  font-weight: 400;
+  font-weight: normal;
   src: url("/fonts/new-amsterdam-v1-latin-regular.woff2") format("woff2");
 }
 
