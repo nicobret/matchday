@@ -12,7 +12,6 @@ import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import useAuth from "@/lib/auth/useAuth";
 import useClub from "@/lib/club/useClub";
-import { categories } from "@/lib/game/gameService";
 import useCreateGame from "@/lib/game/useCreateGame";
 import { useMembers } from "@/lib/member/useMembers";
 import { fromZonedTime } from "date-fns-tz";
@@ -96,94 +95,51 @@ export default function GameForm({ clubId }: { clubId: number }) {
     <form
       id="game-creator"
       onSubmit={handleSubmit(onSubmit)}
-      className="mx-auto mt-8 max-w-lg"
+      className="grid grid-cols-2 gap-x-4 gap-y-6"
     >
-      <div className="my-6 grid w-full grid-cols-2 items-start gap-3">
-        <div>
-          <div className="mb-1 grid w-full items-center gap-2">
-            <Label htmlFor="club">Club</Label>
-            <Input
-              type="text"
-              id="club"
-              value={club?.name || ""}
-              disabled={true}
-              className="cursor-not-allowed"
-            />
-          </div>
-        </div>
-        <div>
-          <div className="mb-1 grid w-full items-center gap-2">
-            <Label htmlFor="season">Saison</Label>
-            <Controller
-              name="season_id"
-              control={control}
-              defaultValue={seasonOptions[0].value}
-              render={({ field }) => (
-                <Select value={field.value} onValueChange={field.onChange}>
-                  <SelectTrigger className="w-full">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {seasonOptions.map((option) => (
-                      <SelectItem key={option.value} value={option.value}>
-                        {option.label}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              )}
-            />
-          </div>
+      <div className="col-span-2 grid w-full items-center gap-2">
+        <Label htmlFor="club">Club</Label>
+        <Input type="text" id="club" value={club?.name || ""} disabled={true} />
+      </div>
+
+      <div className="col-span-2 grid w-full items-center gap-2">
+        <Label htmlFor="season" className="flex justify-between">
+          Saison
           <Link
             to={`~/club/${club.id}/edit#seasons`}
             className="text-primary text-sm"
           >
             Ajouter une saison
           </Link>
-        </div>
+        </Label>
+        <Controller
+          name="season_id"
+          control={control}
+          defaultValue={seasonOptions[0].value}
+          render={({ field }) => (
+            <Select value={field.value} onValueChange={field.onChange}>
+              <SelectTrigger className="w-full">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {seasonOptions.map((option) => (
+                  <SelectItem key={option.value} value={option.value}>
+                    {option.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          )}
+        />
       </div>
 
-      <div className="grid w-full grid-cols-2 gap-3">
-        <div className="grid w-full items-center gap-2">
-          <Label htmlFor="category">Sport</Label>
-          <Select
-            {...register("category")}
-            defaultValue="football"
-            disabled={true}
-          >
-            <SelectTrigger className="w-full">
-              <SelectValue placeholder="Choisir un sport" />
-            </SelectTrigger>
-            <SelectContent>
-              {categories.map((category) => (
-                <SelectItem key={category.value} value={category.value}>
-                  {category.label}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-        </div>
-
-        <div className="grid w-full items-center gap-2">
-          <Label htmlFor="playerCount">Nombre de joueurs</Label>
-          <Input
-            type="number"
-            {...register("total_players", { required: true, min: 0 })}
-            defaultValue={10}
-          />
-        </div>
-      </div>
-
-      <div className="my-6 grid w-full grid-cols-2 gap-3">
-        <div className="grid w-full items-center gap-2">
-          <Label htmlFor="date">Date du match</Label>
-          <Input type="date" {...register("date", { required: true })} />
-        </div>
-
-        <div className="grid w-full items-center gap-2">
-          <Label htmlFor="time">Heure du match</Label>
-          <Input type="time" {...register("time", { required: true })} />
-        </div>
+      <div className="grid w-full items-center gap-2">
+        <Label htmlFor="playerCount">Nombre de joueurs</Label>
+        <Input
+          type="number"
+          {...register("total_players", { required: true, min: 0 })}
+          defaultValue={10}
+        />
       </div>
 
       <div className="grid w-full items-center gap-2">
@@ -195,24 +151,32 @@ export default function GameForm({ clubId }: { clubId: number }) {
         />
       </div>
 
-      <div className="my-6 grid w-full items-center gap-2">
-        <Label htmlFor="location">Lieu</Label>
+      <div className="grid w-full items-center gap-2">
+        <Label htmlFor="date">Date</Label>
+        <Input type="date" {...register("date", { required: true })} />
+      </div>
+
+      <div className="grid w-full items-center gap-2">
+        <Label htmlFor="time">Heure</Label>
+        <Input type="time" {...register("time", { required: true })} />
+      </div>
+
+      <div className="col-span-2 grid w-full items-center gap-2">
+        <Label htmlFor="location">Adresse</Label>
         <Textarea
           {...register("location", { required: true })}
           defaultValue={club.address || undefined}
-          placeholder="24, Rue Alexandre Guilmant, 92190 Meudon"
           className="text-base"
         />
       </div>
 
-      <div className="grid grid-cols-2 gap-2">
-        <Button type="button" asChild variant="secondary">
-          <Link to={`~/club/${club.id}`}>Annuler</Link>
-        </Button>
-        <Button type="submit" disabled={isCreationPending}>
-          Créer
-        </Button>
-      </div>
+      <Button type="submit" disabled={isCreationPending}>
+        Créer
+      </Button>
+
+      <Button type="button" asChild variant="secondary">
+        <Link to={`~/club/${club.id}`}>Annuler</Link>
+      </Button>
     </form>
   );
 }

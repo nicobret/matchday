@@ -75,29 +75,34 @@ export default function ClubHistory({ club }: { club: Club }) {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {games.map((game) => (
-              <TableRow key={game.id}>
-                <TableCell>
-                  <Link
-                    to={`~/game/${game.id}`}
-                    className="text-primary underline underline-offset-4"
-                  >
-                    {new Date(game.date).toLocaleDateString("fr-FR", {
-                      weekday: "long",
-                      month: "short",
-                      day: "numeric",
-                    })}
-                  </Link>
-                </TableCell>
-                <TableCell>
-                  {game.score && game.score.length === 2
-                    ? game.score[0].toString() +
-                      " - " +
-                      game.score[1].toString()
-                    : "N/A"}
-                </TableCell>
-              </TableRow>
-            ))}
+            {games
+              .sort(
+                (a, b) =>
+                  new Date(b.date).getTime() - new Date(a.date).getTime(),
+              )
+              .map((game) => (
+                <TableRow key={game.id}>
+                  <TableCell>
+                    <Link
+                      to={`~/game/${game.id}`}
+                      className="text-primary underline underline-offset-4"
+                    >
+                      {new Date(game.date).toLocaleDateString("fr-FR", {
+                        weekday: "long",
+                        month: "short",
+                        day: "numeric",
+                      })}
+                    </Link>
+                  </TableCell>
+                  <TableCell>
+                    {game.score && game.score.length === 2
+                      ? game.score[0].toString() +
+                        " - " +
+                        game.score[1].toString()
+                      : "N/A"}
+                  </TableCell>
+                </TableRow>
+              ))}
           </TableBody>
         </Table>
       ) : (

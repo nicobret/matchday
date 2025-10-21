@@ -59,7 +59,7 @@ export default function View() {
           </TabsTrigger>
         </TabsList>
 
-        <div className="bg-muted/30 mt-4 rounded-lg border px-4">
+        <div className="bg-muted/30 mt-4 rounded-lg border px-4 pb-2">
           <TabsContent value="schedule">
             <section id="schedule" className="">
               <h2 className="font-new-amsterdam mt-4 scroll-m-20 text-3xl">

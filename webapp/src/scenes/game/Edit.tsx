@@ -10,16 +10,11 @@ import {
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
-import {
-  categories,
-  Game,
-  getGameDurationInMinutes,
-} from "@/lib/game/gameService";
+import { Game, getGameDurationInMinutes } from "@/lib/game/gameService";
 import useGame from "@/lib/game/useGame";
 import useUpdateGame from "@/lib/game/useUpdateGame";
 import useSeasons from "@/lib/season/useSeasons";
 import { fromZonedTime } from "date-fns-tz";
-import { ArrowLeft } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { TablesUpdate } from "shared/types/supabase";
 import { Link, useLocation, useParams } from "wouter";
@@ -105,45 +100,22 @@ function Editor({ game }: { game: Game }) {
   }
 
   return (
-    <div className="mx-auto max-w-5xl p-4">
-      <Link to={`~/game/${game.id}`} className="text-muted-foreground text-sm">
-        <ArrowLeft className="mr-2 inline-block h-4 w-4 align-text-top" />
-        Retour au match
-      </Link>
-
-      <h1 className="mt-6 scroll-m-20 text-2xl font-semibold uppercase tracking-tight">
+    <div className="mx-auto max-w-lg p-4">
+      <h2 className="font-new-amsterdam mb-2 mt-6 scroll-m-20 text-center text-4xl">
         Modifier un match
-      </h1>
+      </h2>
 
-      <form onSubmit={handleSubmit(onSubmit)} className="mt-6">
-        <div className="grid grid-cols-2 gap-4">
-          <div>
-            <Label htmlFor="date">Date</Label>
-            <Input
-              type="date"
-              {...register("date")}
-              defaultValue={initialValues.date}
-              required
-            />
-          </div>
-          <div>
-            <Label htmlFor="time">Heure</Label>
-            <Input
-              type="time"
-              {...register("time")}
-              defaultValue={initialValues.time}
-              required
-            />
-          </div>
-        </div>
-
-        <div className="mt-4">
+      <form
+        onSubmit={handleSubmit(onSubmit)}
+        className="bg-muted/30 mx-auto mt-8 grid max-w-lg grid-cols-2 gap-4 rounded-lg border p-4"
+      >
+        <div className="col-span-2 grid w-full items-center gap-2">
           <Label htmlFor="season">Saison</Label>
           <Select
             onValueChange={(value) => setValue("season_id", value)}
             defaultValue={initialValues.season_id}
           >
-            <SelectTrigger>
+            <SelectTrigger className="w-full">
               <SelectValue placeholder="Choisir une saison" />
             </SelectTrigger>
             <SelectContent>
@@ -156,7 +128,45 @@ function Editor({ game }: { game: Game }) {
           </Select>
         </div>
 
-        <div className="mt-4">
+        <div className="grid w-full items-center gap-2">
+          <Label htmlFor="total_players">Nombre de joueurs</Label>
+          <Input
+            type="number"
+            {...register("total_players")}
+            defaultValue={initialValues.total_players}
+          />
+        </div>
+
+        <div className="grid w-full items-center gap-2">
+          <Label htmlFor="duration">Durée en minutes</Label>
+          <Input
+            type="number"
+            {...register("durationInMinutes")}
+            defaultValue={initialValues.durationInMinutes}
+          />
+        </div>
+
+        <div className="grid w-full items-center gap-2">
+          <Label htmlFor="date">Date</Label>
+          <Input
+            type="date"
+            {...register("date")}
+            defaultValue={initialValues.date}
+            required
+          />
+        </div>
+
+        <div className="grid w-full items-center gap-2">
+          <Label htmlFor="time">Heure</Label>
+          <Input
+            type="time"
+            {...register("time")}
+            defaultValue={initialValues.time}
+            required
+          />
+        </div>
+
+        <div className="col-span-2 grid w-full items-center gap-2">
           <Label htmlFor="location" className="">
             Adresse
           </Label>
@@ -167,72 +177,25 @@ function Editor({ game }: { game: Game }) {
           />
         </div>
 
-        <div className="mt-4">
-          <Label htmlFor="duration">Durée en minutes</Label>
-          <Input
-            type="number"
-            {...register("durationInMinutes")}
-            defaultValue={initialValues.durationInMinutes}
-          />
-        </div>
+        <Button
+          type="submit"
+          disabled={isPending}
+          className="col-span-2 w-full"
+        >
+          Enregistrer
+        </Button>
 
-        <div className="mt-4 grid grid-cols-2 gap-4">
-          <div>
-            <Label htmlFor="category">Sport</Label>
-            <Select
-              {...register("category")}
-              defaultValue={
-                categories.find((c) => c.value === initialValues.category)
-                  ?.value
-              }
-            >
-              <SelectTrigger>
-                <SelectValue placeholder="Choisir un sport" />
-              </SelectTrigger>
-              <SelectContent>
-                {categories.map((category) => (
-                  <SelectItem key={category.value} value={category.value}>
-                    {category.label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
+        <Link
+          to={`~/game/${game.id}`}
+          className={buttonVariants({ variant: "secondary" })}
+        >
+          Annuler
+        </Link>
 
-          <div>
-            <Label htmlFor="total_players">Nombre de joueurs</Label>
-            <Input
-              type="number"
-              {...register("total_players")}
-              defaultValue={initialValues.total_players}
-            />
-          </div>
-        </div>
-
-        <div className="mt-8 grid grid-cols-1 gap-4 md:grid-cols-2">
-          <Button
-            type="submit"
-            disabled={isPending}
-            className="w-full md:order-2"
-          >
-            Enregistrer
-          </Button>
-          <Link
-            to={`~/game/${game.id}`}
-            className={buttonVariants({ variant: "secondary" })}
-          >
-            Annuler
-          </Link>
-        </div>
+        <Button onClick={handleDelete} variant="destructive">
+          Supprimer le match
+        </Button>
       </form>
-
-      <h1 className="mt-12 scroll-m-20 text-2xl font-semibold uppercase tracking-tight">
-        Supprimer le match
-      </h1>
-
-      <Button onClick={handleDelete} variant="destructive" className="mt-4">
-        Supprimer le match
-      </Button>
     </div>
   );
 }
