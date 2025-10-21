@@ -48,10 +48,10 @@ export default function ClubInfo({
           {new Date(club.created_at).toLocaleDateString("fr-FR", {
             dateStyle: "long",
           })}
-          <ItemDescription className="leading-relaxed">
-            <MapPin className="mr-2 inline-block h-4 w-4 align-text-top" />
-            {address}
-          </ItemDescription>
+        </ItemDescription>
+        <ItemDescription className="leading-relaxed">
+          <MapPin className="mr-2 inline-block h-4 w-4 align-text-top" />
+          {address}
         </ItemDescription>
       </ItemContent>
       <ItemActions>

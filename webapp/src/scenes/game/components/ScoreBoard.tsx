@@ -1,14 +1,7 @@
-import { Button } from "@/components/ui/button";
-import {
-  Item,
-  ItemContent,
-  ItemFooter,
-  ItemHeader,
-  ItemTitle,
-} from "@/components/ui/item";
+import { Item, ItemContent, ItemHeader, ItemTitle } from "@/components/ui/item";
 import useUpdateGame from "@/lib/game/useUpdateGame";
 import { Player } from "@/lib/player/player.service";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { Tables } from "shared/types/supabase";
 import NumberInput from "./NumberInput";
 
@@ -19,9 +12,22 @@ export default function ScoreBoard({
   game: Tables<"games">;
   players: Player[];
 }) {
-  const { mutate, isPending } = useUpdateGame(game.id);
+  const { mutate } = useUpdateGame(game.id);
   const [homeScore, setHomeScore] = useState(game.score ? game.score[0] : 0);
   const [awayScore, setAwayScore] = useState(game.score ? game.score[1] : 0);
+  const timeoutRef = useRef<number | null>(null);
+
+  function handleChange(newHomeScore: number, newAwayScore: number) {
+    setHomeScore(newHomeScore);
+    setAwayScore(newAwayScore);
+
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+    }
+    timeoutRef.current = setTimeout(() => {
+      mutate({ score: [newHomeScore, newAwayScore] });
+    }, 500);
+  }
 
   return (
     <Item variant="outline">
@@ -41,10 +47,16 @@ export default function ScoreBoard({
                   <p key={p.id}>{p.profile?.firstname}</p>
                 ))}
             </div>
-            <NumberInput value={homeScore} setValue={setHomeScore} />
+            <NumberInput
+              value={homeScore}
+              onChange={(v) => handleChange(v, awayScore)}
+            />
           </div>
           <div className="flex gap-4">
-            <NumberInput value={awayScore} setValue={setAwayScore} />
+            <NumberInput
+              value={awayScore}
+              onChange={(v) => handleChange(homeScore, v)}
+            />
             <div>
               <p>
                 <strong>Visiteurs</strong>
@@ -60,15 +72,6 @@ export default function ScoreBoard({
           </div>
         </div>
       </ItemContent>
-      <ItemFooter>
-        <Button
-          onClick={() => mutate({ score: [homeScore, awayScore] })}
-          disabled={isPending}
-          variant="secondary"
-        >
-          Enregistrer
-        </Button>
-      </ItemFooter>
     </Item>
   );
 }

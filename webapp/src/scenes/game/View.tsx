@@ -256,7 +256,7 @@ function GameTabs({ game, players }: { game: Game; players: Player[] }) {
           <div className="grid gap-4 md:grid-cols-2">
             <ScoreBoard game={game} players={confirmedPlayers} />
             {!!player && <MyEvents player={player} />}
-            <div className="md:col-span-2">
+            <div className="min-w-0 md:col-span-2">
               <GameStats gameId={game.id} />
             </div>
           </div>

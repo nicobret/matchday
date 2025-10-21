@@ -4,24 +4,21 @@ import { MinusIcon, PlusIcon } from "lucide-react";
 
 export default function NumberInput({
   value,
-  setValue,
+  onChange,
 }: {
   value: number;
-  setValue: React.Dispatch<React.SetStateAction<number>>;
+  onChange: (value: number) => void;
 }) {
   return (
-    <ButtonGroup orientation="vertical" className="h-fit">
-      <Button
-        onClick={() => setValue((value: number) => value + 1)}
-        variant="outline"
-      >
+    <ButtonGroup orientation="vertical" className="h-fit font-mono">
+      <Button onClick={() => onChange(value + 1)} variant="outline">
         <PlusIcon />
       </Button>
-      <Button variant="outline" className="py-6 text-2xl">
+      <Button variant="outline" className="h-11 p-0 text-2xl">
         {value}
       </Button>
       <Button
-        onClick={() => setValue((value) => Math.max(0, value - 1))}
+        onClick={() => onChange(Math.max(0, value - 1))}
         variant="outline"
       >
         <MinusIcon />
