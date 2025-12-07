@@ -9,7 +9,6 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
-import { useToast } from "@/hooks/use-toast";
 import { Game, getGameDurationInMinutes } from "@/lib/game/gameService";
 import useGame from "@/lib/game/useGame";
 import useUpdateGame from "@/lib/game/useUpdateGame";
@@ -17,6 +16,7 @@ import useSeasons from "@/lib/season/useSeasons";
 import { fromZonedTime } from "date-fns-tz";
 import { useForm } from "react-hook-form";
 import { TablesUpdate } from "shared/types/supabase";
+import { toast } from "sonner";
 import { Link, useLocation, useParams } from "wouter";
 
 type FormValues = {
@@ -77,14 +77,13 @@ function Editor({ game }: { game: Game }) {
   const { data: seasons } = useSeasons(game.club_id);
   const initialValues = getFormValuesFromData(game);
   const { mutate, isPending } = useUpdateGame(game.id);
-  const { toast } = useToast();
   const { register, handleSubmit, setValue } = useForm<FormValues>();
 
   function onSubmit(data: FormValues) {
     const payload = getPayloadFromFormValues(data);
     mutate(payload, {
       onSuccess: () => {
-        toast({ description: "Match mis à jour" });
+        toast.success("Match mis à jour");
         navigate(`~/game/${game.id}`);
       },
     });

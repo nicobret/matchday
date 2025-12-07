@@ -11,7 +11,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "./ui/dropdown-menu";
-import { Toaster } from "./ui/toaster";
+import { Toaster } from "./ui/sonner";
 
 export default function Layout({ children }: { children: React.ReactNode }) {
   const { session, logout } = useAuth();

@@ -5,9 +5,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { useToast } from "@/hooks/use-toast";
 import { Member } from "@/lib/club/club.service";
 import { useUpdateMember } from "@/lib/member/useUpdateMember";
+import { toast } from "sonner";
 
 export function RoleSelector({
   member,
@@ -17,7 +17,6 @@ export function RoleSelector({
   enabled: boolean;
 }) {
   const { mutate, isPending } = useUpdateMember(member);
-  const { toast } = useToast();
 
   const options = [
     { value: "member", label: "Membre" },
@@ -33,7 +32,7 @@ export function RoleSelector({
           { role },
           {
             onSuccess: () => {
-              toast({ description: "Rôle mis à jour" });
+              toast.success("Rôle mis à jour");
             },
           },
         )

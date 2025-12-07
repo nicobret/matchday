@@ -23,13 +23,13 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { useToast } from "@/hooks/use-toast";
 import { useMembers } from "@/lib/member/useMembers";
 import useCreatePlayer from "@/lib/player/useCreatePlayer";
 import usePlayers from "@/lib/player/usePlayers";
 import { useCopyToClipboard } from "@uidotdev/usehooks";
 import { Send } from "lucide-react";
 import { useForm } from "react-hook-form";
+import { toast } from "sonner";
 
 type FormValues = { userId: string };
 
@@ -42,7 +42,6 @@ export default function InviteMenu({
   clubId: number;
   disabled: boolean;
 }) {
-  const { toast } = useToast();
   const [, copyToClipboard] = useCopyToClipboard();
   const { mutate: createPlayer } = useCreatePlayer(gameId);
   const { data: members, isPending } = useMembers(clubId);
@@ -55,19 +54,13 @@ export default function InviteMenu({
 
   function onSubmit(data: FormValues) {
     createPlayer({ user_id: data.userId, status: "pending" });
-    toast({
-      title: "Invitation envoyée",
-      description: "Le joueur a été invité avec succès.",
-    });
+    toast.success("Le joueur a été invité avec succès.");
     setValue("userId", "");
   }
 
   function handleCopyLink() {
     copyToClipboard(window.location.href);
-    toast({
-      title: "Lien copié",
-      description: "Le lien a été copié dans le presse-papiers.",
-    });
+    toast.success("Le lien a été copié dans le presse-papiers.");
   }
 
   return (

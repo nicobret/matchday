@@ -1,14 +1,13 @@
 import { SessionContext } from "@/components/auth-provider";
-import { useToast } from "@/hooks/use-toast";
 import supabase from "@/utils/supabase";
 import { useMutation } from "@tanstack/react-query";
 import { useContext } from "react";
+import { toast } from "sonner";
 import { useLocation } from "wouter";
 
 export default function useAuth() {
   const { session, setSession } = useContext(SessionContext);
   const [, navigate] = useLocation();
-  const { toast } = useToast();
 
   async function logout() {
     await supabase.auth.signOut();
@@ -35,14 +34,10 @@ export default function useAuth() {
     },
     onSuccess: (data) => {
       // setSession(data.session);
-      toast({ title: "Succès", description: "Vous êtes connecté." });
+      toast.success("Vous êtes connecté.");
     },
     onError: (error) => {
-      toast({
-        title: "Erreur",
-        description: error.message,
-        variant: "destructive",
-      });
+      toast.error(error.message);
     },
   });
 
