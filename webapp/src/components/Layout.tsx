@@ -18,9 +18,6 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 
   return (
     <div className="relative min-h-screen">
-      {/* Background with gradient and motifs */}
-      <div className="bg-depth-pattern fixed inset-0 -z-10" />
-
       <div className="fixed top-0 z-10 w-full backdrop-blur-sm">
         <nav className="mx-auto flex items-center gap-2 pl-1 pr-2">
           <Link to="/">
