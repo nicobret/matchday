@@ -32,7 +32,7 @@ export default function ClubInviteMenu({ disabled = false }) {
     <Dialog>
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
-          <Button disabled={disabled} variant="secondary">
+          <Button disabled={disabled} variant="outline">
             <Send />
             Inviter
           </Button>

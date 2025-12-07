@@ -17,9 +17,7 @@ export default function ClubSelector({
 
   return (
     <section id="club-selector">
-      <p className="text-center">
-        Veuillez sélectionner un club au préalable :
-      </p>
+      <p className="text-center">Veuillez sélectionner un club&nbsp;:</p>
       {myClubs.length === 0 ? (
         <p className="mt-4 text-center">
           Vous n&apos;êtes membre d'aucun club. Créez un club ou{" "}

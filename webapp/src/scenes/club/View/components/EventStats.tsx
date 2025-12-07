@@ -18,40 +18,40 @@ import { ClubStatsType } from "@/lib/club/useClubStats";
 import { Crown } from "lucide-react";
 import { useQueryState } from "nuqs";
 
-const sortWinsOptions = [
-  { value: "games", label: "Matchs" },
-  { value: "wins", label: "Victoires" },
-  { value: "winstreak", label: "Série de victoires" },
-  { value: "winrate", label: "Pourcentage de victoires" },
+const sortEventsOptions = [
+  { value: "goals", label: "Buts" },
+  { value: "assists", label: "Passes décisives" },
+  { value: "saves", label: "Arrêts" },
 ];
 
-type SortWinsBy = "games" | "wins" | "winstreak" | "winrate";
+type SortEventsBy = "goals" | "assists" | "saves";
 
-export default function WinStats({ data }: { data: ClubStatsType[] }) {
-  const [sortWinsBy, setSortWinsBy] = useQueryState<SortWinsBy>("sortWinsBy", {
-    defaultValue: "wins",
-    clearOnDefault: false,
-    parse: (value) => value as SortWinsBy,
-  });
+export default function EventStats({ data }: { data: ClubStatsType[] }) {
+  const [sortEventsBy, setSortEventsBy] = useQueryState<SortEventsBy>(
+    "sortEventsBy",
+    {
+      defaultValue: "goals",
+      clearOnDefault: false,
+      parse: (value) => value as SortEventsBy,
+    },
+  );
 
   return (
     <div className="overflow-x-auto">
-      <h3 className="scroll-m-20 text-2xl font-semibold tracking-tight">
-        Victoires
-      </h3>
+      <h2 className="font-new-amsterdam scroll-m-20 text-3xl">Actions</h2>
       <div className="mb-2 mt-4 flex gap-2">
         <div className="grid w-full max-w-36 items-center gap-1.5">
           <Label>Trier par</Label>
           <Select
             name="sortEventsBy"
-            value={sortWinsBy}
-            onValueChange={(value: SortWinsBy) => setSortWinsBy(value)}
+            value={sortEventsBy}
+            onValueChange={(value: SortEventsBy) => setSortEventsBy(value)}
           >
             <SelectTrigger>
               <SelectValue placeholder="Trier par" />
             </SelectTrigger>
             <SelectContent>
-              {sortWinsOptions.map((option) => (
+              {sortEventsOptions.map((option) => (
                 <SelectItem key={option.value} value={option.value}>
                   {option.label}
                 </SelectItem>
@@ -66,18 +66,14 @@ export default function WinStats({ data }: { data: ClubStatsType[] }) {
           <TableRow>
             <TableHead></TableHead>
             <TableHead>Prénom</TableHead>
-            <TableHead>Matchs</TableHead>
-            <TableHead>Victoires</TableHead>
-            <TableHead>Série</TableHead>
-            <TableHead>Pourcentage</TableHead>
+            <TableHead>Buts</TableHead>
+            <TableHead>Passes décisives</TableHead>
+            <TableHead>Arrêts</TableHead>
           </TableRow>
         </TableHeader>
         <TableBody>
           {data
-            .sort(
-              (a: ClubStatsType, b: ClubStatsType) =>
-                b[sortWinsBy] - a[sortWinsBy],
-            )
+            .sort((a, b) => b[sortEventsBy] - a[sortEventsBy])
             .map((row, index) => {
               return (
                 <TableRow key={row.user_id}>
@@ -89,10 +85,9 @@ export default function WinStats({ data }: { data: ClubStatsType[] }) {
                     )}
                   </TableCell>
                   <TableCell>{row.firstname}</TableCell>
-                  <TableCell>{row.games}</TableCell>
-                  <TableCell>{row.wins}</TableCell>
-                  <TableCell>{row.winstreak}</TableCell>
-                  <TableCell>{row.winrate} %</TableCell>
+                  <TableCell>{row.goals}</TableCell>
+                  <TableCell>{row.assists}</TableCell>
+                  <TableCell>{row.saves}</TableCell>
                 </TableRow>
               );
             })}

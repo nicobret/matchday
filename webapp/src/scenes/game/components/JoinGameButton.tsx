@@ -11,9 +11,21 @@ import { useLocation } from "wouter";
 export default function JoinGameButton({
   game,
   className = "",
+  variant = "default",
+  size = "default",
+  showIcon = true,
 }: {
   game: Game;
   className?: string;
+  variant?:
+    | "secondary"
+    | "outline"
+    | "ghost"
+    | "link"
+    | "default"
+    | "destructive";
+  size?: "default" | "sm" | "lg";
+  showIcon?: boolean;
 }) {
   const { session } = useAuth();
   const { mutate: createPlayer, isPending } = useCreatePlayer(game.id);
@@ -44,12 +56,18 @@ export default function JoinGameButton({
   }
 
   return (
-    <Button onClick={handleClick} disabled={isPending} className={className}>
+    <Button
+      onClick={handleClick}
+      disabled={isPending}
+      className={className}
+      variant={variant}
+      size={size}
+    >
       {isPending ? (
         <Loader className="h-5 w-5 animate-spin" />
       ) : (
         <>
-          <ClipboardSignature className="inline-block h-4 w-4" />
+          {showIcon && <ClipboardSignature className="inline-block h-4 w-4" />}
           {isInvited ? "Accepter" : "Inscription"}
         </>
       )}

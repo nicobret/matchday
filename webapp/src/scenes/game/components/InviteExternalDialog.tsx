@@ -1,4 +1,4 @@
-import { Button, buttonVariants } from "@/components/ui/button";
+import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
@@ -31,12 +31,7 @@ export default function InviteExternalDialog({
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button
-          disabled={disabled}
-          className={
-            buttonVariants({ variant: "secondary" }) + " w-full md:w-auto"
-          }
-        >
+        <Button disabled={disabled} variant="outline" className="md:w-fit">
           Ajouter un joueur extérieur à la plateforme
         </Button>
       </DialogTrigger>

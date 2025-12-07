@@ -2,6 +2,14 @@
 
 @plugin 'tailwindcss-animate';
 
+@font-face {
+  font-display: swap;
+  font-family: "New Amsterdam";
+  font-style: normal;
+  font-weight: normal;
+  src: url("/fonts/new-amsterdam-v1-latin-regular.woff2") format("woff2");
+}
+
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
@@ -78,7 +86,7 @@
   If we ever want to remove these styles, we need to add an explicit border
   color utility to any element that depends on these defaults.
 */
-@layer base {
+/* @layer base {
   *,
   ::after,
   ::before,
@@ -86,7 +94,7 @@
   ::file-selector-button {
     border-color: var(--color-gray-200, currentColor);
   }
-}
+} */
 
 :root {
   --background: hsl(0, 0%, 100%);
@@ -109,10 +117,15 @@
   --input: hsl(240, 5.9%, 90%);
   --ring: hsl(142.1, 76.2%, 36.3%);
   --radius: 0.5rem;
+  --chart-1: oklch(0.646 0.222 41.116);
+  --chart-2: oklch(0.6 0.118 184.704);
+  --chart-3: oklch(0.398 0.07 227.392);
+  --chart-4: oklch(0.828 0.189 84.429);
+  --chart-5: oklch(0.769 0.188 70.08);
 }
 
 .dark {
-  --background: hsl(20, 14.3%, 4.1%);
+  --background: hsl(219, 10%, 6%);
   --foreground: hsl(0, 0%, 80%);
   --card: hsl(24, 9.8%, 10%);
   --card-foreground: hsl(0, 0%, 85%);
@@ -131,6 +144,11 @@
   --border: hsl(240, 3.7%, 15.9%);
   --input: hsl(240, 3.7%, 15.9%);
   --ring: hsl(142.4, 71.8%, 29.2%);
+  --chart-1: oklch(0.488 0.243 264.376);
+  --chart-2: oklch(0.696 0.17 162.48);
+  --chart-3: oklch(0.769 0.188 70.08);
+  --chart-4: oklch(0.627 0.265 303.9);
+  --chart-5: oklch(0.645 0.246 16.439);
 }
 
 @layer base {
@@ -140,4 +158,83 @@
   body {
     @apply bg-background text-foreground;
   }
+}
+
+@layer base {
+  :root {
+    --chart-1: oklch(0.646 0.222 41.116);
+    --chart-2: oklch(0.6 0.118 184.704);
+    --chart-3: oklch(0.398 0.07 227.392);
+    --chart-4: oklch(0.828 0.189 84.429);
+    --chart-5: oklch(0.769 0.188 70.08);
+  }
+
+  .dark {
+    --chart-1: oklch(0.488 0.243 264.376);
+    --chart-2: oklch(0.696 0.17 162.48);
+    --chart-3: oklch(0.769 0.188 70.08);
+    --chart-4: oklch(0.627 0.265 303.9);
+    --chart-5: oklch(0.645 0.246 16.439);
+  }
+}
+
+html.dark {
+  background-image:
+    radial-gradient(
+      circle at 22% 12%,
+      color-mix(in srgb, var(--primary) 76%, transparent) 0%,
+      transparent 46%
+    ),
+    linear-gradient(
+      145deg,
+      color-mix(in srgb, var(--accent) 36%, transparent) 0%,
+      color-mix(in srgb, var(--primary) 18%, transparent) 48%,
+      color-mix(in srgb, var(--background) 60%, transparent) 100%
+    );
+  background-color: hsl(216 18% 14%); /* fallback, slightly lighter */
+  background-repeat: no-repeat;
+  background-size: cover;
+  /* Use multiply to keep the global feeling darker while letting the theme colors show through */
+  background-blend-mode: multiply;
+  background-attachment: fixed;
+}
+
+.dark body {
+  /* Make body transparent in dark mode so the `html.dark` gradient shows through */
+  background-color: transparent !important;
+}
+
+.bg-depth-pattern::before,
+.bg-depth-pattern::after {
+  content: none;
+  display: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bg-depth-pattern,
+  .bg-depth-pattern::before,
+  .bg-depth-pattern::after {
+    animation: none !important;
+    transition: none !important;
+  }
+}
+
+.floating-element {
+  transform: translateZ(0);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.floating-element:hover {
+  transform: translateY(-2px) translateZ(0);
+  box-shadow:
+    0 10px 25px -3px hsl(var(--foreground) / 0.1),
+    0 4px 6px -4px hsl(var(--foreground) / 0.1),
+    inset 0 1px 0 0 hsl(var(--background) / 0.2);
+}
+
+.dark .floating-element:hover {
+  box-shadow:
+    0 10px 25px -3px hsl(0 0% 0% / 0.4),
+    0 4px 6px -4px hsl(0 0% 0% / 0.3),
+    inset 0 1px 0 0 hsl(var(--foreground) / 0.15);
 }

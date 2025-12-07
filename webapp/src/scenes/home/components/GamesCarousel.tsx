@@ -6,7 +6,7 @@ import {
   CarouselPrevious,
 } from "@/components/ui/carousel";
 import { Game } from "@/lib/game/gameService";
-import GameCard from "@/scenes/club/components/GameCard";
+import GameCard from "@/scenes/club/View/components/GameCard";
 
 export default function GamesCarousel({ games }: { games: Game[] }) {
   return (

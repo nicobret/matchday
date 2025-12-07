@@ -1,10 +1,10 @@
 import useClub from "@/lib/club/useClub";
 import { ArrowLeft } from "lucide-react";
 import { Link, useParams } from "wouter";
-import ClubForm from "./ClubForm";
-import CreateSeasonDialog from "./CreateSeasonDialog";
-import DeleteClub from "./DeleteClub";
-import SeasonList from "./SeasonList";
+import ClubForm from "./components/ClubForm";
+import CreateSeasonDialog from "./components/CreateSeasonDialog";
+import DeleteClub from "./components/DeleteClub";
+import SeasonList from "./components/SeasonList";
 
 export default function EditClub() {
   const { id } = useParams();
