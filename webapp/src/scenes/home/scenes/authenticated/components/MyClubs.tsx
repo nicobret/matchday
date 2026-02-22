@@ -8,11 +8,9 @@ import CreateClubDialog from "./CreateClubDialog";
 
 export default function MyClubs() {
   const { session } = useAuth();
-  const { data: clubs, isError, isPending } = useClubs();
-  const myClubs =
-    clubs?.filter((c) =>
-      c.members?.some((m) => m.user_id === session?.user?.id),
-    ) ?? [];
+  const userId = session?.user?.id;
+  const { data: clubs, isError, isPending } = useClubs(userId);
+  const myClubs = clubs ?? [];
 
   return (
     <section id="my-clubs">

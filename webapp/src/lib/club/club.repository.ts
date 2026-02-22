@@ -1,5 +1,6 @@
 import supabase from "@/utils/supabase";
 import { Tables, TablesInsert, TablesUpdate } from "shared/types/supabase";
+import { Club } from "./club.service";
 
 export async function createClub(
   payload: TablesInsert<"clubs">,
@@ -34,13 +35,19 @@ export async function getClub(id: number): Promise<
   return data;
 }
 
-export async function getClubs() {
-  const { data } = await supabase
+export async function getClubs({ userId }: { userId?: string } = {}): Promise<
+  Club[]
+> {
+  let query: any = supabase
     .from("clubs")
     .select("*, members: club_member (*)")
-    .is("deleted_at", null)
-    .order("created_at")
-    .throwOnError();
+    .is("deleted_at", null);
+
+  if (userId) {
+    query = query.eq("members.user_id", userId);
+  }
+
+  const { data } = await query.order("created_at").throwOnError();
   if (!data) return [];
   return data;
 }
